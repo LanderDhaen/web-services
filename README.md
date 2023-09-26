@@ -1,11 +1,12 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-24ddc0f5d75046c5622901739e7c5dd533143b0c8e959d652212380cedb1ea36.svg)](https://classroom.github.com/a/snPWRHYg)
-# Examenopdracht Front-end Web Development / Web Services
+
+# Examenopdracht Web Services
 
 > Schrap hierboven wat niet past
 
-- Student: VOORNAAM NAAM
-- Studentennummer: xxxxxxxxx
-- E-mailadres: <mailto:voornaam.naam@student.hogent.be>
+- Student: Lander Dhaen
+- Studentennummer: 202293982
+- E-mailadres: <mailto:lander.dhaen@student.hogent.be>
 
 ## Vereisten
 
