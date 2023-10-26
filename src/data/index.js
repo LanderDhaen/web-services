@@ -40,8 +40,6 @@ async function initializeData() {
     throw new Error("Could not initialize the data layer");
   }
 
-  logger.info("Successfully initialized connection to the database");
-
   return knexInstance;
 }
 
@@ -57,7 +55,6 @@ const tables = Object.freeze({
   lesgever: "lesgevers",
   groep: "groepen",
   les: "lessen",
-  lesvoorbereiding: "lesvoorbereidingen",
 });
 
 module.exports = {

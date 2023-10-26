@@ -1,4 +1,4 @@
-let { LESGEVER_DATA } = require("../data/mock_data");
+let { LESGEVER_DATA } = require("../data/mock-data");
 
 const getAllLesgever = () => {
   return { items: LESGEVER_DATA, count: LESGEVER_DATA.length };

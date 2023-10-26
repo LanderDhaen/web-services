@@ -11,8 +11,10 @@ const LOG_LEVEL = config.get("log.level");
 const LOG_DISABLED = config.get("log.disabled");
 const CORS_ORIGINS = config.get("cors.origins");
 const CORS_MAX_AGE = config.get("cors.maxAge");
+const dbclient = config.get("database.client");
+console.log("db client " + dbclient);
 
-async function initializeApp() {
+async function main() {
   initializeLogger({
     level: LOG_LEVEL,
     disabled: LOG_DISABLED,
@@ -31,6 +33,7 @@ async function initializeApp() {
         if (CORS_ORIGINS.indexOf(ctx.request.header.origin) !== -1) {
           return ctx.request.header.origin;
         }
+        // Not a valid domain at this point, let's return the first valid as we should return a string
         return CORS_ORIGINS[0];
       },
       allowHeaders: ["Accept", "Content-Type", "Authorization"],
@@ -43,7 +46,7 @@ async function initializeApp() {
   installRest(app);
 
   app.listen(9000, () => {
-    getLogger().info("Server listening on http://localhost:9000");
+    getLogger().info("🚀 Server listening on http://localhost:9000");
   });
 }
 

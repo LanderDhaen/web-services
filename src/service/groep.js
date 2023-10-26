@@ -1,4 +1,4 @@
-let { GROEP_DATA } = require("../data/mock_data");
+let { GROEP_DATA } = require("../data/mock-data");
 
 const getAllGroepen = () => {
   return { items: GROEP_DATA, count: GROEP_DATA.length };
