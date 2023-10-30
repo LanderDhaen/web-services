@@ -11,7 +11,7 @@ const LESGEVER_DATA = [
   },
   {
     id: 1,
-    naam: "Robbe De",
+    naam: "Robbe De Back-End",
     groep: "Dolfijnen",
     geboortedatum: "18-02-1998",
     type: "Verantwoordelijke",
@@ -28,7 +28,7 @@ const GROEP_DATA = [
   { id: 3, naam: "Walrussen", aantal: 0 },
   { id: 4, naam: "Orkas", aantal: 0 },
   { id: 5, naam: "Dolfijnen", aantal: 1 },
-  { id: 6, naam: "Los", aantal: 1 },
+  { id: 6, naam: "Los De Back-End", aantal: 1 },
 ];
 
 module.exports = { LESGEVER_DATA, GROEP_DATA };

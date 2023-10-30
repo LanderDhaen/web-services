@@ -37,7 +37,7 @@ const deleteGroepById = async (ctx) => {
 
 module.exports = (app) => {
   const router = new Router({
-    prefix: "/transactions",
+    prefix: "/groepen",
   });
 
   router.get("/", getAllGroepen);

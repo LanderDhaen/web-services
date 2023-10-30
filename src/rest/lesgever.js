@@ -49,7 +49,7 @@ const deleteLesgeverById = async (ctx) => {
 
 module.exports = (app) => {
   const router = new Router({
-    prefix: "/transactions",
+    prefix: "/lesgevers",
   });
 
   router.get("/", getAllLesgever);
