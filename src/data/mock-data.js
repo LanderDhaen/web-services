@@ -23,12 +23,13 @@ const LESGEVER_DATA = [
 
 const GROEP_DATA = [
   { id: 0, naam: "Pinguïns", aantal: 0 },
-  { id: 1, naam: "Waterschildpadden", aantal: 0 },
+  { id: 1, naam: "Waterschildpadden", aantal: 1 },
   { id: 2, naam: "Otters", aantal: 0 },
   { id: 3, naam: "Walrussen", aantal: 0 },
   { id: 4, naam: "Orkas", aantal: 0 },
   { id: 5, naam: "Dolfijnen", aantal: 1 },
-  { id: 6, naam: "Los De Back-End", aantal: 1 },
+  { id: 6, naam: "Los", aantal: 1 },
+  { id: 7, naam: "Redders", aantal: 0 },
 ];
 
 module.exports = { LESGEVER_DATA, GROEP_DATA };

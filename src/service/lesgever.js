@@ -1,7 +1,11 @@
-let { LESGEVER_DATA } = require("../data/mock-data");
+const lesgeverRepository = require("../repository/lesgever");
 
-const getAllLesgever = () => {
-  return { items: LESGEVER_DATA, count: LESGEVER_DATA.length };
+const getAllLesgever = async () => {
+  const items = await lesgeverRepository.findAll();
+  return {
+    items,
+    count: items.length,
+  };
 };
 
 const getLesgeverById = (id) => {
