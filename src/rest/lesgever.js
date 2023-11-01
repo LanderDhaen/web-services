@@ -2,13 +2,13 @@ const Router = require("@koa/router");
 const lesgeverService = require("../service/lesgever");
 
 const getAllLesgever = async (ctx) => {
-  ctx.body = lesgeverService.getAllLesgever();
+  ctx.body = await lesgeverService.getAllLesgever();
 };
 
 const createLesgever = async (ctx) => {
   const newLesgever = lesgeverService.createLesgever({
     ...ctx.request.body,
-    id: Number(ctx.request.body.placeId),
+    lesgever_id: Number(ctx.request.body.lesgever_id),
     naam: String(ctx.request.body.naam),
     groep: Number(ctx.request.body.groep),
     geboortedatum: new Date(ctx.request.body.date),
@@ -18,32 +18,37 @@ const createLesgever = async (ctx) => {
     imageURL: String(ctx.request.body.imageURL),
     email: String(ctx.request.body.email),
     GSM: Number(ctx.request.body.GSM),
+    groep_id: Number(ctx.request.body.groep_id),
   });
   ctx.body = newLesgever;
 };
 
 const getLesgeverById = async (ctx) => {
-  ctx.body = lesgeverService.getLesgeverById(Number(ctx.params.id));
+  ctx.body = lesgeverService.getLesgeverById(Number(ctx.params.lesgever_id));
 };
 
 const updateLesgeverById = async (ctx) => {
-  ctx.body = lesgeverService.updateLesgeverById(Number(ctx.params.id), {
-    ...ctx.request.body,
-    id: Number(ctx.request.body.placeId),
-    naam: String(ctx.request.body.naam),
-    groep: Number(ctx.request.body.groep),
-    geboortedatum: new Date(ctx.request.body.date),
-    type: Number(ctx.request.body.type),
-    aanwezigheidspercentage: Number(ctx.request.body.aanwezigheidspercentage),
-    diploma: Number(ctx.request.body.diploma),
-    imageURL: String(ctx.request.body.imageURL),
-    email: String(ctx.request.body.email),
-    GSM: Number(ctx.request.body.GSM),
-  });
+  ctx.body = lesgeverService.updateLesgeverById(
+    Number(ctx.params.lesgever_id),
+    {
+      ...ctx.request.body,
+      lesgever_id: Number(ctx.request.body.lesgever_id),
+      naam: String(ctx.request.body.naam),
+      groep: Number(ctx.request.body.groep),
+      geboortedatum: new Date(ctx.request.body.date),
+      type: Number(ctx.request.body.type),
+      aanwezigheidspercentage: Number(ctx.request.body.aanwezigheidspercentage),
+      diploma: Number(ctx.request.body.diploma),
+      imageURL: String(ctx.request.body.imageURL),
+      email: String(ctx.request.body.email),
+      GSM: Number(ctx.request.body.GSM),
+      groep_id: Number(ctx.request.body.groep_id),
+    }
+  );
 };
 
 const deleteLesgeverById = async (ctx) => {
-  lesgeverService.deleteLesgeverById(Number(ctx.params.id));
+  lesgeverService.deleteLesgeverById(Number(ctx.params.lesgever_id));
   ctx.status = 204;
 };
 

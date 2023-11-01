@@ -1,11 +1,20 @@
-let { GROEP_DATA } = require("../data/mock-data");
+const groepRepository = require("../repository/groep");
 
-const getAllGroepen = () => {
-  return { items: GROEP_DATA, count: GROEP_DATA.length };
+const getAllGroepen = async () => {
+  const items = await groepRepository.getAllGroepen();
+  return { items, count: items.length };
 };
 
-const getGroepById = (id) => {
-  throw new Error("Not implemented yet!");
+const getGroepById = async (groep_id) => {
+  const groep = await groepRepository.findById(groep_id);
+
+  if (!groep) {
+    throw Error(`Er bestaat geen groep met id ${groep_id}!`, {
+      groep_id,
+    });
+  }
+
+  return groep;
 };
 
 const createGroep = ({ naam, beschrijving, aantal_lesgevers }) => {

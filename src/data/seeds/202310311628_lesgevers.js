@@ -44,6 +44,19 @@ module.exports = {
         GSM: "0491882278",
         groep_id: 3,
       },
+      {
+        lesgever_id: 4,
+        naam: "Lander Dhaen",
+        groep: "Dolfijnen",
+        geboortedatum: new Date(2001, 3, 30, 0),
+        type: "Verantwoordelijke",
+        aanwezigheidspercentage: 0,
+        diploma: "Leerkracht LO",
+        imageURL: "",
+        email: "lander.dhaen@gmail.com",
+        GSM: "0491882278",
+        groep_id: 7,
+      },
     ]);
   },
 };

@@ -1,17 +1,11 @@
 const { tables, getKnex } = require("../data/index");
 
-// Alle lesgevers ophalen
-
-const getAllLesgever = () => {
-  return getKnex()(tables.lesgever).select().orderBy("groep", "ASC");
-};
-
-// Lesgever ophalen a.d.h.v id
+// Kolommen selecter
 
 const SELECT_COLUMNS = [
   "lesgever_id",
   `${tables.lesgever}.naam as lesgever_naam`,
-  `${tables.lesgever}.groep_id as lesgever_groep`,
+  "groep",
   "geboortedatum",
   "type",
   "aanwezigheidspercentage",
@@ -19,12 +13,18 @@ const SELECT_COLUMNS = [
   "imageURL",
   "email",
   "GSM",
+  `${tables.groep}.groep_id as groep_id`,
+  `${tables.groep}.naam as groep_naam`,
+  "beschrijving",
+  "aantal_lesgevers",
 ];
+
+// Lesgever formatteren
 
 const formatLesgever = ({
   lesgever_id,
-  lesgever_naam,
-  lesgever_groep,
+  lesgerver_naam,
+  groep,
   geboortedatum,
   type,
   aanwezigheidspercentage,
@@ -32,27 +32,53 @@ const formatLesgever = ({
   imageURL,
   email,
   GSM,
+  groep_id,
+  groep_naam,
+  beschrijving,
+  aantal_lesgevers,
   ...rest
-}) => ({
-  ...rest,
-  groep: {
-    naam: groep_naam,
-    beschrijving: groep_beschrijving,
-  },
-});
+}) => {
+  return {
+    ...rest,
+    groep: {
+      groep_id,
+      groep_naam,
+      beschrijving,
+      aantal_lesgevers,
+    },
+  };
+};
 
-const getLesgeverById = async (id) => {
-  const lesgever = await getKnex()(tables.transaction)
+// Alle lesgevers ophalen
+
+const getAllLesgever = async () => {
+  const lesgevers = await getKnex()(tables.lesgever)
     .join(
-      tables.lesgever,
+      tables.groep,
       `${tables.lesgever}.groep_id`,
       "=",
       `${tables.groep}.groep_id`
     )
-    .where("lesgever_id", id)
+    .select(SELECT_COLUMNS)
+    .orderBy("lesgever_id", "ASC");
+
+  return lesgevers.map(formatLesgever);
+};
+
+// Lesgever ophalen a.d.h.v id
+
+const getLesgeverById = async (lesgever_id) => {
+  const lesgever = await getKnex()(tables.lesgever)
+    .join(
+      tables.groep,
+      `${tables.lesgever}.groep_id`,
+      "=",
+      `${tables.groep}.groep_id`
+    )
+    .where("lesgever_id", lesgever_id)
     .first(SELECT_COLUMNS);
 
-  return lesgever && formatLesgever(lesgever);
+  return formatLesgever(lesgever);
 };
 
 // Lesgever aanmaken
@@ -85,8 +111,8 @@ const createLesgever = async ({
 
 // Lesgeverinformatie updaten
 
-const updateLesgeverById = async (id) => {
-  await getKnex()(tables.lesgever).where("lesgever_id", id).update({
+const updateLesgeverById = async (lesgever_id) => {
+  await getKnex()(tables.lesgever).where("lesgever_id", lesgever_id).update({
     naam,
     geboortedatum,
     type,
@@ -101,8 +127,8 @@ const updateLesgeverById = async (id) => {
 
 // Lesgever verwijderen
 
-const deleteLesgeverById = async (id) => {
-  await getKnex()(tables.lesgever).where("lesgever_id", id).del();
+const deleteLesgeverById = async (lesgever_id) => {
+  await getKnex()(tables.lesgever).where("lesgever_id", lesgever_id).del();
 };
 
 module.exports = {
