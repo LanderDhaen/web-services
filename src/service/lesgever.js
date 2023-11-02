@@ -10,7 +10,7 @@ const getAllLesgever = async () => {
 };
 
 const getLesgeverById = async (lesgever_id) => {
-  const lesgever = await lesgeverRepository.findById(lesgever_id);
+  const lesgever = await lesgeverRepository.getLesgeverById(lesgever_id);
 
   if (!lesgever) {
     throw Error(`Er bestaat geen lesgever met id ${lesgever_id}!`, {
@@ -33,13 +33,7 @@ const createLesgever = async ({
   GSM,
   groep_id,
 }) => {
-  const bestaandeGroep = await groepService.getGroepById(groep_id);
-
-  if (!bestaandeGroep) {
-    throw Error(`Er bestaat geen groep met id ${groep_id}.`, { groep_id });
-  }
-
-  const lesgever_id = await lesgeverRepository.create({
+  const lesgever_id = await lesgeverRepository.createLesgever({
     naam,
     groep,
     geboortedatum,
@@ -52,7 +46,7 @@ const createLesgever = async ({
     groep_id,
   });
 
-  return getLesgeverById(lesgever.id);
+  return getLesgeverById(lesgever_id);
 };
 
 const updateLesgeverById = async (

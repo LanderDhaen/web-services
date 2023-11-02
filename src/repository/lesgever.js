@@ -1,6 +1,6 @@
 const { tables, getKnex } = require("../data/index");
 
-// Kolommen selecter
+// Kolommen selecteren
 
 const SELECT_COLUMNS = [
   "lesgever_id",
@@ -23,7 +23,7 @@ const SELECT_COLUMNS = [
 
 const formatLesgever = ({
   lesgever_id,
-  lesgerver_naam,
+  lesgever_naam,
   groep,
   geboortedatum,
   type,
@@ -36,10 +36,18 @@ const formatLesgever = ({
   groep_naam,
   beschrijving,
   aantal_lesgevers,
-  ...rest
 }) => {
   return {
-    ...rest,
+    lesgever_id,
+    lesgever_naam,
+    groep,
+    geboortedatum,
+    type,
+    aanwezigheidspercentage,
+    diploma,
+    imageURL,
+    email,
+    GSM,
     groep: {
       groep_id,
       groep_naam,
@@ -67,7 +75,7 @@ const getAllLesgever = async () => {
 
 // Lesgever ophalen a.d.h.v id
 
-const getLesgeverById = async (lesgever_id) => {
+const getLesgeverById = async (id) => {
   const lesgever = await getKnex()(tables.lesgever)
     .join(
       tables.groep,
@@ -75,7 +83,7 @@ const getLesgeverById = async (lesgever_id) => {
       "=",
       `${tables.groep}.groep_id`
     )
-    .where("lesgever_id", lesgever_id)
+    .where("lesgever_id", id)
     .first(SELECT_COLUMNS);
 
   return formatLesgever(lesgever);
@@ -85,6 +93,7 @@ const getLesgeverById = async (lesgever_id) => {
 
 const createLesgever = async ({
   naam,
+  groep,
   geboortedatum,
   type,
   aanwezigheidspercentage,
@@ -96,6 +105,7 @@ const createLesgever = async ({
 }) => {
   const [lesgever_id] = await getKnex()(tables.lesgever).insert({
     naam,
+    groep,
     geboortedatum,
     type,
     aanwezigheidspercentage,

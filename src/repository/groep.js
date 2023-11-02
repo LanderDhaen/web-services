@@ -20,7 +20,7 @@ const SELECT_COLUMNS = [
   "GSM",
 ];
 
-// Groep formateren
+// Groep(en) formateren
 
 const formatGroep = (groepen) => {
   const geformateerdeGroepen = [];
@@ -85,43 +85,6 @@ const formatGroep = (groepen) => {
 
   return geformateerdeGroepen;
 };
-/*
-const formatGroep = ({
-  groep_id,
-  groep_naam,
-  beschrijving,
-  aantal_lesgevers,
-  lesgever_id,
-  lesgever_naam,
-  groep,
-  geboortedatum,
-  type,
-  aanwezigheidspercentage,
-  diploma,
-  imageURL,
-  email,
-  GSM,
-}) => {
-  return {
-    groep_id,
-    groep_naam,
-    beschrijving,
-    aantal_lesgevers,
-    lesgevers: {
-      lesgever_id,
-      lesgever_naam,
-      groep,
-      geboortedatum,
-      type,
-      aanwezigheidspercentage,
-      diploma,
-      imageURL,
-      email,
-      GSM,
-    },
-  };
-};
-*/
 
 // Alle groepen ophalen
 
@@ -140,7 +103,7 @@ const getAllGroepen = async () => {
 
 // Groep ophalen a.d.h.v id
 
-const getGroepById = async (groep_id) => {
+const getGroepById = async (id) => {
   const groep = await getKnex()(tables.groep)
     .join(
       tables.lesgever,
@@ -148,10 +111,10 @@ const getGroepById = async (groep_id) => {
       "=",
       `${tables.groep}.groep_id`
     )
-    .where("groep_id", groep_id)
+    .where(`${tables.groep}.groep_id`, id)
     .first(SELECT_COLUMNS);
 
-  return formatLesgever(groep);
+  return groep;
 };
 
 module.exports = {

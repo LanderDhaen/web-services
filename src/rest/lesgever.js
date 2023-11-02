@@ -6,15 +6,16 @@ const getAllLesgever = async (ctx) => {
 };
 
 const createLesgever = async (ctx) => {
+  console.log(ctx.request.body);
   const newLesgever = lesgeverService.createLesgever({
     ...ctx.request.body,
     lesgever_id: Number(ctx.request.body.lesgever_id),
     naam: String(ctx.request.body.naam),
-    groep: Number(ctx.request.body.groep),
-    geboortedatum: new Date(ctx.request.body.date),
-    type: Number(ctx.request.body.type),
+    groep: String(ctx.request.body.groep),
+    geboortedatum: new Date(ctx.request.body.geboortedatum),
+    type: String(ctx.request.body.type),
     aanwezigheidspercentage: Number(ctx.request.body.aanwezigheidspercentage),
-    diploma: Number(ctx.request.body.diploma),
+    diploma: String(ctx.request.body.diploma),
     imageURL: String(ctx.request.body.imageURL),
     email: String(ctx.request.body.email),
     GSM: Number(ctx.request.body.GSM),
@@ -34,11 +35,11 @@ const updateLesgeverById = async (ctx) => {
       ...ctx.request.body,
       lesgever_id: Number(ctx.request.body.lesgever_id),
       naam: String(ctx.request.body.naam),
-      groep: Number(ctx.request.body.groep),
+      groep: String(ctx.request.body.groep),
       geboortedatum: new Date(ctx.request.body.date),
-      type: Number(ctx.request.body.type),
+      type: String(ctx.request.body.type),
       aanwezigheidspercentage: Number(ctx.request.body.aanwezigheidspercentage),
-      diploma: Number(ctx.request.body.diploma),
+      diploma: String(ctx.request.body.diploma),
       imageURL: String(ctx.request.body.imageURL),
       email: String(ctx.request.body.email),
       GSM: Number(ctx.request.body.GSM),
