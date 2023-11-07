@@ -1,5 +1,6 @@
 const Router = require("@koa/router");
 const groepService = require("../service/groep");
+const lesgeverService = require("../service/lesgever");
 
 const getAllGroepen = async (ctx) => {
   ctx.body = await groepService.getAllGroepen();
@@ -17,7 +18,11 @@ const createGroep = async (ctx) => {
 };
 
 const getGroepById = async (ctx) => {
-  ctx.body = groepService.getGroepById(Number(ctx.params.groep_id));
+  ctx.body = await groepService.getGroepById(Number(ctx.params.groep_id));
+};
+
+const getLesgeverByGroepId = async (ctx) => {
+  ctx.body = await lesgeverService.getLesgeverByGroepId(Number(ctx.params.id));
 };
 
 const updateGroepByID = async (ctx) => {
@@ -43,6 +48,7 @@ module.exports = (app) => {
   router.get("/", getAllGroepen);
   router.post("/", createGroep);
   router.get("/:id", getGroepById);
+  router.get("/:id/lesgevers", getLesgeverByGroepId);
   router.put("/:id", updateGroepByID);
   router.delete("/:id", deleteGroepById);
 

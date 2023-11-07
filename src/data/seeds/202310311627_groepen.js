@@ -49,7 +49,7 @@ module.exports = {
       },
       {
         groep_id: 8,
-        naam: "Los",
+        naam: "Losse lesgevers",
         beschrijving: "Visie-cel, Coördinatoren, Stuurgroep",
         aantal_lesgevers: 1,
       },

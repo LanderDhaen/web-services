@@ -6,8 +6,8 @@ const SELECT_COLUMNS = [
   `${tables.lesvoorbereiding}.lesvoorbereiding_id as lesvoorbereiding_id`,
   "link_to_pdf",
   "feedback",
-  `${tables.les}.les_id as les_id`,
-  `${tables.groep}.groep_id as groep_id`,
+  `${tables.lesvoorbereiding}.les_id as les_id`,
+  `${tables.lesvoorbereiding}.groep_id as groep_id`,
 ];
 
 // Lesvoorbereiding(en) formateren

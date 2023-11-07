@@ -89,6 +89,22 @@ const getLesgeverById = async (id) => {
   return formatLesgever(lesgever);
 };
 
+// Lesgevers ophalen a.d.h.v groep_id
+
+const getLesgeverByGroepId = async (id) => {
+  const lesgevers = await getKnex()(tables.lesgever)
+    .join(
+      tables.groep,
+      `${tables.lesgever}.groep_id`,
+      "=",
+      `${tables.groep}.groep_id`
+    )
+    .where(`${tables.lesgever}.groep_id`, id)
+    .select(SELECT_COLUMNS);
+
+  return lesgevers.map(formatLesgever);
+};
+
 // Lesgever aanmaken
 
 const createLesgever = async ({
@@ -144,6 +160,7 @@ const deleteLesgeverById = async (lesgever_id) => {
 module.exports = {
   getAllLesgever,
   getLesgeverById,
+  getLesgeverByGroepId,
   createLesgever,
   updateLesgeverById,
   deleteLesgeverById,

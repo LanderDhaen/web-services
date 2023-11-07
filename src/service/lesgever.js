@@ -21,6 +21,17 @@ const getLesgeverById = async (lesgever_id) => {
   return lesgever;
 };
 
+const getLesgeverByGroepId = async (id) => {
+  const lesgevers = await lesgeverRepository.getLesgeverByGroepId(id);
+  if (!lesgevers) {
+    throw Error(`Er bestaan geen lesgevers met groep id ${id}!`, {
+      id,
+    });
+  }
+
+  return lesgevers;
+};
+
 const createLesgever = async ({
   naam,
   groep,
@@ -98,6 +109,7 @@ const deleteLesgeverById = async (lesgever_id) => {
 module.exports = {
   getAllLesgever,
   getLesgeverById,
+  getLesgeverByGroepId,
   createLesgever,
   updateLesgeverById,
   deleteLesgeverById,
