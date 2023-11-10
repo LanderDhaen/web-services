@@ -9,11 +9,11 @@ const getAllLesgever = async () => {
   };
 };
 
-const getLesgeverById = async (lesgever_id) => {
-  const lesgever = await lesgeverRepository.getLesgeverById(lesgever_id);
+const getLesgeverById = async (id) => {
+  const lesgever = await lesgeverRepository.getLesgeverById(id);
 
   if (!lesgever) {
-    throw Error(`Er bestaat geen lesgever met id ${lesgever_id}!`, {
+    throw Error(`Er bestaat geen lesgever met id ${id}!`, {
       lesgever_id,
     });
   }

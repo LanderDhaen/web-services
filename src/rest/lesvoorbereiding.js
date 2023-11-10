@@ -7,13 +7,13 @@ const getAllLesvoorbereidingen = async (ctx) => {
 };
 
 const getLesvoorbereidingById = async (ctx) => {
-  ctx.body = lesvoorbereidingService.getLesvoorbereidingById(
+  ctx.body = await lesvoorbereidingService.getLesvoorbereidingById(
     Number(ctx.params.lesvoorbereiding_id)
   );
 };
 
 const updateLesvoorbereidingById = async (ctx) => {
-  ctx.body = lesvoorbereidingService.updateLesvoorbereidingById(
+  ctx.body = await lesvoorbereidingService.updateLesvoorbereidingById(
     Number(ctx.params.lesvoorbereiding_id),
     {
       ...ctx.request.body,

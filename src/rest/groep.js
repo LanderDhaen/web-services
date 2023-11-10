@@ -7,7 +7,7 @@ const getAllGroepen = async (ctx) => {
 };
 
 const createGroep = async (ctx) => {
-  const newGroep = groepService.createGroep({
+  const newGroep = await groepService.createGroep({
     ...ctx.request.body,
     groep_id: Number(ctx.request.body.groep_id),
     naam: String(ctx.request.body.naam),
@@ -26,7 +26,7 @@ const getLesgeverByGroepId = async (ctx) => {
 };
 
 const updateGroepByID = async (ctx) => {
-  ctx.body = groepService.updateGroepByID(Number(ctx.params.groep_id), {
+  ctx.body = await groepService.updateGroepByID(Number(ctx.params.groep_id), {
     ...ctx.request.body,
     groep_id: Number(ctx.request.body.groep_id),
     naam: String(ctx.request.body.naam),

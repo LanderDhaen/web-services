@@ -6,8 +6,7 @@ const getAllLesgever = async (ctx) => {
 };
 
 const createLesgever = async (ctx) => {
-  console.log(ctx.request.body);
-  const newLesgever = lesgeverService.createLesgever({
+  const newLesgever = await lesgeverService.createLesgever({
     ...ctx.request.body,
     lesgever_id: Number(ctx.request.body.lesgever_id),
     naam: String(ctx.request.body.naam),
@@ -25,11 +24,11 @@ const createLesgever = async (ctx) => {
 };
 
 const getLesgeverById = async (ctx) => {
-  ctx.body = lesgeverService.getLesgeverById(Number(ctx.params.lesgever_id));
+  ctx.body = await lesgeverService.getLesgeverById(Number(ctx.params.id));
 };
 
 const updateLesgeverById = async (ctx) => {
-  ctx.body = lesgeverService.updateLesgeverById(
+  ctx.body = await lesgeverService.updateLesgeverById(
     Number(ctx.params.lesgever_id),
     {
       ...ctx.request.body,
@@ -49,7 +48,7 @@ const updateLesgeverById = async (ctx) => {
 };
 
 const deleteLesgeverById = async (ctx) => {
-  lesgeverService.deleteLesgeverById(Number(ctx.params.lesgever_id));
+  await lesgeverService.deleteLesgeverById(Number(ctx.params.lesgever_id));
   ctx.status = 204;
 };
 
