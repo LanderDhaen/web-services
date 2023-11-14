@@ -7,7 +7,9 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "start": "env-cmd nodemon"
+    "start": "env-cmd nodemon",
+    "test": "env-cmd -f .env.test jest --runInBand",
+    "test:coverage": "env-cmd -f .env.test jest --coverage --runInBand"
   },
   "dependencies": {
     "@koa/cors": "^4.0.0",
@@ -21,7 +23,9 @@
   },
   "devDependencies": {
     "env-cmd": "^10.1.0",
-    "nodemon": "^3.0.1"
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.1",
+    "supertest": "^6.3.3"
   },
   "nodemonConfig": {
     "signal": "SIGTERM",
