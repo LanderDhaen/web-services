@@ -7,6 +7,8 @@ module.exports = {
     await knex(tables.lesvoorbereiding).insert([
       {
         lesvoorbereiding_id: 1,
+        lesvoorbereiding_naam: "Walter de Walrus gaat naar school",
+        lesvoorbereiding_type: "Gewone les",
         link_to_PDF: "https://www.google.com",
         feedback: "Dit is een test",
         les_id: 1,
@@ -14,6 +16,8 @@ module.exports = {
       },
       {
         lesvoorbereiding_id: 2,
+        lesvoorbereiding_naam: "Jasmijn de Dolfijn maakt een toets",
+        lesvoorbereiding_type: "Tussentijds brevet",
         link_to_PDF: "https://www.google.com",
         feedback: "Dit is een test 2",
         les_id: 7,
@@ -21,6 +25,8 @@ module.exports = {
       },
       {
         lesvoorbereiding_id: 3,
+        lesvoorbereiding_naam: "Walter de Walrus gaat naar de speeltuin",
+        lesvoorbereiding_type: "Speelles",
         link_to_PDF: "https://www.google.com",
         feedback: "Dit is een test 3",
         les_id: 15,
