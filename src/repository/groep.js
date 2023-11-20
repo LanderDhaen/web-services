@@ -41,7 +41,7 @@ const getAllGroepen = async () => {
 const getGroepById = async (id) => {
   const groep = await getKnex()(tables.groep)
     .where(`${tables.groep}.groep_id`, id)
-    .select(SELECT_COLUMNS);
+    .first(SELECT_COLUMNS);
 
   return formatGroep(groep);
 };

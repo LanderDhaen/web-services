@@ -18,7 +18,7 @@ const createGroep = async (ctx) => {
 };
 
 const getGroepById = async (ctx) => {
-  ctx.body = await groepService.getGroepById(Number(ctx.params.groep_id));
+  ctx.body = await groepService.getGroepById(Number(ctx.params.id));
 };
 
 const getLesgeverByGroepId = async (ctx) => {

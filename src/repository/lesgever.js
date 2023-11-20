@@ -1,3 +1,4 @@
+const c = require("config");
 const { tables, getKnex } = require("../data/index");
 
 // Kolommen selecteren

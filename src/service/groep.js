@@ -5,12 +5,12 @@ const getAllGroepen = async () => {
   return { items, count: items.length };
 };
 
-const getGroepById = async (groep_id) => {
-  const groep = await groepRepository.getGroepById(groep_id);
+const getGroepById = async (id) => {
+  const groep = await groepRepository.getGroepById(id);
 
   if (!groep) {
-    throw Error(`Er bestaat geen groep met id ${groep_id}!`, {
-      groep_id,
+    throw Error(`Er bestaat geen groep met id ${id}!`, {
+      id,
     });
   }
 
