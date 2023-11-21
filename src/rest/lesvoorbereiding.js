@@ -1,10 +1,13 @@
 const Router = require("@koa/router");
 const lesvoorbereidingService = require("../service/lesvoorbereiding");
 const c = require("config");
+const validate = require("../core/validation");
 
 const getAllLesvoorbereidingen = async (ctx) => {
   ctx.body = await lesvoorbereidingService.getAllLesvoorbereidingen();
 };
+
+getAllLesvoorbereidingen.validationScheme = null;
 
 const getLesvoorbereidingById = async (ctx) => {
   ctx.body = await lesvoorbereidingService.getLesvoorbereidingById(
@@ -12,12 +15,19 @@ const getLesvoorbereidingById = async (ctx) => {
   );
 };
 
+getLesvoorbereidingById.validationScheme = {
+  params: {
+    lesvoorbereiding_id: Joi.number().integer().positive(),
+  },
+};
+
 const updateLesvoorbereidingById = async (ctx) => {
   ctx.body = await lesvoorbereidingService.updateLesvoorbereidingById(
     Number(ctx.params.lesvoorbereiding_id),
     {
       ...ctx.request.body,
-      lesvoorbereiding_id: Number(ctx.request.body.lesvoorbereiding_id),
+      lesvoorbereiding_naam: String(ctx.request.body.lesvoorbereiding_naam),
+      lesvoorbereiding_type: String(ctx.request.body.lesvoorbereiding_type),
       link_to_pdf: String(ctx.request.body.link_to_pdf),
       feedback: String(ctx.request.body.feedback),
       les_id: Number(ctx.request.body.les_id),
@@ -26,14 +36,40 @@ const updateLesvoorbereidingById = async (ctx) => {
   );
 };
 
+updateLesvoorbereidingById.validationScheme = {
+  params: {
+    lesvoorbereiding_id: Joi.number().integer().positive(),
+  },
+  body: {
+    lesvoorbereiding_naam: Joi.string(),
+    lesvoorbereiding_type: Joi.string(),
+    link_to_pdf: Joi.string(),
+    feedback: Joi.string(),
+    les_id: Joi.number().integer().positive(),
+    groep_id: Joi.number().integer().positive(),
+  },
+};
+
 module.exports = (app) => {
   const router = new Router({
     prefix: "/lesvoorbereidingen",
   });
 
-  router.get("/", getAllLesvoorbereidingen);
-  router.get("/:id", getLesvoorbereidingById);
-  router.put("/:id", updateLesvoorbereidingById);
+  router.get(
+    "/",
+    validate(getAllLesvoorbereidingen.validationScheme),
+    getAllLesvoorbereidingen
+  );
+  router.get(
+    "/:id",
+    validate(getLesvoorbereidingById.validationScheme),
+    getLesvoorbereidingById
+  );
+  router.put(
+    "/:id",
+    validate(updateLesvoorbereidingById.validationScheme),
+    updateLesvoorbereidingById
+  );
 
   app.use(router.routes()).use(router.allowedMethods());
 };

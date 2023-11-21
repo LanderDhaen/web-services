@@ -12,7 +12,6 @@ getAllLesgever.validationScheme = null;
 const createLesgever = async (ctx) => {
   const newLesgever = await lesgeverService.createLesgever({
     ...ctx.request.body,
-    lesgever_id: Number(ctx.request.body.lesgever_id),
     naam: String(ctx.request.body.naam),
     geboortedatum: new Date(ctx.request.body.geboortedatum),
     type: String(ctx.request.body.type),
@@ -28,15 +27,14 @@ const createLesgever = async (ctx) => {
 
 createLesgever.validationScheme = {
   body: {
-    lesgever_id: Joi.number().integer().positive(),
     naam: Joi.string(),
     geboortedatum: Joi.date().iso().less("now"),
     type: Joi.string(),
-    aanwezigheidspercentage: Joi.number().integer().positive(),
+    aanwezigheidspercentage: Joi.number().integer().positive().min(0).max(100),
     diploma: Joi.string(),
     imageURL: Joi.string(),
-    email: Joi.string(),
-    GSM: Joi.number().integer().positive(),
+    email: Joi.string().email(),
+    GSM: Joi.number().integer().positive().precision(10),
     groep_id: Joi.number().integer().positive(),
   },
 };
@@ -56,7 +54,6 @@ const updateLesgeverById = async (ctx) => {
     Number(ctx.params.lesgever_id),
     {
       ...ctx.request.body,
-      lesgever_id: Number(ctx.request.body.lesgever_id),
       naam: String(ctx.request.body.naam),
       geboortedatum: new Date(ctx.request.body.date),
       type: String(ctx.request.body.type),
@@ -71,16 +68,18 @@ const updateLesgeverById = async (ctx) => {
 };
 
 updateLesgeverById.validationScheme = {
-  body: {
+  params: {
     lesgever_id: Joi.number().integer().positive(),
+  },
+  body: {
     naam: Joi.string(),
     geboortedatum: Joi.date().iso().less("now"),
     type: Joi.string(),
-    aanwezigheidspercentage: Joi.number().integer().positive(),
+    aanwezigheidspercentage: Joi.number().integer().positive().min(0).max(100),
     diploma: Joi.string(),
     imageURL: Joi.string(),
-    email: Joi.string(),
-    GSM: Joi.number().integer().positive(),
+    email: Joi.string().email(),
+    GSM: Joi.number().integer().positive().precision(10),
     groep_id: Joi.number().integer().positive(),
   },
 };

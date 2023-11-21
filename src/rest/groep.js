@@ -1,15 +1,17 @@
 const Router = require("@koa/router");
 const groepService = require("../service/groep");
 const lesgeverService = require("../service/lesgever");
+const validate = require("../core/validation");
 
 const getAllGroepen = async (ctx) => {
   ctx.body = await groepService.getAllGroepen();
 };
 
+getAllGroepen.validationScheme = null;
+
 const createGroep = async (ctx) => {
   const newGroep = await groepService.createGroep({
     ...ctx.request.body,
-    groep_id: Number(ctx.request.body.groep_id),
     naam: String(ctx.request.body.naam),
     beschrijving: String(ctx.request.body.beschrijving),
     aantal_lesgevers: Number(ctx.request.body.aantal_lesgevers),
@@ -17,22 +19,52 @@ const createGroep = async (ctx) => {
   ctx.body = newGroep;
 };
 
+createGroep.validationScheme = {
+  body: {
+    naam: Joi.string(),
+    beschrijving: Joi.string(),
+    aantal_lesgevers: Joi.number().integer().positive(),
+  },
+};
+
 const getGroepById = async (ctx) => {
   ctx.body = await groepService.getGroepById(Number(ctx.params.id));
+};
+
+getGroepById.validationScheme = {
+  params: {
+    id: Joi.number().integer().positive(),
+  },
 };
 
 const getLesgeverByGroepId = async (ctx) => {
   ctx.body = await lesgeverService.getLesgeverByGroepId(Number(ctx.params.id));
 };
 
+getLesgeverByGroepId.validationScheme = {
+  params: {
+    id: Joi.number().integer().positive(),
+  },
+};
+
 const updateGroepByID = async (ctx) => {
   ctx.body = await groepService.updateGroepByID(Number(ctx.params.groep_id), {
     ...ctx.request.body,
-    groep_id: Number(ctx.request.body.groep_id),
     naam: String(ctx.request.body.naam),
     beschrijving: String(ctx.request.body.beschrijving),
     aantal_lesgevers: Number(ctx.request.body.aantal_lesgevers),
   });
+};
+
+updateGroepByID.validationScheme = {
+  params: {
+    groep_id: Joi.number().integer().positive(),
+  },
+  body: {
+    naam: Joi.string(),
+    beschrijving: Joi.string(),
+    aantal_lesgevers: Joi.number().integer().positive(),
+  },
 };
 
 const deleteGroepById = async (ctx) => {
@@ -40,17 +72,35 @@ const deleteGroepById = async (ctx) => {
   ctx.status = 204;
 };
 
+deleteGroepById.validationScheme = {
+  params: {
+    groep_id: Joi.number().integer().positive(),
+  },
+};
+
 module.exports = (app) => {
   const router = new Router({
     prefix: "/groepen",
   });
 
-  router.get("/", getAllGroepen);
-  router.post("/", createGroep);
-  router.get("/:id", getGroepById);
-  router.get("/:id/lesgevers", getLesgeverByGroepId);
-  router.put("/:id", updateGroepByID);
-  router.delete("/:id", deleteGroepById);
+  router.get("/", validate(getAllGroepen.validationScheme), getAllGroepen);
+  router.post("/", validate(createGroep.validationScheme), createGroep);
+  router.get("/:id", validate(getGroepById.validationScheme), getGroepById);
+  router.get(
+    "/:id/lesgevers",
+    validate(getLesgeverByGroepId.validationScheme),
+    getLesgeverByGroepId
+  );
+  router.put(
+    "/:id",
+    validate(updateGroepByID.validationScheme),
+    updateGroepByID
+  );
+  router.delete(
+    "/:id",
+    validate(deleteGroepById.validationScheme),
+    deleteGroepById
+  );
 
   app.use(router.routes()).use(router.allowedMethods());
 };
