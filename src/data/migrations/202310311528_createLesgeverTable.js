@@ -5,7 +5,6 @@ module.exports = {
     await knex.schema.createTable(tables.lesgever, (table) => {
       table.increments("lesgever_id");
       table.string("naam", 255).notNullable();
-      table.string("groep", 255).notNullable();
       table.date("geboortedatum").notNullable();
       table.string("type", 255).notNullable();
       table.integer("aanwezigheidspercentage").notNullable();

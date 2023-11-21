@@ -6,7 +6,6 @@ const { tables, getKnex } = require("../data/index");
 const SELECT_COLUMNS = [
   "lesgever_id",
   `${tables.lesgever}.naam as lesgever_naam`,
-  "groep",
   "geboortedatum",
   "type",
   "aanwezigheidspercentage",
@@ -25,7 +24,6 @@ const SELECT_COLUMNS = [
 const formatLesgever = ({
   lesgever_id,
   lesgever_naam,
-  groep,
   geboortedatum,
   type,
   aanwezigheidspercentage,
@@ -41,7 +39,6 @@ const formatLesgever = ({
   return {
     lesgever_id,
     lesgever_naam,
-    groep,
     geboortedatum,
     type,
     aanwezigheidspercentage,
@@ -110,7 +107,6 @@ const getLesgeverByGroepId = async (id) => {
 
 const createLesgever = async ({
   naam,
-  groep,
   geboortedatum,
   type,
   aanwezigheidspercentage,
@@ -122,7 +118,6 @@ const createLesgever = async ({
 }) => {
   const [lesgever_id] = await getKnex()(tables.lesgever).insert({
     naam,
-    groep,
     geboortedatum,
     type,
     aanwezigheidspercentage,

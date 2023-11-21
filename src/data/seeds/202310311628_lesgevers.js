@@ -8,7 +8,6 @@ module.exports = {
       {
         lesgever_id: 1,
         naam: "Lander Dhaen",
-        groep: "Los",
         geboortedatum: new Date(2001, 3, 30, 0),
         type: "Lesvrij",
         aanwezigheidspercentage: 100,
@@ -21,7 +20,6 @@ module.exports = {
       {
         lesgever_id: 2,
         naam: "Robbe De Back-End",
-        groep: "Dolfijnen",
         geboortedatum: new Date(2001, 3, 30, 0),
         type: "Verantwoordelijke",
         aanwezigheidspercentage: 95,
@@ -34,7 +32,6 @@ module.exports = {
       {
         lesgever_id: 3,
         naam: "Hannah Van den Steen",
-        groep: "Waterschildpadden",
         geboortedatum: new Date(2001, 3, 30, 0),
         type: "Vaste Lesgever",
         aanwezigheidspercentage: 100,
@@ -47,7 +44,6 @@ module.exports = {
       {
         lesgever_id: 4,
         naam: "Evert Walravens",
-        groep: "Dolfijnen",
         geboortedatum: new Date(2001, 3, 30, 0),
         type: "Verantwoordelijke",
         aanwezigheidspercentage: 0,

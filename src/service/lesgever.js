@@ -34,7 +34,6 @@ const getLesgeverByGroepId = async (id) => {
 
 const createLesgever = async ({
   naam,
-  groep,
   geboortedatum,
   type,
   aanwezigheidspercentage,
@@ -46,7 +45,6 @@ const createLesgever = async ({
 }) => {
   const lesgever_id = await lesgeverRepository.createLesgever({
     naam,
-    groep,
     geboortedatum,
     type,
     aanwezigheidspercentage,
@@ -64,7 +62,6 @@ const updateLesgeverById = async (
   lesgever_id,
   {
     naam,
-    groep,
     geboortedatum,
     type,
     aanwezigheidspercentage,
@@ -83,7 +80,6 @@ const updateLesgeverById = async (
 
   await lesgeverRepository.update(lesgever_id, {
     naam,
-    groep,
     geboortedatum,
     type,
     aanwezigheidspercentage,
