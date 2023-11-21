@@ -33,12 +33,12 @@ module.exports = {
       },
       {
         lesgever_id: 3,
-        naam: "Lander 2.0",
+        naam: "Hannah Van den Steen",
         groep: "Waterschildpadden",
         geboortedatum: new Date(2001, 3, 30, 0),
         type: "Vaste Lesgever",
         aanwezigheidspercentage: 100,
-        diploma: "Geen",
+        diploma: "Leerkracht LO",
         imageURL: "",
         email: "lander.dhaen@move-united.be",
         GSM: "0491882278",
@@ -46,7 +46,7 @@ module.exports = {
       },
       {
         lesgever_id: 4,
-        naam: "Lander Dhaen",
+        naam: "Evert Walravens",
         groep: "Dolfijnen",
         geboortedatum: new Date(2001, 3, 30, 0),
         type: "Verantwoordelijke",

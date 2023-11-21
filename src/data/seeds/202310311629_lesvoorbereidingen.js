@@ -8,7 +8,7 @@ module.exports = {
       {
         lesvoorbereiding_id: 1,
         lesvoorbereiding_naam: "Walter de Walrus gaat naar school",
-        lesvoorbereiding_type: "Gewone les",
+        lesvoorbereiding_type: "Gewone Les",
         link_to_PDF: "https://www.google.com",
         feedback: "Dit is een test",
         les_id: 1,
@@ -17,7 +17,7 @@ module.exports = {
       {
         lesvoorbereiding_id: 2,
         lesvoorbereiding_naam: "Jasmijn de Dolfijn maakt een toets",
-        lesvoorbereiding_type: "Tussentijds brevet",
+        lesvoorbereiding_type: "Tussentijds Brevet",
         link_to_PDF: "https://www.google.com",
         feedback: "Dit is een test 2",
         les_id: 7,
