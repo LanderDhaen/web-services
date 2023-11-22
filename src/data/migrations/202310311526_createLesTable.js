@@ -4,6 +4,7 @@ module.exports = {
   up: async (knex) => {
     await knex.schema.createTable(tables.les, (table) => {
       table.increments("les_id");
+      table.unique("les_id", "idx_les_id_unique");
       table.date("datum").notNullable();
 
       table.integer("lessenreeks_id").unsigned().notNullable();

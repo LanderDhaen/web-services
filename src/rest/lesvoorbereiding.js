@@ -1,3 +1,4 @@
+const Joi = require("joi");
 const Router = require("@koa/router");
 const lesvoorbereidingService = require("../service/lesvoorbereiding");
 const c = require("config");

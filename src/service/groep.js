@@ -1,3 +1,5 @@
+const ServiceError = require("../core/serviceError");
+const handleDBError = require("./_handleDBError");
 const groepRepository = require("../repository/groep");
 
 const getAllGroepen = async () => {
@@ -9,7 +11,7 @@ const getGroepById = async (id) => {
   const groep = await groepRepository.getGroepById(id);
 
   if (!groep) {
-    throw Error(`Er bestaat geen groep met id ${id}!`, {
+    throw ServiceError.notFound(`Er bestaat geen groep met id ${id}!`, {
       id,
     });
   }
@@ -17,22 +19,7 @@ const getGroepById = async (id) => {
   return groep;
 };
 
-const createGroep = ({ naam, beschrijving, aantal_lesgevers }) => {
-  throw new Error("Not implemented yet!");
-};
-
-const updateGroepByID = (id, { naam, beschrijving, aantal_lesgevers }) => {
-  throw new Error("Not implemented yet!");
-};
-
-const deleteGroepById = (id) => {
-  throw new Error("Not implemented yet!");
-};
-
 module.exports = {
   getAllGroepen,
   getGroepById,
-  createGroep,
-  updateGroepByID,
-  deleteGroepById,
 };
