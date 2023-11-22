@@ -14,7 +14,7 @@ const SELECT_COLUMNS = [
   "email",
   "GSM",
   `${tables.groep}.groep_id as groep_id`,
-  `${tables.groep}.naam as groep_naam`,
+  `${tables.groep}.groep_naam as groep_naam`,
   "beschrijving",
   "aantal_lesgevers",
 ];

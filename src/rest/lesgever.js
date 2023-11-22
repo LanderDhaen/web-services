@@ -50,26 +50,23 @@ getLesgeverById.validationScheme = {
 };
 
 const updateLesgeverById = async (ctx) => {
-  ctx.body = await lesgeverService.updateLesgeverById(
-    Number(ctx.params.lesgever_id),
-    {
-      ...ctx.request.body,
-      naam: String(ctx.request.body.naam),
-      geboortedatum: new Date(ctx.request.body.date),
-      type: String(ctx.request.body.type),
-      aanwezigheidspercentage: Number(ctx.request.body.aanwezigheidspercentage),
-      diploma: String(ctx.request.body.diploma),
-      imageURL: String(ctx.request.body.imageURL),
-      email: String(ctx.request.body.email),
-      GSM: Number(ctx.request.body.GSM),
-      groep_id: Number(ctx.request.body.groep_id),
-    }
-  );
+  ctx.body = await lesgeverService.updateLesgeverById(Number(ctx.params.id), {
+    ...ctx.request.body,
+    naam: String(ctx.request.body.naam),
+    geboortedatum: new Date(ctx.request.body.date),
+    type: String(ctx.request.body.type),
+    aanwezigheidspercentage: Number(ctx.request.body.aanwezigheidspercentage),
+    diploma: String(ctx.request.body.diploma),
+    imageURL: String(ctx.request.body.imageURL),
+    email: String(ctx.request.body.email),
+    GSM: Number(ctx.request.body.GSM),
+    groep_id: Number(ctx.request.body.groep_id),
+  });
 };
 
 updateLesgeverById.validationScheme = {
   params: {
-    lesgever_id: Joi.number().integer().positive(),
+    id: Joi.number().integer().positive(),
   },
   body: {
     naam: Joi.string(),

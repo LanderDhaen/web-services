@@ -12,24 +12,24 @@ getAllLesvoorbereidingen.validationScheme = null;
 
 const getLesvoorbereidingById = async (ctx) => {
   ctx.body = await lesvoorbereidingService.getLesvoorbereidingById(
-    Number(ctx.params.lesvoorbereiding_id)
+    Number(ctx.params.id)
   );
 };
 
 getLesvoorbereidingById.validationScheme = {
   params: {
-    lesvoorbereiding_id: Joi.number().integer().positive(),
+    id: Joi.number().integer().positive(),
   },
 };
 
 const updateLesvoorbereidingById = async (ctx) => {
   ctx.body = await lesvoorbereidingService.updateLesvoorbereidingById(
-    Number(ctx.params.lesvoorbereiding_id),
+    Number(ctx.params.id),
     {
       ...ctx.request.body,
       lesvoorbereiding_naam: String(ctx.request.body.lesvoorbereiding_naam),
       lesvoorbereiding_type: String(ctx.request.body.lesvoorbereiding_type),
-      link_to_pdf: String(ctx.request.body.link_to_pdf),
+      link_to_PDF: String(ctx.request.body.link_to_pdf),
       feedback: String(ctx.request.body.feedback),
       les_id: Number(ctx.request.body.les_id),
       groep_id: Number(ctx.request.body.groep_id),
@@ -39,12 +39,12 @@ const updateLesvoorbereidingById = async (ctx) => {
 
 updateLesvoorbereidingById.validationScheme = {
   params: {
-    lesvoorbereiding_id: Joi.number().integer().positive(),
+    id: Joi.number().integer().positive(),
   },
   body: {
     lesvoorbereiding_naam: Joi.string(),
     lesvoorbereiding_type: Joi.string(),
-    link_to_pdf: Joi.string(),
+    link_to_PDF: Joi.string(),
     feedback: Joi.string(),
     les_id: Joi.number().integer().positive(),
     groep_id: Joi.number().integer().positive(),

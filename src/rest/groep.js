@@ -13,7 +13,7 @@ getAllGroepen.validationScheme = null;
 const createGroep = async (ctx) => {
   const newGroep = await groepService.createGroep({
     ...ctx.request.body,
-    naam: String(ctx.request.body.naam),
+    groep_naam: String(ctx.request.body.naam),
     beschrijving: String(ctx.request.body.beschrijving),
     aantal_lesgevers: Number(ctx.request.body.aantal_lesgevers),
   });
@@ -22,7 +22,7 @@ const createGroep = async (ctx) => {
 
 createGroep.validationScheme = {
   body: {
-    naam: Joi.string(),
+    groep_naam: Joi.string(),
     beschrijving: Joi.string(),
     aantal_lesgevers: Joi.number().integer().positive(),
   },
@@ -48,21 +48,21 @@ getLesgeverByGroepId.validationScheme = {
   },
 };
 
-const updateGroepByID = async (ctx) => {
-  ctx.body = await groepService.updateGroepByID(Number(ctx.params.groep_id), {
+const updateGroepById = async (ctx) => {
+  ctx.body = await groepService.updateGroepById(Number(ctx.params.groep_id), {
     ...ctx.request.body,
-    naam: String(ctx.request.body.naam),
+    groep_naam: String(ctx.request.body.naam),
     beschrijving: String(ctx.request.body.beschrijving),
     aantal_lesgevers: Number(ctx.request.body.aantal_lesgevers),
   });
 };
 
-updateGroepByID.validationScheme = {
+updateGroepById.validationScheme = {
   params: {
     groep_id: Joi.number().integer().positive(),
   },
   body: {
-    naam: Joi.string(),
+    groep_naam: Joi.string(),
     beschrijving: Joi.string(),
     aantal_lesgevers: Joi.number().integer().positive(),
   },
@@ -94,8 +94,8 @@ module.exports = (app) => {
   );
   router.put(
     "/:id",
-    validate(updateGroepByID.validationScheme),
-    updateGroepByID
+    validate(updateGroepById.validationScheme),
+    updateGroepById
   );
   router.delete(
     "/:id",

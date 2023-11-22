@@ -6,7 +6,7 @@ const { tables, getKnex } = require("../data/index");
 
 const SELECT_COLUMNS = [
   `${tables.groep}.groep_id as groep_id`,
-  `${tables.groep}.naam as groep_naam`,
+  `${tables.groep}.groep_naam as groep_naam`,
   "beschrijving",
   "aantal_lesgevers",
 ];
@@ -46,7 +46,22 @@ const getGroepById = async (id) => {
   return formatGroep(groep);
 };
 
+// Groepinformatie updaten
+
+const updateGroepById = async (
+  groep_id,
+  { groep_naam, beschrijving, aantal_lesgevers }
+) => {
+  await getKnex()(tables.groep).where("groep_id", groep_id).update({
+    groep_naam,
+    beschrijving,
+    aantal_lesgevers,
+  });
+  return getGroepById(groep_id);
+};
+
 module.exports = {
   getAllGroepen,
   getGroepById,
+  updateGroepById,
 };

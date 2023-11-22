@@ -38,7 +38,7 @@ module.exports = {
         diploma: "Leerkracht LO",
         imageURL: "",
         email: "lander.dhaen@move-united.be",
-        GSM: "0491882278",
+        GSM: "0499999999",
         groep_id: 3,
       },
       {
@@ -49,8 +49,8 @@ module.exports = {
         aanwezigheidspercentage: 0,
         diploma: "Leerkracht LO",
         imageURL: "",
-        email: "lander.dhaen@gmail.com",
-        GSM: "0491882278",
+        email: "evert.walravens@move-united.be",
+        GSM: "0490000000",
         groep_id: 7,
       },
     ]);

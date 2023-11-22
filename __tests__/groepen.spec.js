@@ -1,6 +1,33 @@
 const supertest = require("supertest");
 const createServer = require("../src/createServer");
-const { getKnex } = require("../src/data");
+const { tables, getKnex } = require("../src/data");
+
+const data = {
+  groepen: [
+    {
+      groep_id: 1,
+      groep_naam: "Eendjes",
+      beschrijving: "Startgroep, met ouders",
+      aantal_lesgevers: 0,
+    },
+    {
+      groep_id: 2,
+      groep_naam: "Pinguïns",
+      beschrijving: "Startgroep, zonder ouders",
+      aantal_lesgevers: 0,
+    },
+    {
+      groep_id: 3,
+      groep_naam: "Waterschildpadden",
+      beschrijving: "Watergewenning, ontdekken diep",
+      aantal_lesgevers: 1,
+    },
+  ],
+};
+
+const dataToDelete = {
+  groepen: [1, 2, 3],
+};
 
 describe("Groepen", () => {
   let server;
@@ -20,9 +47,106 @@ describe("Groepen", () => {
   const URL = "/api/groepen";
 
   describe("GET /api/groepen", () => {
-    it("should 200 and return all groepen", async () => {
+    // Testdata toevoegen aan database
+
+    beforeAll(async () => {
+      await knex(tables.groep).insert(data.groepen);
+    });
+
+    // Testdata verwijderen uit database
+
+    afterAll(async () => {
+      await knex(tables.groep).whereIn("groep_id", dataToDelete.groepen).del();
+    });
+
+    // Test
+
+    test("should 200 and return all groepen", async () => {
       const response = await request.get(URL);
       expect(response.status).toBe(200);
+      expect(response.body.items.length).toBe(3);
+
+      expect(response.body.items[0]).toEqual({
+        groep_id: 1,
+        groep_naam: "Eendjes",
+        beschrijving: "Startgroep, met ouders",
+        aantal_lesgevers: 0,
+      });
+
+      expect(response.body.items[1]).toEqual({
+        groep_id: 2,
+        groep_naam: "Pinguïns",
+        beschrijving: "Startgroep, zonder ouders",
+        aantal_lesgevers: 0,
+      });
+
+      expect(response.body.items[2]).toEqual({
+        groep_id: 3,
+        groep_naam: "Waterschildpadden",
+        beschrijving: "Watergewenning, ontdekken diep",
+        aantal_lesgevers: 1,
+      });
     });
   });
+
+  // GET /api/groepen/:id
+
+  describe("GET /api/groepen/:id", () => {
+    // Testdata toevoegen aan database
+
+    beforeAll(async () => {
+      await knex(tables.groep).insert(data.groepen[0]);
+    });
+
+    // Testdata verwijderen uit database
+
+    afterAll(async () => {
+      await knex(tables.groep).whereIn("groep_id", dataToDelete.groepen).del();
+    });
+
+    // Test
+
+    test("should 200 and return the requested groep", async () => {
+      const response = await request.get(`${URL}/1`);
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({
+        groep_id: 1,
+        groep_naam: "Eendjes",
+        beschrijving: "Startgroep, met ouders",
+        aantal_lesgevers: 0,
+      });
+    });
+  });
+
+  /* describe("PUT /api/groepen/:id", () => {
+    // Testdata toevoegen aan database
+
+    beforeAll(async () => {
+      await knex(tables.groep).insert(data.groepen[0]);
+    });
+
+    // Testdata verwijderen uit database
+
+    afterAll(async () => {
+      await knex(tables.groep).whereIn("groep_id", dataToDelete.groepen).del();
+    });
+
+    // Test
+
+    test("should 200 and return the updated groep", async () => {
+      const response = await request.put(`${URL}/1`).send({
+        groep_naam: "Eendjes 2.0",
+        beschrijving: "Startgroep, met ouders 2.0",
+        aantal_lesgevers: 8,
+      });
+
+      expect(response.status).toBe(200);
+      expect(response.body.groep_id).toBeTruthy();
+      expect(response.body).toEqual({
+        groep_naam: "Eendjes 2.0",
+        beschrijving: "Startgroep, met ouders 2.0",
+        aantal_lesgevers: 8,
+      });
+    });
+  }); */
 });

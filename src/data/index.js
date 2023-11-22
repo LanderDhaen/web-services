@@ -60,12 +60,14 @@ async function initializeData() {
     throw new Error("Migration failed, check the logs for more information");
   }
 
-  try {
-    await knexInstance.seed.run();
-  } catch (error) {
-    logger.error("Error while seeding database", {
-      error,
-    });
+  if (isDevelopment) {
+    try {
+      await knexInstance.seed.run();
+    } catch (error) {
+      logger.error("Error while seeding database", {
+        error,
+      });
+    }
   }
 
   logger.info("Database connection successful");

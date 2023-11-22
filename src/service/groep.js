@@ -19,7 +19,32 @@ const getGroepById = async (id) => {
   return groep;
 };
 
+const updateGroepById = async (
+  groep_id,
+  { naam, beschrijving, aantal_lesgevers }
+) => {
+  const groep = await groepRepository.getGroepById(groep_id);
+
+  if (!groep) {
+    throw ServiceError.notFound(`Er bestaat geen groep met id ${groep_id}!`, {
+      groep_id,
+    });
+  }
+
+  try {
+    await groepRepository.update(groep_id, {
+      naam,
+      beschrijving,
+      aantal_lesgevers,
+    });
+  } catch (error) {
+    handleDBError(error);
+  }
+  return getGroepById(groep_id);
+};
+
 module.exports = {
   getAllGroepen,
   getGroepById,
+  updateGroepById,
 };
