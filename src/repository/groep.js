@@ -49,11 +49,13 @@ const getGroepById = async (id) => {
 // Groep aanmaken
 
 const createGroep = async ({ groep_naam, beschrijving, aantal_lesgevers }) => {
-  const [groep_id] = await getKnex()(tables.groep).insert({
+  const [id] = await getKnex()(tables.groep).insert({
     groep_naam,
     beschrijving,
     aantal_lesgevers,
   });
+
+  return id;
 };
 
 // Groep updaten a.d.h.v id

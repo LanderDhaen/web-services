@@ -149,4 +149,36 @@ describe("Groepen", () => {
       expect(response.body.aantal_lesgevers).toBe(8);
     });
   });
+
+  // POST /api/groepen
+
+  describe("POST /api/groepen", () => {
+    const groepenToDelete = [];
+
+    // Testdata toevoegen aan database niet nodig
+
+    // Testdata verwijderen uit database
+
+    afterAll(async () => {
+      await knex(tables.groep).whereIn("groep_id", groepenToDelete).del();
+    });
+
+    // Test
+
+    test("should 201 and return the created groep", async () => {
+      const response = await request.post(URL).send({
+        groep_naam: "Haaien",
+        beschrijving: "Competitiegroep",
+        aantal_lesgevers: 5,
+      });
+
+      expect(response.status).toBe(201);
+      expect(response.body.groep_id).toBeTruthy();
+      expect(response.body.groep_naam).toBe("Haaien");
+      expect(response.body.beschrijving).toBe("Competitiegroep");
+      expect(response.body.aantal_lesgevers).toBe(5);
+
+      groepenToDelete.push(response.body.groep_id);
+    });
+  });
 });

@@ -329,4 +329,60 @@ describe("Lesgevers", () => {
       });
     });
   });
+
+  // POST /api/lesgevers
+
+  describe("POST /api/lesgevers", () => {
+    const lesgeversToDelete = [];
+
+    // Testdata toevoegen aan database
+
+    beforeAll(async () => {
+      await knex(tables.groep).insert(data.groepen);
+    });
+
+    // Testdata verwijderen uit database
+
+    afterAll(async () => {
+      await knex(tables.lesgever)
+        .whereIn("lesgever_id", lesgeversToDelete)
+        .del();
+      await knex(tables.groep).whereIn("groep_id", dataToDelete.groepen).del();
+    });
+
+    // Test
+
+    test("should be 201 and return the created lesgever", async () => {
+      const response = await request.post(URL).send({
+        lesgever_naam: "Fix it Felix",
+        geboortedatum: "2001-03-30T00:00:00.000Z",
+        type: "Reserve Lesgever",
+        aanwezigheidspercentage: 10,
+        diploma: "Geen",
+        imageURL: "",
+        email: "fixitfelix@move-united.be",
+        GSM: "0491111111",
+        groep_id: 1,
+      });
+
+      expect(response.status).toBe(201);
+      expect(response.body.lesgever_id).toBeTruthy();
+      expect(response.body.lesgever_naam).toBe("Fix it Felix");
+      expect(response.body.geboortedatum).toBe("2001-03-30T00:00:00.000Z");
+      expect(response.body.type).toBe("Reserve Lesgever");
+      expect(response.body.aanwezigheidspercentage).toBe(10);
+      expect(response.body.diploma).toBe("Geen");
+      expect(response.body.imageURL).toBe("");
+      expect(response.body.email).toBe("fixitfelix@move-united.be");
+      expect(response.body.GSM).toBe("0491111111");
+      expect(response.body.groep).toEqual({
+        groep_id: 1,
+        groep_naam: "Eendjes",
+        beschrijving: "Startgroep, met ouders",
+        aantal_lesgevers: 0,
+      });
+
+      lesgeversToDelete.push(response.body.lesgever_id);
+    });
+  });
 });

@@ -118,7 +118,7 @@ const createLesgever = async ({
   GSM,
   groep_id,
 }) => {
-  const [lesgever_id] = await getKnex()(tables.lesgever).insert({
+  const [id] = await getKnex()(tables.lesgever).insert({
     lesgever_naam,
     geboortedatum,
     type,
@@ -130,7 +130,7 @@ const createLesgever = async ({
     groep_id,
   });
 
-  return lesgever_id;
+  return id;
 };
 
 // Lesgever updaten a.d.h.v id

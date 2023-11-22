@@ -63,7 +63,7 @@ const createLesgever = async ({
   }
 
   try {
-    const id = await lesgeverRepository.create({
+    const id = await lesgeverRepository.createLesgever({
       lesgever_naam,
       geboortedatum,
       type,

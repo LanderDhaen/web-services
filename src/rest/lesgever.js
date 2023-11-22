@@ -23,7 +23,7 @@ const createLesgever = async (ctx) => {
     diploma: String(ctx.request.body.diploma),
     imageURL: String(ctx.request.body.imageURL),
     email: String(ctx.request.body.email),
-    GSM: Number(ctx.request.body.GSM),
+    GSM: String(ctx.request.body.GSM),
     groep_id: Number(ctx.request.body.groep_id),
   });
   ctx.status = 201;
@@ -39,7 +39,7 @@ createLesgever.validationScheme = {
     diploma: Joi.string(),
     imageURL: Joi.string(),
     email: Joi.string().email(),
-    GSM: Joi.number().integer().positive().precision(10),
+    GSM: Joi.string().length(10),
     groep_id: Joi.number().integer().positive(),
   },
 };

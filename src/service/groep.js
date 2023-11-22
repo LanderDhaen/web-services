@@ -28,12 +28,12 @@ const getGroepById = async (id) => {
 
 const createGroep = async ({ groep_naam, beschrijving, aantal_lesgevers }) => {
   try {
-    const groep = await groepRepository.create({
+    const id = await groepRepository.createGroep({
       groep_naam,
       beschrijving,
       aantal_lesgevers,
     });
-    return getGroepById(groep.groep_id);
+    return getGroepById(id);
   } catch (error) {
     throw handleDBError(error);
   }
@@ -77,7 +77,7 @@ const deleteGroepById = async (groep_id) => {
   }
 
   try {
-    await groepRepository.delete(groep_id);
+    await groepRepository.deleteGroepById(groep_id);
   } catch (error) {
     handleDBError(error);
   }

@@ -332,9 +332,6 @@ describe("Lesvoorbereidingen", () => {
         les_id: 1,
         groep_id: 7,
       });
-
-      console.log(response.body);
-
       expect(response.status).toBe(201);
       expect(response.body.lesvoorbereiding_id).toBeTruthy();
       expect(response.body.lesvoorbereiding_naam).toBe(
