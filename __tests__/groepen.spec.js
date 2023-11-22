@@ -23,10 +23,26 @@ const data = {
       aantal_lesgevers: 1,
     },
   ],
+
+  lesgevers: [
+    {
+      lesgever_id: 3,
+      lesgever_naam: "Hannah Van den Steen",
+      geboortedatum: new Date(2001, 3, 30, 0),
+      type: "Vaste Lesgever",
+      aanwezigheidspercentage: 100,
+      diploma: "Leerkracht LO",
+      imageURL: "",
+      email: "lander.dhaen@move-united.be",
+      GSM: "0499999999",
+      groep_id: 3,
+    },
+  ],
 };
 
 const dataToDelete = {
   groepen: [1, 2, 3],
+  lesgevers: [3],
 };
 
 describe("Groepen", () => {
@@ -118,6 +134,52 @@ describe("Groepen", () => {
     });
   });
 
+  // GET /groepen/:id/lesgevers
+
+  describe("GET /api/groepen/:id/lesgevers", () => {
+    // Testdata toevoegen aan database
+
+    beforeAll(async () => {
+      await knex(tables.groep).insert(data.groepen);
+      await knex(tables.lesgever).insert(data.lesgevers);
+    });
+
+    // Testdata verwijderen uit database
+
+    afterAll(async () => {
+      await knex(tables.lesgever)
+        .whereIn("lesgever_id", dataToDelete.lesgevers)
+        .del();
+      await knex(tables.groep).whereIn("groep_id", dataToDelete.groepen).del();
+    });
+
+    // Test
+
+    test("should 200 and return the lesgevers of the requested groep", async () => {
+      const response = await request.get(`${URL}/3/lesgevers`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.length).toBe(1);
+      expect(response.body[0]).toEqual({
+        lesgever_id: 3,
+        lesgever_naam: "Hannah Van den Steen",
+        geboortedatum: new Date(2001, 3, 30, 0).toISOString(),
+        type: "Vaste Lesgever",
+        aanwezigheidspercentage: 100,
+        diploma: "Leerkracht LO",
+        imageURL: "",
+        email: "lander.dhaen@move-united.be",
+        GSM: "0499999999",
+        groep: {
+          groep_id: 3,
+          groep_naam: "Waterschildpadden",
+          beschrijving: "Watergewenning, ontdekken diep",
+          aantal_lesgevers: 1,
+        },
+      });
+    });
+  });
+
   // PUT /api/groepen/:id
 
   describe("PUT /api/groepen/:id", () => {
@@ -179,6 +241,31 @@ describe("Groepen", () => {
       expect(response.body.aantal_lesgevers).toBe(5);
 
       groepenToDelete.push(response.body.groep_id);
+    });
+  });
+
+  // DELETE /api/groepen/:id
+
+  describe("DELETE /api/groepen/:id", () => {
+    // Testdata toevoegen aan database
+
+    beforeAll(async () => {
+      await knex(tables.groep).insert(data.groepen);
+    });
+
+    // Testdata verwijderen uit database
+
+    afterAll(async () => {
+      await knex(tables.groep).whereIn("groep_id", dataToDelete.groepen).del();
+    });
+
+    // Test
+
+    test("should 204 and return nothing", async () => {
+      const response = await request.delete(`${URL}/1`);
+
+      expect(response.status).toBe(204);
+      expect(response.body).toEqual({});
     });
   });
 });

@@ -74,8 +74,16 @@ const updateGroepById = async (
 
 // Lesgever verwijderen a.d.h.v id
 
-const deleteGroepById = async (groep_id) => {
-  await getKnex()(tables.groep).where("groep_id", groep_id).del();
+const deleteGroepById = async (id) => {
+  try {
+    const rijen = await getKnex()(tables.groep).where("groep_id", id).del();
+    return rijen > 0;
+  } catch (error) {
+    getLogger().error("Error in deleteLesvoorbereidingById", {
+      error,
+    });
+    throw error;
+  }
 };
 
 module.exports = {

@@ -129,9 +129,18 @@ const updateLesvoorbereidingById = async (
 // Lesvoorbereiding verwijderen a.d.h.v id
 
 const deleteLesvoorbereidingById = async (id) => {
-  await getKnex()(tables.lesvoorbereiding)
-    .where("lesvoorbereiding_id", id)
-    .del();
+  try {
+    const rijen = await getKnex()(tables.lesvoorbereiding)
+      .where("lesvoorbereiding_id", id)
+      .del();
+
+    return rijen > 0;
+  } catch (error) {
+    getLogger().error("Error in deleteLesvoorbereidingById", {
+      error,
+    });
+    throw error;
+  }
 };
 
 module.exports = {

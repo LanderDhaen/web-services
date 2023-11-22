@@ -351,4 +351,39 @@ describe("Lesvoorbereidingen", () => {
       lesvoorBereidingenToDelete.push(response.body.lesvoorbereiding_id);
     });
   });
+
+  // DELETE /api/lesvoorbereidingen/:id
+
+  describe("DELETE /api/lesvoorbereidingen/:id", () => {
+    // Testdata toevoegen aan database
+
+    beforeAll(async () => {
+      await knex(tables.groep).insert(data.groepen);
+      await knex(tables.lessenreeks).insert(data.lessenreeksen);
+      await knex(tables.les).insert(data.lessen);
+      await knex(tables.lesvoorbereiding).insert(data.lesvoorbereidingen);
+    });
+
+    // Testdata verwijderen uit database
+
+    afterAll(async () => {
+      await knex(tables.lesvoorbereiding)
+        .whereIn("lesvoorbereiding_id", dataToDelete.lesvoorbereidingen)
+        .del();
+      await knex(tables.lessenreeks)
+        .whereIn("lessenreeks_id", dataToDelete.lessenreeksen)
+        .del();
+      await knex(tables.les).whereIn("les_id", dataToDelete.lessen).del();
+      await knex(tables.groep).whereIn("groep_id", dataToDelete.groepen).del();
+    });
+
+    // Test
+
+    test("should 204 and return nothing", async () => {
+      const response = await request.delete(`${URL}/1`);
+
+      expect(response.status).toBe(204);
+      expect(response.body).toEqual({});
+    });
+  });
 });

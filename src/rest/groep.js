@@ -82,13 +82,13 @@ updateGroepById.validationScheme = {
 // Groep verwijderen a.d.h.v id
 
 const deleteGroepById = async (ctx) => {
-  groepService.deleteGroepById(Number(ctx.params.groep_id));
+  groepService.deleteGroepById(Number(ctx.params.id));
   ctx.status = 204;
 };
 
 deleteGroepById.validationScheme = {
   params: {
-    groep_id: Joi.number().integer().positive(),
+    id: Joi.number().integer().positive(),
   },
 };
 

@@ -1,5 +1,6 @@
 const c = require("config");
 const { tables, getKnex } = require("../data/index");
+const { getLogger } = require("../core/logging");
 
 // Kolommen selecteren
 
@@ -35,10 +36,8 @@ const formatLesgever = ({
   groep_naam,
   beschrijving,
   aantal_lesgevers,
-  ...lesgever
 }) => {
   return {
-    ...lesgever,
     lesgever_id,
     lesgever_naam,
     geboortedatum,
@@ -165,7 +164,16 @@ const updateLesgeverById = async (
 // Lesgever verwijderen a.d.h.v id
 
 const deleteLesgeverById = async (id) => {
-  await getKnex()(tables.lesgever).where("lesgever_id", id).del();
+  try {
+    const rijen = await getKnex()(tables.lesgever)
+      .where("lesgever_id", id)
+      .del();
+
+    return rijen > 0;
+  } catch (error) {
+    getLogger().error("Error in deleteLesgeverById", { error });
+    throw error;
+  }
 };
 
 module.exports = {

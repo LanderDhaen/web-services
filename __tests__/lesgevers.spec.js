@@ -385,4 +385,32 @@ describe("Lesgevers", () => {
       lesgeversToDelete.push(response.body.lesgever_id);
     });
   });
+
+  // DELETE /api/lesgevers/:id
+
+  describe("DELETE /api/lesgevers/:id", () => {
+    // Testdata toevoegen aan database
+
+    beforeAll(async () => {
+      await knex(tables.groep).insert(data.groepen);
+      await knex(tables.lesgever).insert(data.lesgevers);
+    });
+
+    // Testdata verwijderen uit database
+
+    afterAll(async () => {
+      await knex(tables.lesgever)
+        .whereIn("lesgever_id", dataToDelete.lesgevers)
+        .del();
+      await knex(tables.groep).whereIn("groep_id", dataToDelete.groepen).del();
+    });
+
+    // Test
+
+    test("should be 204 and return nothing", async () => {
+      const response = await request.delete(`${URL}/1`);
+      expect(response.status).toBe(204);
+      expect(response.body).toEqual({});
+    });
+  });
 });

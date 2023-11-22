@@ -67,17 +67,17 @@ const updateGroepById = async (
 
 // Groep verwijderen a.d.h.v id
 
-const deleteGroepById = async (groep_id) => {
-  const groep = await groepRepository.getGroepById(groep_id);
+const deleteGroepById = async (id) => {
+  const groep = await groepRepository.getGroepById(id);
 
   if (!groep) {
-    throw ServiceError.notFound(`Er bestaat geen groep met id ${groep_id}!`, {
+    throw ServiceError.notFound(`Er bestaat geen groep met id ${id}!`, {
       groep_id,
     });
   }
 
   try {
-    await groepRepository.deleteGroepById(groep_id);
+    await groepRepository.deleteGroepById(id);
   } catch (error) {
     handleDBError(error);
   }
