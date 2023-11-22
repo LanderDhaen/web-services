@@ -16,7 +16,7 @@ getAllLesgever.validationScheme = null;
 const createLesgever = async (ctx) => {
   const newLesgever = await lesgeverService.createLesgever({
     ...ctx.request.body,
-    naam: String(ctx.request.body.naam),
+    lesgever_naam: String(ctx.request.body.lesgever_naam),
     geboortedatum: new Date(ctx.request.body.geboortedatum),
     type: String(ctx.request.body.type),
     aanwezigheidspercentage: Number(ctx.request.body.aanwezigheidspercentage),
@@ -26,12 +26,13 @@ const createLesgever = async (ctx) => {
     GSM: Number(ctx.request.body.GSM),
     groep_id: Number(ctx.request.body.groep_id),
   });
+  ctx.status = 201;
   ctx.body = newLesgever;
 };
 
 createLesgever.validationScheme = {
   body: {
-    naam: Joi.string(),
+    lesgever_naam: Joi.string(),
     geboortedatum: Joi.date().iso().less("now"),
     type: Joi.string(),
     aanwezigheidspercentage: Joi.number().integer().positive().min(0).max(100),
@@ -60,14 +61,14 @@ getLesgeverById.validationScheme = {
 const updateLesgeverById = async (ctx) => {
   ctx.body = await lesgeverService.updateLesgeverById(Number(ctx.params.id), {
     ...ctx.request.body,
-    naam: String(ctx.request.body.naam),
-    geboortedatum: new Date(ctx.request.body.date),
+    lesgever_naam: String(ctx.request.body.lesgever_naam),
+    geboortedatum: new Date(ctx.request.body.geboortedatum),
     type: String(ctx.request.body.type),
     aanwezigheidspercentage: Number(ctx.request.body.aanwezigheidspercentage),
     diploma: String(ctx.request.body.diploma),
     imageURL: String(ctx.request.body.imageURL),
     email: String(ctx.request.body.email),
-    GSM: Number(ctx.request.body.GSM),
+    GSM: String(ctx.request.body.GSM),
     groep_id: Number(ctx.request.body.groep_id),
   });
 };
@@ -77,14 +78,14 @@ updateLesgeverById.validationScheme = {
     id: Joi.number().integer().positive(),
   },
   body: {
-    naam: Joi.string(),
+    lesgever_naam: Joi.string(),
     geboortedatum: Joi.date().iso().less("now"),
     type: Joi.string(),
     aanwezigheidspercentage: Joi.number().integer().positive().min(0).max(100),
     diploma: Joi.string(),
     imageURL: Joi.string(),
     email: Joi.string().email(),
-    GSM: Joi.number().integer().positive().precision(10),
+    GSM: Joi.string().length(10),
     groep_id: Joi.number().integer().positive(),
   },
 };

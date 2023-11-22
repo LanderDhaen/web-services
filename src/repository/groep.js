@@ -59,15 +59,15 @@ const createGroep = async ({ groep_naam, beschrijving, aantal_lesgevers }) => {
 // Groep updaten a.d.h.v id
 
 const updateGroepById = async (
-  groep_id,
+  id,
   { groep_naam, beschrijving, aantal_lesgevers }
 ) => {
-  await getKnex()(tables.groep).where("groep_id", groep_id).update({
+  await getKnex()(tables.groep).where("groep_id", id).update({
     groep_naam,
     beschrijving,
     aantal_lesgevers,
   });
-  return getGroepById(groep_id);
+  return id;
 };
 
 // Lesgever verwijderen a.d.h.v id

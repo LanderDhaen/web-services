@@ -5,7 +5,7 @@ const { tables, getKnex } = require("../data/index");
 
 const SELECT_COLUMNS = [
   "lesgever_id",
-  `${tables.lesgever}.naam as lesgever_naam`,
+  `${tables.lesgever}.lesgever_naam as lesgever_naam`,
   "geboortedatum",
   "type",
   "aanwezigheidspercentage",
@@ -108,7 +108,7 @@ const getLesgeverByGroepId = async (id) => {
 // Lesgever aanmaken
 
 const createLesgever = async ({
-  naam,
+  lesgever_naam,
   geboortedatum,
   type,
   aanwezigheidspercentage,
@@ -119,7 +119,7 @@ const createLesgever = async ({
   groep_id,
 }) => {
   const [lesgever_id] = await getKnex()(tables.lesgever).insert({
-    naam,
+    lesgever_naam,
     geboortedatum,
     type,
     aanwezigheidspercentage,
@@ -135,9 +135,22 @@ const createLesgever = async ({
 
 // Lesgever updaten a.d.h.v id
 
-const updateLesgeverById = async (lesgever_id) => {
-  await getKnex()(tables.lesgever).where("lesgever_id", lesgever_id).update({
-    naam,
+const updateLesgeverById = async (
+  id,
+  {
+    lesgever_naam,
+    geboortedatum,
+    type,
+    aanwezigheidspercentage,
+    diploma,
+    imageURL,
+    email,
+    GSM,
+    groep_id,
+  }
+) => {
+  await getKnex()(tables.lesgever).where("lesgever_id", id).update({
+    lesgever_naam,
     geboortedatum,
     type,
     aanwezigheidspercentage,
@@ -151,8 +164,8 @@ const updateLesgeverById = async (lesgever_id) => {
 
 // Lesgever verwijderen a.d.h.v id
 
-const deleteLesgeverById = async (lesgever_id) => {
-  await getKnex()(tables.lesgever).where("lesgever_id", lesgever_id).del();
+const deleteLesgeverById = async (id) => {
+  await getKnex()(tables.lesgever).where("lesgever_id", id).del();
 };
 
 module.exports = {

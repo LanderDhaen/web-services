@@ -62,7 +62,7 @@ const getAllLesvoorbereidingen = async () => {
 
 // Lesvoorbereiding ophalen a.d.h.v id
 
-const getLesvoorbereidingById = async (lesvoorbereiding_id) => {
+const getLesvoorbereidingById = async (id) => {
   const lesvoorbereiding = await getKnex()(tables.lesvoorbereiding)
     .join(
       tables.groep,
@@ -70,7 +70,7 @@ const getLesvoorbereidingById = async (lesvoorbereiding_id) => {
       "=",
       `${tables.groep}.groep_id`
     )
-    .where("lesvoorbereiding_id", lesvoorbereiding_id)
+    .where("lesvoorbereiding_id", id)
     .first(SELECT_COLUMNS);
 
   return formatLesvoorbereiding(lesvoorbereiding);
@@ -86,26 +86,39 @@ const createLesvoorbereiding = async ({
   les_id,
   groep_id,
 }) => {
-  const [lesvoorbereiding_id] = await getKnex()(tables.lesvoorbereiding).insert(
-    {
+  try {
+    const [id] = await getKnex()(tables.lesvoorbereiding).insert({
       lesvoorbereiding_naam,
       lesvoorbereiding_type,
       link_to_PDF,
       feedback,
       les_id,
       groep_id,
-    }
-  );
-
-  return lesvoorbereiding_id;
+    });
+    return id;
+  } catch (error) {
+    throw handleDBError(error);
+  }
 };
 
 // Lesvoorbereiding updaten a.d.h.v id
 
-const updateLesvoorbereidingById = async (lesvoorbereiding_id) => {
+const updateLesvoorbereidingById = async (
+  id,
+  {
+    lesvoorbereiding_naam,
+    lesvoorbereiding_type,
+    link_to_PDF,
+    feedback,
+    les_id,
+    groep_id,
+  }
+) => {
   await getKnex()(tables.lesvoorbereiding)
-    .where("lesvoorbereiding_id", lesvoorbereiding_id)
+    .where("lesvoorbereiding_id", id)
     .update({
+      lesvoorbereiding_naam,
+      lesvoorbereiding_type,
       link_to_PDF,
       feedback,
       les_id,
@@ -115,9 +128,9 @@ const updateLesvoorbereidingById = async (lesvoorbereiding_id) => {
 
 // Lesvoorbereiding verwijderen a.d.h.v id
 
-const deleteLesvoorbereidingById = async (lesvoorbereiding_id) => {
+const deleteLesvoorbereidingById = async (id) => {
   await getKnex()(tables.lesvoorbereiding)
-    .where("lesvoorbereiding_id", lesvoorbereiding_id)
+    .where("lesvoorbereiding_id", id)
     .del();
 };
 

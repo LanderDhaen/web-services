@@ -118,7 +118,9 @@ describe("Groepen", () => {
     });
   });
 
-  /* describe("PUT /api/groepen/:id", () => {
+  // PUT /api/groepen/:id
+
+  describe("PUT /api/groepen/:id", () => {
     // Testdata toevoegen aan database
 
     beforeAll(async () => {
@@ -142,11 +144,9 @@ describe("Groepen", () => {
 
       expect(response.status).toBe(200);
       expect(response.body.groep_id).toBeTruthy();
-      expect(response.body).toEqual({
-        groep_naam: "Eendjes 2.0",
-        beschrijving: "Startgroep, met ouders 2.0",
-        aantal_lesgevers: 8,
-      });
+      expect(response.body.groep_naam).toBe("Eendjes 2.0");
+      expect(response.body.beschrijving).toBe("Startgroep, met ouders 2.0");
+      expect(response.body.aantal_lesgevers).toBe(8);
     });
-  }); */
+  });
 });

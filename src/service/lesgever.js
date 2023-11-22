@@ -44,7 +44,7 @@ const getLesgeverByGroepId = async (id) => {
 };
 
 const createLesgever = async ({
-  naam,
+  lesgever_naam,
   geboortedatum,
   type,
   aanwezigheidspercentage,
@@ -63,8 +63,8 @@ const createLesgever = async ({
   }
 
   try {
-    const lesgever_id = await lesgeverRepository.create({
-      naam,
+    const id = await lesgeverRepository.create({
+      lesgever_naam,
       geboortedatum,
       type,
       aanwezigheidspercentage,
@@ -74,7 +74,7 @@ const createLesgever = async ({
       GSM,
       groep_id,
     });
-    return getLesgeverById(lesgever_id);
+    return getLesgeverById(id);
   } catch (error) {
     throw handleDBError(error);
   }
@@ -83,9 +83,9 @@ const createLesgever = async ({
 // Lesgever updaten a.d.h.v id
 
 const updateLesgeverById = async (
-  lesgever_id,
+  id,
   {
-    naam,
+    lesgever_naam,
     geboortedatum,
     type,
     aanwezigheidspercentage,
@@ -104,8 +104,8 @@ const updateLesgeverById = async (
     });
   }
 
-  await lesgeverRepository.update(lesgever_id, {
-    naam,
+  await lesgeverRepository.updateLesgeverById(id, {
+    lesgever_naam,
     geboortedatum,
     type,
     aanwezigheidspercentage,
@@ -122,7 +122,7 @@ const updateLesgeverById = async (
 
 const deleteLesgeverById = async (id) => {
   try {
-    const deletedLesgever = await lesgeverRepository.delete(id);
+    const deletedLesgever = await lesgeverRepository.deleteLesgeverById(id);
 
     if (!deletedLesgever) {
       throw ServiceError.notFound(`Er bestaat geen lesgever met id ${id}!`, {

@@ -42,27 +42,27 @@ const createGroep = async ({ groep_naam, beschrijving, aantal_lesgevers }) => {
 // Groep updaten a.d.h.v id
 
 const updateGroepById = async (
-  groep_id,
-  { naam, beschrijving, aantal_lesgevers }
+  id,
+  { groep_naam, beschrijving, aantal_lesgevers }
 ) => {
-  const groep = await groepRepository.getGroepById(groep_id);
+  const groep = await groepRepository.getGroepById(id);
 
   if (!groep) {
-    throw ServiceError.notFound(`Er bestaat geen groep met id ${groep_id}!`, {
-      groep_id,
+    throw ServiceError.notFound(`Er bestaat geen groep met id ${id}!`, {
+      id,
     });
   }
 
   try {
-    await groepRepository.update(groep_id, {
-      naam,
+    await groepRepository.updateGroepById(id, {
+      groep_naam,
       beschrijving,
       aantal_lesgevers,
     });
   } catch (error) {
     handleDBError(error);
   }
-  return getGroepById(groep_id);
+  return getGroepById(id);
 };
 
 // Groep verwijderen a.d.h.v id

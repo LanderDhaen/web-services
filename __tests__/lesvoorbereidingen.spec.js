@@ -239,4 +239,119 @@ describe("Lesvoorbereidingen", () => {
       });
     });
   });
+
+  // PUT /api/lesvoorbereidingen/:id
+
+  describe("PUT /api/lesvoorbereidingen/:id", () => {
+    // Testdata toevoegen aan database
+
+    beforeAll(async () => {
+      await knex(tables.groep).insert(data.groepen);
+      await knex(tables.lessenreeks).insert(data.lessenreeksen);
+      await knex(tables.les).insert(data.lessen);
+      await knex(tables.lesvoorbereiding).insert(data.lesvoorbereidingen[0]);
+    });
+
+    // Testdata verwijderen uit database
+
+    afterAll(async () => {
+      await knex(tables.lesvoorbereiding)
+        .whereIn("lesvoorbereiding_id", dataToDelete.lesvoorbereidingen)
+        .del();
+      await knex(tables.lessenreeks)
+        .whereIn("lessenreeks_id", dataToDelete.lessenreeksen)
+        .del();
+      await knex(tables.les).whereIn("les_id", dataToDelete.lessen).del();
+      await knex(tables.groep).whereIn("groep_id", dataToDelete.groepen).del();
+    });
+
+    // Test
+
+    test("should 200 and return the updated lesvoorbereiding", async () => {
+      const response = await request.put(`${URL}/1`).send({
+        lesvoorbereiding_naam: "Walter de Walrus gaat naar de speeltuin 2.0",
+        lesvoorbereiding_type: "Speelles 2.0",
+        link_to_PDF: "https://chamilo.hogent.be/",
+        feedback: "Dit is een test 3.0",
+        les_id: 15,
+        groep_id: 7,
+      });
+
+      expect(response.status).toBe(200);
+      expect(response.body.lesvoorbereiding_id).toBeTruthy();
+      expect(response.body.lesvoorbereiding_naam).toBe(
+        "Walter de Walrus gaat naar de speeltuin 2.0"
+      );
+      expect(response.body.lesvoorbereiding_type).toBe("Speelles 2.0");
+      expect(response.body.link_to_PDF).toBe("https://chamilo.hogent.be/");
+      expect(response.body.feedback).toBe("Dit is een test 3.0");
+      expect(response.body.les_id).toBe(15);
+      expect(response.body.groep).toEqual({
+        groep_id: 7,
+        groep_naam: "Dolfijnen",
+        beschrijving: "Verfijnen drie slagen, afstand- en reddend zwemmen",
+        aantal_lesgevers: 1,
+      });
+    });
+  });
+
+  // POST /api/lesvoorbereidingen
+
+  describe("POST /api/lesvoorbereidingen", () => {
+    const lesvoorBereidingenToDelete = [];
+
+    // Testdata toevoegen aan database
+
+    beforeAll(async () => {
+      await knex(tables.groep).insert(data.groepen);
+      await knex(tables.lessenreeks).insert(data.lessenreeksen);
+      await knex(tables.les).insert(data.lessen);
+    });
+
+    // Testdata verwijderen uit database
+
+    afterAll(async () => {
+      await knex(tables.lesvoorbereiding)
+        .whereIn("lesvoorbereiding_id", lesvoorBereidingenToDelete)
+        .del();
+      await knex(tables.lessenreeks)
+        .whereIn("lessenreeks_id", dataToDelete.lessenreeksen)
+        .del();
+      await knex(tables.les).whereIn("les_id", dataToDelete.lessen).del();
+      await knex(tables.groep).whereIn("groep_id", dataToDelete.groepen).del();
+    });
+
+    // Test
+
+    test("should 201 and return the created lesvoorbereiding", async () => {
+      const response = await request.post(URL).send({
+        lesvoorbereiding_naam: "Jasmijn de Dolfijn onderzoekt de grotten",
+        lesvoorbereiding_type: "Gewone Les",
+        link_to_PDF: "https://chamilo.hogent.be/",
+        feedback: "Dit is de les vanuit de testklasse",
+        les_id: 1,
+        groep_id: 7,
+      });
+
+      console.log(response.body);
+
+      expect(response.status).toBe(201);
+      expect(response.body.lesvoorbereiding_id).toBeTruthy();
+      expect(response.body.lesvoorbereiding_naam).toBe(
+        "Jasmijn de Dolfijn onderzoekt de grotten"
+      );
+      expect(response.body.lesvoorbereiding_type).toBe("Gewone Les");
+      expect(response.body.link_to_PDF).toBe("https://chamilo.hogent.be/");
+      expect(response.body.feedback).toBe("Dit is de les vanuit de testklasse");
+      expect(response.body.les_id).toBe(1);
+      expect(response.body.groep).toEqual({
+        groep_id: 7,
+        groep_naam: "Dolfijnen",
+        beschrijving: "Verfijnen drie slagen, afstand- en reddend zwemmen",
+        aantal_lesgevers: 1,
+      });
+
+      lesvoorBereidingenToDelete.push(response.body.lesvoorbereiding_id);
+    });
+  });
 });

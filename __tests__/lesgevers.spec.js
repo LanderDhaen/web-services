@@ -6,8 +6,8 @@ const data = {
   lesgevers: [
     {
       lesgever_id: 1,
-      naam: "Lander Dhaen",
-      geboortedatum: new Date(2001, 3, 30, 0),
+      lesgever_naam: "Lander Dhaen",
+      geboortedatum: new Date(2001, 3, 30, 0, 0),
       type: "Lesvrij",
       aanwezigheidspercentage: 100,
       diploma: "Redder",
@@ -18,7 +18,7 @@ const data = {
     },
     {
       lesgever_id: 2,
-      naam: "Robbe De Back-End",
+      lesgever_naam: "Robbe De Back-End",
       geboortedatum: new Date(2001, 3, 30, 0),
       type: "Verantwoordelijke",
       aanwezigheidspercentage: 95,
@@ -30,7 +30,7 @@ const data = {
     },
     {
       lesgever_id: 3,
-      naam: "Hannah Van den Steen",
+      lesgever_naam: "Hannah Van den Steen",
       geboortedatum: new Date(2001, 3, 30, 0),
       type: "Vaste Lesgever",
       aanwezigheidspercentage: 100,
@@ -42,7 +42,7 @@ const data = {
     },
     {
       lesgever_id: 4,
-      naam: "Evert Walravens",
+      lesgever_naam: "Evert Walravens",
       geboortedatum: new Date(2001, 3, 30, 0),
       type: "Verantwoordelijke",
       aanwezigheidspercentage: 0,
@@ -240,7 +240,7 @@ describe("Lesgevers", () => {
 
     beforeAll(async () => {
       await knex(tables.groep).insert(data.groepen);
-      await knex(tables.lesgever).insert(data.lesgevers);
+      await knex(tables.lesgever).insert(data.lesgevers[0]);
     });
 
     // Testdata verwijderen uit database
@@ -274,6 +274,58 @@ describe("Lesgevers", () => {
           beschrijving: "Visie-cel, Coördinatoren, Stuurgroep",
           aantal_lesgevers: 1,
         },
+      });
+    });
+  });
+
+  // PUT /api/lesgevers/:id
+
+  describe("PUT /api/lesgevers/:id", () => {
+    // Testdata toevoegen aan database
+
+    beforeAll(async () => {
+      await knex(tables.groep).insert(data.groepen);
+      await knex(tables.lesgever).insert(data.lesgevers[0]);
+    });
+
+    // Testdata verwijderen uit database
+
+    afterAll(async () => {
+      await knex(tables.lesgever)
+        .whereIn("lesgever_id", dataToDelete.lesgevers)
+        .del();
+      await knex(tables.groep).whereIn("groep_id", dataToDelete.groepen).del();
+    });
+
+    // Test
+    test("should 200 and return the updated lesgever", async () => {
+      const response = await request.put(`${URL}/1`).send({
+        lesgever_naam: "Lander Dhaen 2.0",
+        geboortedatum: "2001-03-30T00:00:00.000Z",
+        type: "Verantwoordelijke",
+        aanwezigheidspercentage: 80,
+        diploma: "Animator",
+        imageURL: "",
+        email: "lander.dhaen@gmail.com",
+        GSM: "0491882278",
+        groep_id: 8,
+      });
+
+      expect(response.status).toBe(200);
+      expect(response.body.lesgever_id).toBeTruthy();
+      expect(response.body.lesgever_naam).toBe("Lander Dhaen 2.0");
+      expect(response.body.geboortedatum).toBe("2001-03-30T00:00:00.000Z");
+      expect(response.body.type).toBe("Verantwoordelijke");
+      expect(response.body.aanwezigheidspercentage).toBe(80);
+      expect(response.body.diploma).toBe("Animator");
+      expect(response.body.imageURL).toBe("");
+      expect(response.body.email).toBe("lander.dhaen@gmail.com");
+      expect(response.body.GSM).toBe("0491882278");
+      expect(response.body.groep).toEqual({
+        groep_id: 8,
+        groep_naam: "Losse lesgevers",
+        beschrijving: "Visie-cel, Coördinatoren, Stuurgroep",
+        aantal_lesgevers: 1,
       });
     });
   });

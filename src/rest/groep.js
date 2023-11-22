@@ -17,10 +17,11 @@ getAllGroepen.validationScheme = null;
 const createGroep = async (ctx) => {
   const newGroep = await groepService.createGroep({
     ...ctx.request.body,
-    groep_naam: String(ctx.request.body.naam),
+    groep_naam: String(ctx.request.body.groep_naam),
     beschrijving: String(ctx.request.body.beschrijving),
     aantal_lesgevers: Number(ctx.request.body.aantal_lesgevers),
   });
+  ctx.status = 201;
   ctx.body = newGroep;
 };
 
@@ -59,9 +60,9 @@ getLesgeverByGroepId.validationScheme = {
 // Groep updaten a.d.h.v id
 
 const updateGroepById = async (ctx) => {
-  ctx.body = await groepService.updateGroepById(Number(ctx.params.groep_id), {
+  ctx.body = await groepService.updateGroepById(Number(ctx.params.id), {
     ...ctx.request.body,
-    groep_naam: String(ctx.request.body.naam),
+    groep_naam: String(ctx.request.body.groep_naam),
     beschrijving: String(ctx.request.body.beschrijving),
     aantal_lesgevers: Number(ctx.request.body.aantal_lesgevers),
   });
@@ -69,7 +70,7 @@ const updateGroepById = async (ctx) => {
 
 updateGroepById.validationScheme = {
   params: {
-    groep_id: Joi.number().integer().positive(),
+    id: Joi.number().integer().positive(),
   },
   body: {
     groep_naam: Joi.string(),

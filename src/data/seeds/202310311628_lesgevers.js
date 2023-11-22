@@ -7,7 +7,7 @@ module.exports = {
     await knex(tables.lesgever).insert([
       {
         lesgever_id: 1,
-        naam: "Lander Dhaen",
+        lesgever_naam: "Lander Dhaen",
         geboortedatum: new Date(2001, 3, 30, 0),
         type: "Lesvrij",
         aanwezigheidspercentage: 100,
@@ -19,7 +19,7 @@ module.exports = {
       },
       {
         lesgever_id: 2,
-        naam: "Robbe De Back-End",
+        lesgever_naam: "Robbe De Back-End",
         geboortedatum: new Date(2001, 3, 30, 0),
         type: "Verantwoordelijke",
         aanwezigheidspercentage: 95,
@@ -31,7 +31,7 @@ module.exports = {
       },
       {
         lesgever_id: 3,
-        naam: "Hannah Van den Steen",
+        lesgever_naam: "Hannah Van den Steen",
         geboortedatum: new Date(2001, 3, 30, 0),
         type: "Vaste Lesgever",
         aanwezigheidspercentage: 100,
@@ -43,7 +43,7 @@ module.exports = {
       },
       {
         lesgever_id: 4,
-        naam: "Evert Walravens",
+        lesgever_naam: "Evert Walravens",
         geboortedatum: new Date(2001, 3, 30, 0),
         type: "Verantwoordelijke",
         aanwezigheidspercentage: 0,

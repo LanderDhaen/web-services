@@ -20,11 +20,12 @@ const createLesvoorbereiding = async (ctx) => {
       ...ctx.request.body,
       lesvoorbereiding_naam: String(ctx.request.body.lesvoorbereiding_naam),
       lesvoorbereiding_type: String(ctx.request.body.lesvoorbereiding_type),
-      link_to_PDF: String(ctx.request.body.link_to_pdf),
+      link_to_PDF: String(ctx.request.body.link_to_PDF),
       feedback: String(ctx.request.body.feedback),
       les_id: Number(ctx.request.body.les_id),
       groep_id: Number(ctx.request.body.groep_id),
     });
+  ctx.status = 201;
   ctx.body = newLesvoorbereiding;
 };
 
@@ -62,7 +63,7 @@ const updateLesvoorbereidingById = async (ctx) => {
       ...ctx.request.body,
       lesvoorbereiding_naam: String(ctx.request.body.lesvoorbereiding_naam),
       lesvoorbereiding_type: String(ctx.request.body.lesvoorbereiding_type),
-      link_to_PDF: String(ctx.request.body.link_to_pdf),
+      link_to_PDF: String(ctx.request.body.link_to_PDF),
       feedback: String(ctx.request.body.feedback),
       les_id: Number(ctx.request.body.les_id),
       groep_id: Number(ctx.request.body.groep_id),
