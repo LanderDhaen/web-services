@@ -35,8 +35,10 @@ const formatLesgever = ({
   groep_naam,
   beschrijving,
   aantal_lesgevers,
+  ...lesgever
 }) => {
   return {
+    ...lesgever,
     lesgever_id,
     lesgever_naam,
     geboortedatum,
