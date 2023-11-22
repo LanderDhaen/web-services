@@ -4,11 +4,15 @@ const groepService = require("../service/groep");
 const lesgeverService = require("../service/lesgever");
 const validate = require("../core/validation");
 
+// Alle groepen ophalen
+
 const getAllGroepen = async (ctx) => {
   ctx.body = await groepService.getAllGroepen();
 };
 
 getAllGroepen.validationScheme = null;
+
+// Groep aanmaken
 
 const createGroep = async (ctx) => {
   const newGroep = await groepService.createGroep({
@@ -28,6 +32,8 @@ createGroep.validationScheme = {
   },
 };
 
+// Groep ophalen a.d.h.v id
+
 const getGroepById = async (ctx) => {
   ctx.body = await groepService.getGroepById(Number(ctx.params.id));
 };
@@ -38,6 +44,8 @@ getGroepById.validationScheme = {
   },
 };
 
+// Lesgevers ophalen a.d.h.v groep_id
+
 const getLesgeverByGroepId = async (ctx) => {
   ctx.body = await lesgeverService.getLesgeverByGroepId(Number(ctx.params.id));
 };
@@ -47,6 +55,8 @@ getLesgeverByGroepId.validationScheme = {
     id: Joi.number().integer().positive(),
   },
 };
+
+// Groep updaten a.d.h.v id
 
 const updateGroepById = async (ctx) => {
   ctx.body = await groepService.updateGroepById(Number(ctx.params.groep_id), {
@@ -67,6 +77,8 @@ updateGroepById.validationScheme = {
     aantal_lesgevers: Joi.number().integer().positive(),
   },
 };
+
+// Groep verwijderen a.d.h.v id
 
 const deleteGroepById = async (ctx) => {
   groepService.deleteGroepById(Number(ctx.params.groep_id));

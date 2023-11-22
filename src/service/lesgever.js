@@ -3,6 +3,8 @@ const handleDBError = require("./_handleDBError");
 const lesgeverRepository = require("../repository/lesgever");
 const groepService = require("../service/groep");
 
+// Alle lesgevers ophalen
+
 const getAllLesgever = async () => {
   const items = await lesgeverRepository.getAllLesgever();
   return {
@@ -10,6 +12,8 @@ const getAllLesgever = async () => {
     count: items.length,
   };
 };
+
+// Lesgever ophalen a.d.h.v id
 
 const getLesgeverById = async (id) => {
   const lesgever = await lesgeverRepository.getLesgeverById(id);
@@ -22,6 +26,8 @@ const getLesgeverById = async (id) => {
 
   return lesgever;
 };
+
+// Lesgevers ophalen a.d.h.v groep_id
 
 const getLesgeverByGroepId = async (id) => {
   const lesgevers = await lesgeverRepository.getLesgeverByGroepId(id);
@@ -74,6 +80,8 @@ const createLesgever = async ({
   }
 };
 
+// Lesgever updaten a.d.h.v id
+
 const updateLesgeverById = async (
   lesgever_id,
   {
@@ -109,6 +117,8 @@ const updateLesgeverById = async (
   });
   return getLesgeverById(id);
 };
+
+// Lesgever verwijderen a.d.h.v id
 
 const deleteLesgeverById = async (id) => {
   try {

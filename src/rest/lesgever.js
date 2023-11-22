@@ -3,11 +3,15 @@ const Router = require("@koa/router");
 const lesgeverService = require("../service/lesgever");
 const validate = require("../core/validation");
 
+// Alle lesgevers ophalen
+
 const getAllLesgever = async (ctx) => {
   ctx.body = await lesgeverService.getAllLesgever();
 };
 
 getAllLesgever.validationScheme = null;
+
+// Lesgever aanmaken
 
 const createLesgever = async (ctx) => {
   const newLesgever = await lesgeverService.createLesgever({
@@ -39,6 +43,8 @@ createLesgever.validationScheme = {
   },
 };
 
+// Lesgever ophalen a.d.h.v id
+
 const getLesgeverById = async (ctx) => {
   ctx.body = await lesgeverService.getLesgeverById(Number(ctx.params.id));
 };
@@ -48,6 +54,8 @@ getLesgeverById.validationScheme = {
     id: Joi.number().integer().positive(),
   },
 };
+
+// Lesgever updaten a.d.h.v id
 
 const updateLesgeverById = async (ctx) => {
   ctx.body = await lesgeverService.updateLesgeverById(Number(ctx.params.id), {
@@ -80,6 +88,8 @@ updateLesgeverById.validationScheme = {
     groep_id: Joi.number().integer().positive(),
   },
 };
+
+// Lesgever verwijderen a.d.h.v id
 
 const deleteLesgeverById = async (ctx) => {
   await lesgeverService.deleteLesgeverById(Number(ctx.params.id));

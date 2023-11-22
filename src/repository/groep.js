@@ -46,7 +46,17 @@ const getGroepById = async (id) => {
   return formatGroep(groep);
 };
 
-// Groepinformatie updaten
+// Groep aanmaken
+
+const createGroep = async ({ groep_naam, beschrijving, aantal_lesgevers }) => {
+  const [groep_id] = await getKnex()(tables.groep).insert({
+    groep_naam,
+    beschrijving,
+    aantal_lesgevers,
+  });
+};
+
+// Groep updaten a.d.h.v id
 
 const updateGroepById = async (
   groep_id,
@@ -60,8 +70,16 @@ const updateGroepById = async (
   return getGroepById(groep_id);
 };
 
+// Lesgever verwijderen a.d.h.v id
+
+const deleteGroepById = async (groep_id) => {
+  await getKnex()(tables.groep).where("groep_id", groep_id).del();
+};
+
 module.exports = {
   getAllGroepen,
   getGroepById,
+  createGroep,
   updateGroepById,
+  deleteGroepById,
 };

@@ -60,7 +60,7 @@ const getAllLesvoorbereidingen = async () => {
   return lesvoorbereidingen.map(formatLesvoorbereiding);
 };
 
-// Lesvoorbereiding ophalen op id
+// Lesvoorbereiding ophalen a.d.h.v id
 
 const getLesvoorbereidingById = async (lesvoorbereiding_id) => {
   const lesvoorbereiding = await getKnex()(tables.lesvoorbereiding)
@@ -76,7 +76,31 @@ const getLesvoorbereidingById = async (lesvoorbereiding_id) => {
   return formatLesvoorbereiding(lesvoorbereiding);
 };
 
-// Lesvoorbereidinginformatie updaten
+// Lesvoorbereiding aanmaken
+
+const createLesvoorbereiding = async ({
+  lesvoorbereiding_naam,
+  lesvoorbereiding_type,
+  link_to_PDF,
+  feedback,
+  les_id,
+  groep_id,
+}) => {
+  const [lesvoorbereiding_id] = await getKnex()(tables.lesvoorbereiding).insert(
+    {
+      lesvoorbereiding_naam,
+      lesvoorbereiding_type,
+      link_to_PDF,
+      feedback,
+      les_id,
+      groep_id,
+    }
+  );
+
+  return lesvoorbereiding_id;
+};
+
+// Lesvoorbereiding updaten a.d.h.v id
 
 const updateLesvoorbereidingById = async (lesvoorbereiding_id) => {
   await getKnex()(tables.lesvoorbereiding)
@@ -89,8 +113,18 @@ const updateLesvoorbereidingById = async (lesvoorbereiding_id) => {
     });
 };
 
+// Lesvoorbereiding verwijderen a.d.h.v id
+
+const deleteLesvoorbereidingById = async (lesvoorbereiding_id) => {
+  await getKnex()(tables.lesvoorbereiding)
+    .where("lesvoorbereiding_id", lesvoorbereiding_id)
+    .del();
+};
+
 module.exports = {
   getAllLesvoorbereidingen,
   getLesvoorbereidingById,
+  createLesvoorbereiding,
   updateLesvoorbereidingById,
+  deleteLesvoorbereidingById,
 };

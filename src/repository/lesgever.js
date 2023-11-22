@@ -19,7 +19,7 @@ const SELECT_COLUMNS = [
   "aantal_lesgevers",
 ];
 
-// Lesgever formatteren
+// Lesgever(s) formatteren
 
 const formatLesgever = ({
   lesgever_id,
@@ -133,7 +133,7 @@ const createLesgever = async ({
   return lesgever_id;
 };
 
-// Lesgeverinformatie updaten
+// Lesgever updaten a.d.h.v id
 
 const updateLesgeverById = async (lesgever_id) => {
   await getKnex()(tables.lesgever).where("lesgever_id", lesgever_id).update({
@@ -149,7 +149,7 @@ const updateLesgeverById = async (lesgever_id) => {
   });
 };
 
-// Lesgever verwijderen
+// Lesgever verwijderen a.d.h.v id
 
 const deleteLesgeverById = async (lesgever_id) => {
   await getKnex()(tables.lesgever).where("lesgever_id", lesgever_id).del();
