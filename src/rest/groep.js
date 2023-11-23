@@ -2,6 +2,7 @@ const Joi = require("joi");
 const Router = require("@koa/router");
 const groepService = require("../service/groep");
 const lesgeverService = require("../service/lesgever");
+const lesvoorbereidingService = require("../service/lesvoorbereiding");
 const validate = require("../core/validation");
 
 // Alle groepen ophalen
@@ -57,6 +58,20 @@ getLesgeverByGroepId.validationScheme = {
   },
 };
 
+// Lesvoorbereidingen ophalen a.d.h.v groep_id
+
+const getLesvoorbereidingByGroepId = async (ctx) => {
+  ctx.body = await lesvoorbereidingService.getLesvoorbereidingByGroepId(
+    Number(ctx.params.id)
+  );
+};
+
+getLesvoorbereidingByGroepId.validationScheme = {
+  params: {
+    id: Joi.number().integer().positive(),
+  },
+};
+
 // Groep updaten a.d.h.v id
 
 const updateGroepById = async (ctx) => {
@@ -104,6 +119,11 @@ module.exports = (app) => {
     "/:id/lesgevers",
     validate(getLesgeverByGroepId.validationScheme),
     getLesgeverByGroepId
+  );
+  router.get(
+    "/:id/lesvoorbereidingen",
+    validate(getLesvoorbereidingByGroepId.validationScheme),
+    getLesvoorbereidingByGroepId
   );
   router.put(
     "/:id",

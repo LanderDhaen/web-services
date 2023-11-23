@@ -28,6 +28,24 @@ const getLesvoorbereidingById = async (id) => {
   return lesvoorbereiding;
 };
 
+// Lesvoorbereidingen ophalen a.d.h.v groep_id
+
+const getLesvoorbereidingByGroepId = async (id) => {
+  const lesvoorbereidingen =
+    await lesvoorbereidingRepository.getLesvoorbereidingByGroepId(id);
+
+  if (!lesvoorbereidingen) {
+    throw ServiceError.notFound(
+      `Er bestaat geen lesvoorbereiding met groep_id ${gid}!`,
+      {
+        id,
+      }
+    );
+  }
+
+  return lesvoorbereidingen;
+};
+
 // Lesvoorbereiding aanmaken
 
 const createLesvoorbereiding = async ({
@@ -116,6 +134,7 @@ const deleteLesvoorbereidingById = async (id) => {
 module.exports = {
   getAllLesvoorbereidingen,
   getLesvoorbereidingById,
+  getLesvoorbereidingByGroepId,
   createLesvoorbereiding,
   updateLesvoorbereidingById,
   deleteLesvoorbereidingById,

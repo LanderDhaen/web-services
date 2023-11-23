@@ -38,11 +38,44 @@ const data = {
       groep_id: 3,
     },
   ],
+
+  lesvoorbereidingen: [
+    {
+      lesvoorbereiding_id: 1,
+      lesvoorbereiding_naam: "Walter de Walrus gaat naar school",
+      lesvoorbereiding_type: "Gewone Les",
+      link_to_PDF: "https://www.google.com",
+      feedback: "Dit is een test",
+      les_id: 1,
+      groep_id: 3,
+    },
+  ],
+
+  lessen: [
+    {
+      les_id: 1,
+      datum: new Date(2023, 9, 1, 0),
+      lessenreeks_id: 1,
+    },
+  ],
+
+  lessenreeksen: [
+    {
+      lessenreeks_id: 1,
+      jaargang: "2023-2024",
+      nummer: 1,
+      startdatum: new Date(2023, 9, 1, 0),
+      einddatum: new Date(2023, 12, 30, 0),
+    },
+  ],
 };
 
 const dataToDelete = {
   groepen: [1, 2, 3],
   lesgevers: [3],
+  lesvoorbereidingen: [1],
+  lessen: [1],
+  lessenreeksen: [1],
 };
 
 describe("Groepen", () => {
@@ -170,6 +203,55 @@ describe("Groepen", () => {
         imageURL: "",
         email: "lander.dhaen@move-united.be",
         GSM: "0499999999",
+        groep: {
+          groep_id: 3,
+          groep_naam: "Waterschildpadden",
+          beschrijving: "Watergewenning, ontdekken diep",
+          aantal_lesgevers: 1,
+        },
+      });
+    });
+  });
+
+  // GET /api/groepen/:id/lesvoorbereidingen
+
+  describe("GET /api/groepen/:id/lesvoorbereidingen", () => {
+    // Testdata toevoegen aan database
+
+    beforeAll(async () => {
+      await knex(tables.lessenreeks).insert(data.lessenreeksen);
+      await knex(tables.groep).insert(data.groepen);
+      await knex(tables.les).insert(data.lessen);
+      await knex(tables.lesvoorbereiding).insert(data.lesvoorbereidingen);
+    });
+
+    // Testdata verwijderen uit database
+
+    afterAll(async () => {
+      await knex(tables.lesvoorbereiding)
+        .whereIn("lesvoorbereiding_id", dataToDelete.lesvoorbereidingen)
+        .del();
+      await knex(tables.groep).whereIn("groep_id", dataToDelete.groepen).del();
+      await knex(tables.les).whereIn("les_id", dataToDelete.lessen).del();
+      await knex(tables.lessenreeks)
+        .whereIn("lessenreeks_id", dataToDelete.lessenreeksen)
+        .del();
+    });
+
+    // Test
+
+    test("should 200 and return the lesvoorbereidingen of the requested groep", async () => {
+      const response = await request.get(`${URL}/3/lesvoorbereidingen`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.length).toBe(1);
+      expect(response.body[0]).toEqual({
+        lesvoorbereiding_id: 1,
+        lesvoorbereiding_naam: "Walter de Walrus gaat naar school",
+        lesvoorbereiding_type: "Gewone Les",
+        link_to_PDF: "https://www.google.com",
+        feedback: "Dit is een test",
+        les_id: 1,
         groep: {
           groep_id: 3,
           groep_naam: "Waterschildpadden",

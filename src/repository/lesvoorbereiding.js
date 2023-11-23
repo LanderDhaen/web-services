@@ -76,6 +76,23 @@ const getLesvoorbereidingById = async (id) => {
   return formatLesvoorbereiding(lesvoorbereiding);
 };
 
+// Lesvoorbereidingen ophalen a.d.h.v groep_id
+
+const getLesvoorbereidingByGroepId = async (id) => {
+  const lesvoorbereidingen = await getKnex()(tables.lesvoorbereiding)
+    .join(
+      tables.groep,
+      `${tables.lesvoorbereiding}.groep_id`,
+      "=",
+      `${tables.groep}.groep_id`
+    )
+    .where(`${tables.lesvoorbereiding}.groep_id`, id)
+    .select(SELECT_COLUMNS)
+    .orderBy(`${tables.lesvoorbereiding}.lesvoorbereiding_id`, "ASC");
+
+  return lesvoorbereidingen.map(formatLesvoorbereiding);
+};
+
 // Lesvoorbereiding aanmaken
 
 const createLesvoorbereiding = async ({
@@ -146,6 +163,7 @@ const deleteLesvoorbereidingById = async (id) => {
 module.exports = {
   getAllLesvoorbereidingen,
   getLesvoorbereidingById,
+  getLesvoorbereidingByGroepId,
   createLesvoorbereiding,
   updateLesvoorbereidingById,
   deleteLesvoorbereidingById,
