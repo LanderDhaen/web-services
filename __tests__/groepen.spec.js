@@ -251,7 +251,9 @@ describe("Groepen", () => {
         lesvoorbereiding_type: "Gewone Les",
         link_to_PDF: "https://www.google.com",
         feedback: "Dit is een test",
-        les_id: 1,
+        les: {
+          les_id: 1,
+        },
         groep: {
           groep_id: 3,
           groep_naam: "Waterschildpadden",

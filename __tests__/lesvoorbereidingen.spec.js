@@ -152,7 +152,9 @@ describe("Lesvoorbereidingen", () => {
         lesvoorbereiding_type: "Gewone Les",
         link_to_PDF: "https://www.google.com",
         feedback: "Dit is een test",
-        les_id: 1,
+        les: {
+          les_id: 1,
+        },
         groep: {
           groep_id: 3,
           groep_naam: "Waterschildpadden",
@@ -167,7 +169,9 @@ describe("Lesvoorbereidingen", () => {
         lesvoorbereiding_type: "Tussentijds Brevet",
         link_to_PDF: "https://www.move-united.be/",
         feedback: "Dit is een test 2",
-        les_id: 7,
+        les: {
+          les_id: 7,
+        },
         groep: {
           groep_id: 7,
           groep_naam: "Dolfijnen",
@@ -182,7 +186,9 @@ describe("Lesvoorbereidingen", () => {
         lesvoorbereiding_type: "Speelles",
         link_to_PDF: "https://chamilo.hogent.be/",
         feedback: "Dit is een test 3",
-        les_id: 15,
+        les: {
+          les_id: 15,
+        },
         groep: {
           groep_id: 3,
           groep_naam: "Waterschildpadden",
@@ -229,7 +235,9 @@ describe("Lesvoorbereidingen", () => {
         lesvoorbereiding_type: "Gewone Les",
         link_to_PDF: "https://www.google.com",
         feedback: "Dit is een test",
-        les_id: 1,
+        les: {
+          les_id: 1,
+        },
         groep: {
           groep_id: 3,
           groep_naam: "Waterschildpadden",
@@ -285,7 +293,9 @@ describe("Lesvoorbereidingen", () => {
       expect(response.body.lesvoorbereiding_type).toBe("Speelles 2.0");
       expect(response.body.link_to_PDF).toBe("https://chamilo.hogent.be/");
       expect(response.body.feedback).toBe("Dit is een test 3.0");
-      expect(response.body.les_id).toBe(15);
+      expect(response.body.les).toEqual({
+        les_id: 15,
+      });
       expect(response.body.groep).toEqual({
         groep_id: 7,
         groep_naam: "Dolfijnen",
@@ -340,7 +350,9 @@ describe("Lesvoorbereidingen", () => {
       expect(response.body.lesvoorbereiding_type).toBe("Gewone Les");
       expect(response.body.link_to_PDF).toBe("https://chamilo.hogent.be/");
       expect(response.body.feedback).toBe("Dit is de les vanuit de testklasse");
-      expect(response.body.les_id).toBe(1);
+      expect(response.body.les).toEqual({
+        les_id: 1,
+      });
       expect(response.body.groep).toEqual({
         groep_id: 7,
         groep_naam: "Dolfijnen",
