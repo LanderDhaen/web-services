@@ -1,6 +1,8 @@
 const c = require("config");
 const { tables, getKnex } = require("../data/index");
 const { getLogger } = require("../core/logging");
+const ServiceError = require("../core/serviceError");
+const ObjectMapper = require("object-mapper");
 
 // Kolommen selecteren
 
@@ -22,38 +24,20 @@ const SELECT_COLUMNS = [
 
 // Lesgever(s) formatteren
 
-const formatLesgever = ({
-  lesgever_id,
-  lesgever_naam,
-  geboortedatum,
-  type,
-  aanwezigheidspercentage,
-  diploma,
-  imageURL,
-  email,
-  GSM,
-  groep_id,
-  groep_naam,
-  beschrijving,
-  aantal_lesgevers,
-}) => {
-  return {
-    lesgever_id,
-    lesgever_naam,
-    geboortedatum,
-    type,
-    aanwezigheidspercentage,
-    diploma,
-    imageURL,
-    email,
-    GSM,
-    groep: {
-      groep_id,
-      groep_naam,
-      beschrijving,
-      aantal_lesgevers,
-    },
-  };
+const formatLesgever = {
+  lesgever_id: "lesgever_id",
+  lesgever_naam: "lesgever_naam",
+  geboortedatum: "geboortedatum",
+  type: "type",
+  aanwezigheidspercentage: "aanwezigheidspercentage",
+  diploma: "diploma",
+  imageURL: "imageURL",
+  email: "email",
+  GSM: "GSM",
+  groep_id: "groep.groep_id",
+  groep_naam: "groep.groep_naam",
+  beschrijving: "groep.beschrijving",
+  aantal_lesgevers: "groep.aantal_lesgevers",
 };
 
 // Alle lesgevers ophalen
@@ -69,7 +53,7 @@ const getAllLesgever = async () => {
     .select(SELECT_COLUMNS)
     .orderBy("lesgever_id", "ASC");
 
-  return lesgevers.map(formatLesgever);
+  return lesgevers.map((lesgever) => ObjectMapper(lesgever, formatLesgever));
 };
 
 // Lesgever ophalen a.d.h.v id
@@ -85,7 +69,11 @@ const getLesgeverById = async (id) => {
     .where("lesgever_id", id)
     .first(SELECT_COLUMNS);
 
-  return formatLesgever(lesgever);
+  if (!lesgever) {
+    throw ServiceError.notFound(`Lesgever met id ${id} niet gevonden`);
+  }
+
+  return ObjectMapper(lesgever, formatLesgever);
 };
 
 // Lesgevers ophalen a.d.h.v groep_id
@@ -101,7 +89,11 @@ const getLesgeverByGroepId = async (id) => {
     .where(`${tables.lesgever}.groep_id`, id)
     .select(SELECT_COLUMNS);
 
-  return lesgevers.map(formatLesgever);
+  if (!lesgevers) {
+    throw ServiceError.notFound(`Groep met id ${id} niet gevonden`);
+  }
+
+  return lesgevers.map((lesgever) => ObjectMapper(lesgever, formatLesgever));
 };
 
 // Lesgever aanmaken

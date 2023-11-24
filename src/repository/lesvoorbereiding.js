@@ -1,4 +1,7 @@
 const { tables, getKnex } = require("../data/index");
+const { getLogger } = require("../core/logging");
+const ServiceError = require("../core/serviceError");
+const ObjectMapper = require("object-mapper");
 
 // Kolommen selecteren
 
@@ -17,32 +20,17 @@ const SELECT_COLUMNS = [
 
 // Lesvoorbereiding(en) formateren
 
-const formatLesvoorbereiding = ({
-  lesvoorbereiding_id,
-  lesvoorbereiding_naam,
-  lesvoorbereiding_type,
-  link_to_PDF,
-  feedback,
-  les_id,
-  groep_id,
-  groep_naam,
-  beschrijving,
-  aantal_lesgevers,
-}) => {
-  return {
-    lesvoorbereiding_id,
-    lesvoorbereiding_naam,
-    lesvoorbereiding_type,
-    link_to_PDF,
-    feedback,
-    les_id,
-    groep: {
-      groep_id,
-      groep_naam,
-      beschrijving,
-      aantal_lesgevers,
-    },
-  };
+const formatLesvoorbereiding = {
+  lesvoorbereiding_id: "lesvoorbereiding_id",
+  lesvoorbereiding_naam: "lesvoorbereiding_naam",
+  lesvoorbereiding_type: "lesvoorbereiding_type",
+  link_to_PDF: "link_to_PDF",
+  feedback: "feedback",
+  les_id: "les.les_id",
+  groep_id: "groep.groep_id",
+  groep_naam: "groep.groep_naam",
+  beschrijving: "groep.beschrijving",
+  aantal_lesgevers: "groep.aantal_lesgevers",
 };
 
 // Alle lesvoorbereidingen ophalen
@@ -57,7 +45,9 @@ const getAllLesvoorbereidingen = async () => {
     )
     .select(SELECT_COLUMNS)
     .orderBy(`${tables.lesvoorbereiding}.lesvoorbereiding_id`, "ASC");
-  return lesvoorbereidingen.map(formatLesvoorbereiding);
+  return lesvoorbereidingen.map((lesvoorbereiding) =>
+    ObjectMapper(lesvoorbereiding, formatLesvoorbereiding)
+  );
 };
 
 // Lesvoorbereiding ophalen a.d.h.v id
@@ -73,7 +63,11 @@ const getLesvoorbereidingById = async (id) => {
     .where("lesvoorbereiding_id", id)
     .first(SELECT_COLUMNS);
 
-  return formatLesvoorbereiding(lesvoorbereiding);
+  if (!lesvoorbereiding) {
+    throw ServiceError.notFound(`Lesvoorbereiding met id ${id} niet gevonden`);
+  }
+
+  return ObjectMapper(lesvoorbereiding, formatLesvoorbereiding);
 };
 
 // Lesvoorbereidingen ophalen a.d.h.v groep_id
@@ -90,7 +84,13 @@ const getLesvoorbereidingByGroepId = async (id) => {
     .select(SELECT_COLUMNS)
     .orderBy(`${tables.lesvoorbereiding}.lesvoorbereiding_id`, "ASC");
 
-  return lesvoorbereidingen.map(formatLesvoorbereiding);
+  if (!lesvoorbereidingen) {
+    throw ServiceError.notFound(`Groep met id ${id} niet gevonden`);
+  }
+
+  return lesvoorbereidingen.map((lesvoorbereiding) =>
+    ObjectMapper(lesvoorbereiding, formatLesvoorbereiding)
+  );
 };
 
 // Lesvoorbereiding aanmaken

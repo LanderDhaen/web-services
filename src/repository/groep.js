@@ -1,6 +1,7 @@
-const { format } = require("mysql2");
 const { getLogger } = require("../core/logging");
 const { tables, getKnex } = require("../data/index");
+const ServiceError = require("../core/serviceError");
+const ObjectMapper = require("object-mapper");
 
 // Kolommen selecteren
 
@@ -13,18 +14,11 @@ const SELECT_COLUMNS = [
 
 // Groep(en) formateren
 
-const formatGroep = ({
-  groep_id,
-  groep_naam,
-  beschrijving,
-  aantal_lesgevers,
-}) => {
-  return {
-    groep_id,
-    groep_naam,
-    beschrijving,
-    aantal_lesgevers,
-  };
+const formatGroep = {
+  groep_id: "groep_id",
+  groep_naam: "groep_naam",
+  beschrijving: "beschrijving",
+  aantal_lesgevers: "aantal_lesgevers",
 };
 
 // Alle groepen ophalen
@@ -33,7 +27,7 @@ const getAllGroepen = async () => {
   const groepen = await getKnex()(tables.groep)
     .select(SELECT_COLUMNS)
     .orderBy("groep_id", "ASC");
-  return groepen.map(formatGroep);
+  return groepen.map((groep) => ObjectMapper(groep, formatGroep));
 };
 
 // Groep ophalen a.d.h.v id
@@ -43,7 +37,10 @@ const getGroepById = async (id) => {
     .where(`${tables.groep}.groep_id`, id)
     .first(SELECT_COLUMNS);
 
-  return formatGroep(groep);
+  if (!groep) {
+    throw ServiceError.notFound(`Groep met id ${id} niet gevonden`);
+  }
+  return ObjectMapper(groep, formatGroep);
 };
 
 // Groep aanmaken
