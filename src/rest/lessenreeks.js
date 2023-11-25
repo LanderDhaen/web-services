@@ -1,6 +1,7 @@
 const Joi = require("joi");
 const Router = require("@koa/router");
 const lessenreeksService = require("../service/lessenreeks");
+const lesService = require("../service/les");
 const validate = require("../core/validation");
 
 // Alle lessenreeksen ophalen
@@ -41,6 +42,18 @@ const getLessenreeksById = async (ctx) => {
 };
 
 getLessenreeksById.validationScheme = {
+  params: {
+    id: Joi.number().integer().positive(),
+  },
+};
+
+// Lessen ophalen a.d.h.v lessenreeks_id
+
+const getLesByLessenreeksId = async (ctx) => {
+  ctx.body = await lesService.getLesByLessenreeksId(Number(ctx.params.id));
+};
+
+getLesByLessenreeksId.validationScheme = {
   params: {
     id: Joi.number().integer().positive(),
   },
@@ -106,6 +119,12 @@ module.exports = (app) => {
     "/",
     validate(createLessenreeks.validationScheme),
     createLessenreeks
+  );
+
+  router.get(
+    "/:id/lessen",
+    validate(getLesByLessenreeksId.validationScheme),
+    getLesByLessenreeksId
   );
 
   router.put(

@@ -43,6 +43,8 @@ const getLesgeverByGroepId = async (id) => {
   return lesgevers;
 };
 
+// Lesgever aanmaken
+
 const createLesgever = async ({
   lesgever_naam,
   geboortedatum,

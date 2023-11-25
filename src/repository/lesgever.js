@@ -1,4 +1,3 @@
-const c = require("config");
 const { tables, getKnex } = require("../data/index");
 const { getLogger } = require("../core/logging");
 const ServiceError = require("../core/serviceError");
@@ -90,7 +89,9 @@ const getLesgeverByGroepId = async (id) => {
     .select(SELECT_COLUMNS);
 
   if (!lesgevers) {
-    throw ServiceError.notFound(`Groep met id ${id} niet gevonden`);
+    throw ServiceError.notFound(
+      `Er bestaan geen lessen met lessenreeks id ${id}`
+    );
   }
 
   return lesgevers.map((lesgever) => ObjectMapper(lesgever, formatLesgever));

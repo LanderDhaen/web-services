@@ -26,6 +26,8 @@ const getLessenreeksById = async (id) => {
   return lessenreeks;
 };
 
+// Lessenreeks aanmaken
+
 const createLessenreeks = async ({
   jaargang,
   nummer,

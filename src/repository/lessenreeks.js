@@ -38,7 +38,7 @@ const getAllLessenreeks = async () => {
 
 const getLessenreeksById = async (id) => {
   const lessenreeks = await getKnex()(tables.lessenreeks)
-    .where(`${tables.lessenreeks}.lessenreeks_id`, id)
+    .where("lessenreeks_id", id)
     .first(SELECT_COLUMNS);
 
   if (!lessenreeks) {

@@ -26,10 +26,18 @@ const data = {
       einddatum: new Date(2024, 12, 30, 0),
     },
   ],
+  lessen: [
+    {
+      les_id: 1,
+      datum: new Date(2023, 9, 1, 0),
+      lessenreeks_id: 1,
+    },
+  ],
 };
 
 const dataToDelete = {
   lessenreeksen: [1, 2, 3],
+  lessen: [1],
 };
 
 describe("Lessenreeksen", () => {
@@ -127,6 +135,46 @@ describe("Lessenreeksen", () => {
         nummer: 1,
         startdatum: new Date(2023, 9, 1, 0).toJSON(),
         einddatum: new Date(2023, 12, 30, 0).toJSON(),
+      });
+    });
+  });
+
+  // GET /api/lessenreeksen/:id/lessen
+
+  describe("GET /api/lessenreeksen/:id/lessen", () => {
+    // Testdata toevoegen aan database
+
+    beforeAll(async () => {
+      await knex(tables.lessenreeks).insert(data.lessenreeksen[0]);
+      await knex(tables.les).insert(data.lessen[0]);
+    });
+
+    // Testdata verwijderen uit database
+
+    afterAll(async () => {
+      await knex(tables.les).whereIn("les_id", dataToDelete.lessen).del();
+      await knex(tables.lessenreeks)
+        .whereIn("lessenreeks_id", dataToDelete.lessenreeksen)
+        .del();
+    });
+    // Test
+
+    test("should 200 and return the lessen of the requested lessenreeks", async () => {
+      const response = await request.get(`${URL}/1/lessen`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.length).toBe(1);
+
+      expect(response.body[0]).toEqual({
+        les_id: 1,
+        datum: new Date(2023, 9, 1, 0).toJSON(),
+        lessenreeks: {
+          lessenreeks_id: 1,
+          jaargang: "2023-2024",
+          nummer: 1,
+          startdatum: new Date(2023, 9, 1, 0).toJSON(),
+          einddatum: new Date(2023, 12, 30, 0).toJSON(),
+        },
       });
     });
   });
