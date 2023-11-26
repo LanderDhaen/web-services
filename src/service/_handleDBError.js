@@ -48,6 +48,13 @@ const handleDBError = (error) => {
           "Er bestaat al een lesvoorbereiding met deze link"
         );
 
+      // Lesgeverschema
+
+      case sqlMessage.includes("idx_lesgeverschema_id_unique"):
+        return ServiceError.validationFailed(
+          "Lesgeverschema met dit id bestaat al"
+        );
+
       default:
         return ServiceError.validationFailed("This item already exists");
     }
@@ -76,6 +83,14 @@ const handleDBError = (error) => {
 
       case sqlMessage.includes("fk_lesvoorbereiding_groep"):
         return ServiceError.notFound("Deze groep bestaat niet");
+
+      // Lesgeverschema
+
+      case sqlMessage.includes("fk_lesgeverschema_lesgever"):
+        return ServiceError.notFound("Deze lesgever bestaat niet");
+
+      case sqlMessage.includes("fk_lesgeverschema_les"):
+        return ServiceError.notFound("Deze les bestaat niet");
     }
   }
 

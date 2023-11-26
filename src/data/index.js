@@ -99,6 +99,7 @@ const tables = Object.freeze({
   groep: "groepen",
   lesgever: "lesgevers",
   lesvoorbereiding: "lesvoorbereidingen",
+  lesgeverschema: "lesgeverschema",
 });
 
 module.exports = {

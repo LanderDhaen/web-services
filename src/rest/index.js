@@ -5,6 +5,7 @@ const installGroepRouter = require("./groep");
 const installLesvoorbereidingRouter = require("./lesvoorbereiding");
 const installLessenreeksRouter = require("./lessenreeks");
 const installLesRouter = require("./les");
+const installLesgeverschemaRouter = require("./lesgeverschema");
 
 module.exports = (app) => {
   const router = new Router({
@@ -17,6 +18,7 @@ module.exports = (app) => {
   installLesvoorbereidingRouter(router);
   installLessenreeksRouter(router);
   installLesRouter(router);
+  installLesgeverschemaRouter(router);
 
   app.use(router.routes()).use(router.allowedMethods());
 };
