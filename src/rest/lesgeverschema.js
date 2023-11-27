@@ -47,6 +47,31 @@ getLesgeverschemaByLesId.validationScheme = {
   },
 };
 
+// Lesgeverschema updaten a.d.h.v. id
+
+const updateLesgeverschemaById = async (ctx) => {
+  ctx.body = await lesgeverschemaService.updateLesgeverschemaById(
+    Number(ctx.params.id),
+    {
+      ...ctx.request.body,
+      les_id: Number(ctx.request.body.les_id),
+      groep_id: Number(ctx.request.body.groep_id),
+      lesgever_id: Number(ctx.request.body.lesgever_id),
+    }
+  );
+};
+
+updateLesgeverschemaById.validationScheme = {
+  params: {
+    id: Joi.number().integer().positive(),
+  },
+  body: {
+    les_id: Joi.number().integer().positive(),
+    lesgever_id: Joi.number().integer().positive(),
+    groep_id: Joi.number().integer().positive(),
+  },
+};
+
 // Lesgeverschema verwijderen a.d.h.v. id
 
 const deleteLesgeverschemaById = async (ctx) => {
@@ -81,6 +106,12 @@ module.exports = (app) => {
     "/",
     validate(createLesgeverschema.validationScheme),
     createLesgeverschema
+  );
+
+  router.put(
+    "/:id",
+    validate(updateLesgeverschemaById.validationScheme),
+    updateLesgeverschemaById
   );
 
   router.delete(

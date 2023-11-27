@@ -61,6 +61,25 @@ const createLesgeverschema = async ({ groep_id, lesgever_id, les_id }) => {
   }
 };
 
+// Lesgeverschema updaten a.d.h.v. id
+
+const updateLesgeverschemaById = async (
+  id,
+  { groep_id, lesgever_id, les_id }
+) => {
+  try {
+    await getLesgeverschemaById(id);
+    await lesgeverschemaRepository.updateLesgeverschemaById(id, {
+      groep_id,
+      lesgever_id,
+      les_id,
+    });
+    return getLesgeverschemaById(id);
+  } catch (error) {
+    throw handleDBError(error);
+  }
+};
+
 // Lesgeverschema verwijderen a.d.h.v. lesgever_id
 
 const deleteLesgeverschemaById = async (id) => {
@@ -84,5 +103,6 @@ module.exports = {
   getLesgeverschemaById,
   getLesgeverschemaByLesId,
   createLesgeverschema,
+  updateLesgeverschemaById,
   deleteLesgeverschemaById,
 };

@@ -237,6 +237,21 @@ const createLesgeverschema = async ({ groep_id, lesgever_id, les_id }) => {
   return id;
 };
 
+// Lesgeverschema updaten a.d.h.v. id
+
+const updateLesgeverschemaById = async (
+  id,
+  { groep_id, lesgever_id, les_id }
+) => {
+  await getKnex()(tables.lesgeverschema)
+    .where(`${tables.lesgeverschema}.les_lesgever_id`, id)
+    .update({
+      les_id,
+      groep_id,
+      lesgever_id,
+    });
+};
+
 // Lesgeverschema verwijderen a.d.h.v. id
 
 const deleteLesgeverschemaById = async (id) => {
@@ -261,5 +276,6 @@ module.exports = {
   getLesgeverschemaById,
   getLesgeverschemaByLesId,
   createLesgeverschema,
+  updateLesgeverschemaById,
   deleteLesgeverschemaById,
 };
