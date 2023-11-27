@@ -11,6 +11,11 @@ module.exports = {
         lessenreeks_id: 1,
       },
       {
+        les_id: 2,
+        datum: new Date(2023, 9, 8, 0),
+        lessenreeks_id: 1,
+      },
+      {
         les_id: 15,
         datum: new Date(2023, 12, 30, 0),
         lessenreeks_id: 1,

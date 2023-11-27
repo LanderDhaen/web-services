@@ -61,9 +61,28 @@ const createLesgeverschema = async ({ groep_id, lesgever_id, les_id }) => {
   }
 };
 
+// Lesgeverschema verwijderen a.d.h.v. lesgever_id
+
+const deleteLesgeverschemaById = async (id) => {
+  const lesgeverschema =
+    await lesgeverschemaRepository.deleteLesgeverschemaById(id);
+
+  if (!lesgeverschema) {
+    throw ServiceError.notFound(
+      `Er bestaat geen lesgeverschema met id ${id}!`,
+      {
+        id,
+      }
+    );
+  }
+
+  return lesgeverschema;
+};
+
 module.exports = {
   getAllLesgeverschema,
   getLesgeverschemaById,
   getLesgeverschemaByLesId,
   createLesgeverschema,
+  deleteLesgeverschemaById,
 };

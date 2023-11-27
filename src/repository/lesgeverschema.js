@@ -50,6 +50,7 @@ const formatLesgeverschemas = (lesgeverschemas) => {
 
       if (existingGroep) {
         existingGroep.lesgevers.push({
+          les_lesgever_id: current.les_lesgever_id,
           lesgever_id: current.lesgever_id,
           lesgever_naam: current.lesgever_naam,
           geboortedatum: current.geboortedatum,
@@ -66,6 +67,7 @@ const formatLesgeverschemas = (lesgeverschemas) => {
           groep_id_schema: current.groep_id_schema,
           lesgevers: [
             {
+              les_lesgever_id: current.les_lesgever_id,
               lesgever_id: current.lesgever_id,
               lesgever_naam: current.lesgever_naam,
               geboortedatum: current.geboortedatum,
@@ -96,6 +98,7 @@ const formatLesgeverschemas = (lesgeverschemas) => {
             groep_id_schema: current.groep_id_schema,
             lesgevers: [
               {
+                les_lesgever_id: current.les_lesgever_id,
                 lesgever_id: current.lesgever_id,
                 lesgever_naam: current.lesgever_naam,
                 geboortedatum: current.geboortedatum,
@@ -234,9 +237,29 @@ const createLesgeverschema = async ({ groep_id, lesgever_id, les_id }) => {
   return id;
 };
 
+// Lesgeverschema verwijderen a.d.h.v. id
+
+const deleteLesgeverschemaById = async (id) => {
+  const lesgeverschema = await getKnex()(tables.lesgeverschema)
+    .where(`${tables.lesgeverschema}.les_lesgever_id`, id)
+    .del();
+
+  if (!lesgeverschema) {
+    throw ServiceError.notFound(
+      `Er bestaat geen lesgeverschema met ID ${id}!`,
+      {
+        id,
+      }
+    );
+  }
+
+  return lesgeverschema;
+};
+
 module.exports = {
   getAllLesgeverschema,
   getLesgeverschemaById,
   getLesgeverschemaByLesId,
   createLesgeverschema,
+  deleteLesgeverschemaById,
 };

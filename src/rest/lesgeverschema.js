@@ -14,7 +14,6 @@ getAllLesgeverschema.validationScheme = null;
 // Lesgeverschema aanmaken
 
 const createLesgeverschema = async (ctx) => {
-  console.log(ctx.request.body);
   const newLesgeverschema = await lesgeverschemaService.createLesgeverschema({
     ...ctx.request.body,
     les_id: Number(ctx.request.body.les_id),
@@ -36,6 +35,7 @@ createLesgeverschema.validationScheme = {
 // Lesgeverschema ophalen a.d.h.v. les_id
 
 const getLesgeverschemaByLesId = async (ctx) => {
+  console.log(ctx.params.id);
   ctx.body = await lesgeverschemaService.getLesgeverschemaByLesId(
     Number(ctx.params.id)
   );
@@ -47,15 +47,15 @@ getLesgeverschemaByLesId.validationScheme = {
   },
 };
 
-// Lesgeverschema verwijderen a.d.h.v. les_id
+// Lesgeverschema verwijderen a.d.h.v. id
 
-const deleteLesgeverschemaByLesId = async (ctx) => {
-  ctx.body = await lesgeverschemaService.deleteLesgeverschemaByLesId(
+const deleteLesgeverschemaById = async (ctx) => {
+  ctx.body = await lesgeverschemaService.deleteLesgeverschemaById(
     Number(ctx.params.id)
   );
 };
 
-deleteLesgeverschemaByLesId.validationScheme = {
+deleteLesgeverschemaById.validationScheme = {
   params: {
     id: Joi.number().integer().positive(),
   },
@@ -81,6 +81,12 @@ module.exports = (app) => {
     "/",
     validate(createLesgeverschema.validationScheme),
     createLesgeverschema
+  );
+
+  router.delete(
+    "/:id",
+    validate(deleteLesgeverschemaById.validationScheme),
+    deleteLesgeverschemaById
   );
 
   app.use(router.routes()).use(router.allowedMethods());
