@@ -16,6 +16,7 @@ getAllGroepen.validationScheme = null;
 // Groep aanmaken
 
 const createGroep = async (ctx) => {
+  console.log(ctx);
   const newGroep = await groepService.createGroep({
     ...ctx.request.body,
     groep_naam: String(ctx.request.body.groep_naam),

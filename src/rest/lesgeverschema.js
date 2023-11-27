@@ -14,6 +14,7 @@ getAllLesgeverschema.validationScheme = null;
 // Lesgeverschema aanmaken
 
 const createLesgeverschema = async (ctx) => {
+  console.log(ctx.request.body);
   const newLesgeverschema = await lesgeverschemaService.createLesgeverschema({
     ...ctx.request.body,
     les_id: Number(ctx.request.body.les_id),
