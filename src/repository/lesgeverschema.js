@@ -225,6 +225,26 @@ const getLesgeverschemaByLesId = async (id) => {
   return formatLesgeverschemas(lesgeverschemas);
 };
 
+// Lesgeverschema ophalen a.d.h.v. lesgever_id
+
+const getLesgeverschemaByLesgeverId = async (id) => {
+  const lesgeverschemas = await getKnex()(tables.lesgeverschema)
+    .select("*")
+    .where(`${tables.lesgeverschema}.lesgever_id`, id)
+    .orderBy(`${tables.lesgeverschema}.les_id`, "ASC");
+
+  if (!lesgeverschemas) {
+    throw ServiceError.notFound(
+      `Er bestaat geen lesgeverschema met lesgever_id ${id}!`,
+      {
+        id,
+      }
+    );
+  }
+
+  return lesgeverschemas;
+};
+
 // Lesgeverschema aanmaken
 
 const createLesgeverschema = async ({ groep_id, lesgever_id, les_id }) => {
@@ -275,6 +295,7 @@ module.exports = {
   getAllLesgeverschema,
   getLesgeverschemaById,
   getLesgeverschemaByLesId,
+  getLesgeverschemaByLesgeverId,
   createLesgeverschema,
   updateLesgeverschemaById,
   deleteLesgeverschemaById,

@@ -32,21 +32,6 @@ createLesgeverschema.validationScheme = {
   },
 };
 
-// Lesgeverschema ophalen a.d.h.v. les_id
-
-const getLesgeverschemaByLesId = async (ctx) => {
-  console.log(ctx.params.id);
-  ctx.body = await lesgeverschemaService.getLesgeverschemaByLesId(
-    Number(ctx.params.id)
-  );
-};
-
-getLesgeverschemaByLesId.validationScheme = {
-  params: {
-    id: Joi.number().integer().positive(),
-  },
-};
-
 // Lesgeverschema updaten a.d.h.v. id
 
 const updateLesgeverschemaById = async (ctx) => {
@@ -95,11 +80,6 @@ module.exports = (app) => {
     "/",
     validate(getAllLesgeverschema.validationScheme),
     getAllLesgeverschema
-  );
-  router.get(
-    "/:id",
-    validate(getLesgeverschemaByLesId.validationScheme),
-    getLesgeverschemaByLesId
   );
 
   router.post(

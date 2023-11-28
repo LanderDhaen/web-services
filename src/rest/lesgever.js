@@ -1,6 +1,7 @@
 const Joi = require("joi");
 const Router = require("@koa/router");
 const lesgeverService = require("../service/lesgever");
+const lesgeverschemaService = require("../service/lesgeverschema");
 const validate = require("../core/validation");
 
 // Alle lesgevers ophalen
@@ -53,6 +54,20 @@ const getLesgeverById = async (ctx) => {
 };
 
 getLesgeverById.validationScheme = {
+  params: {
+    id: Joi.number().integer().positive(),
+  },
+};
+
+// Lesgeverschema ophalen a.d.h.v. lesgever_id
+
+const getLesgeverschemaByLesgeverId = async (ctx) => {
+  ctx.body = await lesgeverschemaService.getLesgeverschemaByLesgeverId(
+    Number(ctx.params.id)
+  );
+};
+
+getLesgeverschemaByLesgeverId.validationScheme = {
   params: {
     id: Joi.number().integer().positive(),
   },
@@ -131,6 +146,11 @@ module.exports = (app) => {
     "/:id",
     validate(getLesgeverById.validationScheme),
     getLesgeverById
+  );
+  router.get(
+    "/:id/lesgeverschemas",
+    validate(getLesgeverschemaByLesgeverId.validationScheme),
+    getLesgeverschemaByLesgeverId
   );
   router.put(
     "/:id",

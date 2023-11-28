@@ -36,7 +36,24 @@ const getLesgeverschemaByLesId = async (id) => {
 
   if (!lesgeverschema) {
     throw ServiceError.notFound(
-      `Er bestaat geen lesgeverschema met les_id ${id}!`,
+      `Er bestaat geen lesgeverschema voor les_id ${id}!`,
+      {
+        id,
+      }
+    );
+  }
+
+  return lesgeverschema;
+};
+
+// Lesgeverschema ophalen a.d.h.v. lesgever_id
+const getLesgeverschemaByLesgeverId = async (id) => {
+  const lesgeverschema =
+    await lesgeverschemaRepository.getLesgeverschemaByLesgeverId(id);
+
+  if (!lesgeverschema) {
+    throw ServiceError.notFound(
+      `Er bestaat geen lesgeverschema voor lesgever_id ${id}!`,
       {
         id,
       }
@@ -102,6 +119,7 @@ module.exports = {
   getAllLesgeverschema,
   getLesgeverschemaById,
   getLesgeverschemaByLesId,
+  getLesgeverschemaByLesgeverId,
   createLesgeverschema,
   updateLesgeverschemaById,
   deleteLesgeverschemaById,
