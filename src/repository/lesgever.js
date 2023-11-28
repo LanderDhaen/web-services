@@ -19,6 +19,8 @@ const SELECT_COLUMNS = [
   `${tables.groep}.groep_naam as groep_naam`,
   "beschrijving",
   "aantal_lesgevers",
+  "password_hash",
+  "roles",
 ];
 
 // Lesgever(s) formatteren
@@ -37,6 +39,8 @@ const formatLesgever = {
   groep_naam: "groep.groep_naam",
   beschrijving: "groep.beschrijving",
   aantal_lesgevers: "groep.aantal_lesgevers",
+  password_hash: "password_hash",
+  roles: "roles",
 };
 
 // Alle lesgevers ophalen
@@ -75,6 +79,12 @@ const getLesgeverById = async (id) => {
   return ObjectMapper(lesgever, formatLesgever);
 };
 
+// Lesgever ophalen a.d.h.v email
+
+const getLesgeverByEmail = (email) => {
+  return getKnex()(tables.lesgever).where("email", email).first();
+};
+
 // Lesgevers ophalen a.d.h.v groep_id
 
 const getLesgeverByGroepId = async (id) => {
@@ -109,6 +119,8 @@ const createLesgever = async ({
   email,
   GSM,
   groep_id,
+  password_hash,
+  roles,
 }) => {
   const [id] = await getKnex()(tables.lesgever).insert({
     lesgever_naam,
@@ -120,6 +132,8 @@ const createLesgever = async ({
     email,
     GSM,
     groep_id,
+    password_hash,
+    roles: JSON.stringify(roles),
   });
 
   return id;
@@ -172,6 +186,7 @@ const deleteLesgeverById = async (id) => {
 module.exports = {
   getAllLesgever,
   getLesgeverById,
+  getLesgeverByEmail,
   getLesgeverByGroepId,
   createLesgever,
   updateLesgeverById,

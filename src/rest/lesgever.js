@@ -25,6 +25,7 @@ const createLesgever = async (ctx) => {
     email: String(ctx.request.body.email),
     GSM: String(ctx.request.body.GSM),
     groep_id: Number(ctx.request.body.groep_id),
+    password: String(ctx.request.body.password),
   });
   ctx.status = 201;
   ctx.body = newLesgever;
@@ -41,6 +42,7 @@ createLesgever.validationScheme = {
     email: Joi.string().email(),
     GSM: Joi.string().length(10),
     groep_id: Joi.number().integer().positive(),
+    password: Joi.string().min(1).required(),
   },
 };
 
@@ -103,6 +105,21 @@ deleteLesgeverById.validationScheme = {
   },
 };
 
+// Lesgever inloggen
+
+const login = async (ctx) => {
+  const { email, password } = ctx.request.body; // 👈 2
+  const token = await lesgeverService.login(email, password); // 👈 3
+  ctx.body = token; // 👈 4
+};
+login.validationScheme = {
+  // 👈 5
+  body: {
+    email: Joi.string().email(),
+    password: Joi.string(),
+  },
+};
+
 module.exports = (app) => {
   const router = new Router({
     prefix: "/lesgevers",
@@ -125,6 +142,7 @@ module.exports = (app) => {
     validate(deleteLesgeverById.validationScheme),
     deleteLesgeverById
   );
+  router.post("/login", validate(login.validationScheme), login);
 
   app.use(router.routes()).use(router.allowedMethods());
 };

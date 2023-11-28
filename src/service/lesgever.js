@@ -2,6 +2,8 @@ const ServiceError = require("../core/serviceError");
 const handleDBError = require("./_handleDBError");
 const lesgeverRepository = require("../repository/lesgever");
 const groepService = require("../service/groep");
+const { hashPassword, verifyPassword } = require("../core/password"); // 👈 4
+const { generateJWT } = require("../core/jwt"); // 👈 7
 
 // Alle lesgevers ophalen
 
@@ -55,6 +57,7 @@ const createLesgever = async ({
   email,
   GSM,
   groep_id,
+  password,
 }) => {
   const bestaandeGroep = await groepService.getGroepById(groep_id);
 
@@ -65,6 +68,8 @@ const createLesgever = async ({
   }
 
   try {
+    const password_hash = await hashPassword(password);
+
     const id = await lesgeverRepository.createLesgever({
       lesgever_naam,
       geboortedatum,
@@ -75,6 +80,8 @@ const createLesgever = async ({
       email,
       GSM,
       groep_id,
+      password_hash,
+      roles: ["user"],
     });
     return getLesgeverById(id);
   } catch (error) {
@@ -136,6 +143,46 @@ const deleteLesgeverById = async (id) => {
   }
 };
 
+// Lesgever inloggen
+
+const makeExposedLesgever = ({ lesgever_id, lesgever_naam, email, roles }) => ({
+  lesgever_id,
+  lesgever_naam,
+  email,
+  roles,
+});
+
+const makeLoginData = async (lesgever) => {
+  const token = await generateJWT(lesgever);
+  return {
+    user: makeExposedLesgever(lesgever),
+    token,
+  };
+};
+
+const login = async (email, password) => {
+  const lesgever = await lesgeverRepository.getLesgeverByEmail(email); // 👈 2
+
+  if (!lesgever) {
+    // NIET tonen dat we de lesgever niet kennen
+
+    throw ServiceError.unauthorized(
+      "The given email and password do not match"
+    );
+  }
+
+  const passwordValid = await verifyPassword(password, lesgever.password_hash); // 👈 4
+  // 👇 5
+  if (!passwordValid) {
+    // NIET tonen dat we de lesgever kennen, maar het wachtwoord niet klopt
+    throw ServiceError.unauthorized(
+      "The given email and password do not match"
+    );
+  }
+
+  return await makeLoginData(lesgever); // 👈 6
+};
+
 module.exports = {
   getAllLesgever,
   getLesgeverById,
@@ -143,4 +190,5 @@ module.exports = {
   createLesgever,
   updateLesgeverById,
   deleteLesgeverById,
+  login,
 };
