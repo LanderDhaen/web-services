@@ -146,6 +146,7 @@ const deleteLesgeverById = async (id) => {
 // Lesgever inloggen
 
 const makeExposedLesgever = ({
+  lesgever_id,
   lesgever_naam,
   geboortedatum,
   type,
@@ -154,9 +155,10 @@ const makeExposedLesgever = ({
   imageURL,
   email,
   GSM,
-  groep_id,
+  groep,
   roles,
 }) => ({
+  lesgever_id,
   lesgever_naam,
   geboortedatum,
   type,
@@ -165,7 +167,7 @@ const makeExposedLesgever = ({
   imageURL,
   email,
   GSM,
-  groep_id,
+  groep,
   roles,
 });
 

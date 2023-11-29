@@ -7,7 +7,7 @@ const data = {
     {
       lesgever_id: 1,
       lesgever_naam: "Lander Dhaen",
-      geboortedatum: new Date(2001, 3, 30, 0, 0),
+      geboortedatum: new Date(2001, 3, 30, 0),
       type: "Lesvrij",
       aanwezigheidspercentage: 100,
       diploma: "Redder",
@@ -15,6 +15,9 @@ const data = {
       email: "lander.dhaen@gmail.com",
       GSM: "0491882278",
       groep_id: 8,
+      password_hash:
+        "$argon2id$v=19$m=131072,t=6,p=1$9AMcua9h7va8aUQSEgH/TA$TUFuJ6VPngyGThMBVo3ONOZ5xYfee9J1eNMcA5bSpq4",
+      roles: JSON.stringify(["admin, user"]),
     },
     {
       lesgever_id: 2,
@@ -27,6 +30,9 @@ const data = {
       email: "robbe.debackend@move-united.be",
       GSM: "0477777777",
       groep_id: 7,
+      password_hash:
+        "$argon2id$v=19$m=131072,t=6,p=1$9AMcua9h7va8aUQSEgH/TA$TUFuJ6VPngyGThMBVo3ONOZ5xYfee9J1eNMcA5bSpq4",
+      roles: JSON.stringify(["admin, user"]),
     },
     {
       lesgever_id: 3,
@@ -39,6 +45,9 @@ const data = {
       email: "lander.dhaen@move-united.be",
       GSM: "0499999999",
       groep_id: 3,
+      password_hash:
+        "$argon2id$v=19$m=131072,t=6,p=1$9AMcua9h7va8aUQSEgH/TA$TUFuJ6VPngyGThMBVo3ONOZ5xYfee9J1eNMcA5bSpq4",
+      roles: JSON.stringify(["admin, user"]),
     },
     {
       lesgever_id: 4,
@@ -51,6 +60,9 @@ const data = {
       email: "evert.walravens@move-united.be",
       GSM: "0490000000",
       groep_id: 7,
+      password_hash:
+        "$argon2id$v=19$m=131072,t=6,p=1$9AMcua9h7va8aUQSEgH/TA$TUFuJ6VPngyGThMBVo3ONOZ5xYfee9J1eNMcA5bSpq4",
+      roles: JSON.stringify(["user"]),
     },
   ],
   groepen: [
@@ -156,6 +168,7 @@ describe("Lesgevers", () => {
 
     test("should 200 and return all lesgevers", async () => {
       const response = await request.get(URL);
+
       expect(response.status).toBe(200);
       expect(response.body.items.length).toBe(4);
 
@@ -175,6 +188,7 @@ describe("Lesgevers", () => {
           beschrijving: "Visie-cel, Coördinatoren, Stuurgroep",
           aantal_lesgevers: 1,
         },
+        roles: ["admin, user"],
       });
 
       expect(response.body.items[1]).toEqual({
@@ -193,6 +207,7 @@ describe("Lesgevers", () => {
           beschrijving: "Verfijnen drie slagen, afstand- en reddend zwemmen",
           aantal_lesgevers: 1,
         },
+        roles: ["admin, user"],
       });
 
       expect(response.body.items[2]).toEqual({
@@ -211,6 +226,7 @@ describe("Lesgevers", () => {
           beschrijving: "Watergewenning, ontdekken diep",
           aantal_lesgevers: 1,
         },
+        roles: ["admin, user"],
       });
 
       expect(response.body.items[3]).toEqual({
@@ -229,6 +245,7 @@ describe("Lesgevers", () => {
           beschrijving: "Verfijnen drie slagen, afstand- en reddend zwemmen",
           aantal_lesgevers: 1,
         },
+        roles: ["user"],
       });
     });
   });
@@ -274,6 +291,7 @@ describe("Lesgevers", () => {
           beschrijving: "Visie-cel, Coördinatoren, Stuurgroep",
           aantal_lesgevers: 1,
         },
+        roles: ["admin, user"],
       });
     });
   });
@@ -309,6 +327,9 @@ describe("Lesgevers", () => {
         email: "lander.dhaen@gmail.com",
         GSM: "0491882278",
         groep_id: 8,
+        password_hash:
+          "$argon2id$v=19$m=131072,t=6,p=1$9AMcua9h7va8aUQSEgH/TA$TUFuJ6VPngyGThMBVo3ONOZ5xYfee9J1eNMcA5bSpq4",
+        roles: JSON.stringify(["admin, user"]),
       });
 
       expect(response.status).toBe(200);
@@ -327,6 +348,7 @@ describe("Lesgevers", () => {
         beschrijving: "Visie-cel, Coördinatoren, Stuurgroep",
         aantal_lesgevers: 1,
       });
+      expect(response.body.roles).toEqual(["admin, user"]);
     });
   });
 
@@ -363,6 +385,9 @@ describe("Lesgevers", () => {
         email: "fixitfelix@move-united.be",
         GSM: "0491111111",
         groep_id: 1,
+        password_hash:
+          "$argon2id$v=19$m=131072,t=6,p=1$9AMcua9h7va8aUQSEgH/TA$TUFuJ6VPngyGThMBVo3ONOZ5xYfee9J1eNMcA5bSpq4",
+        roles: JSON.stringify(["user"]),
       });
 
       expect(response.status).toBe(201);
@@ -381,6 +406,7 @@ describe("Lesgevers", () => {
         beschrijving: "Startgroep, met ouders",
         aantal_lesgevers: 0,
       });
+      expect(response.body.roles).toEqual(["user"]);
 
       lesgeversToDelete.push(response.body.lesgever_id);
     });

@@ -36,6 +36,9 @@ const data = {
       email: "lander.dhaen@move-united.be",
       GSM: "0499999999",
       groep_id: 3,
+      password_hash:
+        "$argon2id$v=19$m=131072,t=6,p=1$9AMcua9h7va8aUQSEgH/TA$TUFuJ6VPngyGThMBVo3ONOZ5xYfee9J1eNMcA5bSpq4",
+      roles: JSON.stringify(["admin, user"]),
     },
   ],
 
@@ -209,6 +212,7 @@ describe("Groepen", () => {
           beschrijving: "Watergewenning, ontdekken diep",
           aantal_lesgevers: 1,
         },
+        roles: ["admin, user"],
       });
     });
   });
