@@ -1,7 +1,6 @@
 const ServiceError = require("../core/serviceError");
 const handleDBError = require("./_handleDBError");
 const groepRepository = require("../repository/groep");
-const { get } = require("config");
 
 // Alle groepen ophalen
 

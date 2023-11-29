@@ -123,12 +123,11 @@ deleteLesgeverById.validationScheme = {
 // Lesgever inloggen
 
 const login = async (ctx) => {
-  const { email, password } = ctx.request.body; // 👈 2
-  const token = await lesgeverService.login(email, password); // 👈 3
-  ctx.body = token; // 👈 4
+  const { email, password } = ctx.request.body;
+  const token = await lesgeverService.login(email, password);
+  ctx.body = token;
 };
 login.validationScheme = {
-  // 👈 5
   body: {
     email: Joi.string().email(),
     password: Joi.string(),

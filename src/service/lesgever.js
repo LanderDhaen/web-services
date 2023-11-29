@@ -10,7 +10,7 @@ const { generateJWT } = require("../core/jwt"); // 👈 7
 const getAllLesgever = async () => {
   const items = await lesgeverRepository.getAllLesgever();
   return {
-    items,
+    items: items.map(makeExposedLesgever),
     count: items.length,
   };
 };
@@ -26,7 +26,7 @@ const getLesgeverById = async (id) => {
     });
   }
 
-  return lesgever;
+  return makeExposedLesgever(lesgever);
 };
 
 // Lesgevers ophalen a.d.h.v groep_id
@@ -42,7 +42,7 @@ const getLesgeverByGroepId = async (id) => {
     );
   }
 
-  return lesgevers;
+  return lesgevers.map(makeExposedLesgever);
 };
 
 // Lesgever aanmaken
@@ -145,10 +145,27 @@ const deleteLesgeverById = async (id) => {
 
 // Lesgever inloggen
 
-const makeExposedLesgever = ({ lesgever_id, lesgever_naam, email, roles }) => ({
-  lesgever_id,
+const makeExposedLesgever = ({
   lesgever_naam,
+  geboortedatum,
+  type,
+  aanwezigheidspercentage,
+  diploma,
+  imageURL,
   email,
+  GSM,
+  groep_id,
+  roles,
+}) => ({
+  lesgever_naam,
+  geboortedatum,
+  type,
+  aanwezigheidspercentage,
+  diploma,
+  imageURL,
+  email,
+  GSM,
+  groep_id,
   roles,
 });
 
