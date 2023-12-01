@@ -7,7 +7,7 @@ module.exports = {
       table.unique("groep_id", "idx_groep_id_unique");
       table.string("groep_naam", 255).notNullable();
       table.unique("groep_naam", "idx_groep_naam_unique");
-      table.string("beschrijving", 255).notNullable();
+      table.text("beschrijving").notNullable();
       table.integer("aantal_lesgevers").notNullable();
     });
   },
