@@ -143,7 +143,7 @@ const deleteLesgeverById = async (id) => {
   }
 };
 
-// Lesgever inloggen
+// Lesgever zonder wachtwoord teruggeven
 
 const makeExposedLesgever = ({
   lesgever_id,
@@ -171,10 +171,12 @@ const makeExposedLesgever = ({
   roles,
 });
 
+// Lesgever inloggen
+
 const makeLoginData = async (lesgever) => {
   const token = await generateJWT(lesgever);
   return {
-    lesgever: makeExposedLesgever(lesgever),
+    lesgever_id: lesgever.lesgever_id,
     token,
   };
 };
