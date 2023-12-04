@@ -175,8 +175,10 @@ const makeExposedLesgever = ({
 
 const makeLoginData = async (lesgever) => {
   const token = await generateJWT(lesgever);
+
   return {
     lesgever_id: lesgever.lesgever_id,
+    roles: lesgever.roles,
     token,
   };
 };
