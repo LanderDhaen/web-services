@@ -18,10 +18,13 @@ const config = {
   // clearMocks: false,
 
   // Indicates whether the coverage information should be collected while executing the test
-  // collectCoverage: false,
-
+  collectCoverageFrom: [
+    "./src/repository/**/*.js",
+    "./src/service/**/*.js",
+    "./src/rest/**/*.js",
+  ],
   // An array of glob patterns indicating a set of files for which coverage information should be collected
-  // collectCoverageFrom: undefined,
+  coverageDirectory: "__tests__/coverage",
 
   // The directory where Jest should output its coverage files
   // coverageDirectory: undefined,
@@ -60,10 +63,10 @@ const config = {
   // forceCoverageMatch: [],
 
   // A path to a module which exports an async function that is triggered once before all test suites
-  // globalSetup: undefined,
+  globalSetup: "./__tests__/global.setup.js",
 
   // A path to a module which exports an async function that is triggered once after all test suites
-  // globalTeardown: undefined,
+  globalTeardown: "./__tests__/global.teardown.js",
 
   // A set of global variables that need to be available in all test environments
   // globals: {},

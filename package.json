@@ -46,6 +46,6 @@
     ],
     "ext": "js,json",
     "legacyWatch": true,
-    "exec": "node --inspect=0.0.0.0:9001 --trace-warnings src/index.js"
+    "exec": "node --trace-warnings src/index.js"
   }
 }

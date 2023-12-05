@@ -1,9 +1,11 @@
 const ServiceError = require("../core/serviceError");
 const handleDBError = require("./_handleDBError");
+const config = require("config"); // 👈 7
+const { getLogger } = require("../core/logging"); // 👈 4
+const { generateJWT, verifyJWT } = require("../core/jwt");
 const lesgeverRepository = require("../repository/lesgever");
 const groepService = require("../service/groep");
 const { hashPassword, verifyPassword } = require("../core/password"); // 👈 4
-const { generateJWT } = require("../core/jwt"); // 👈 7
 
 // Alle lesgevers ophalen
 
@@ -171,6 +173,44 @@ const makeExposedLesgever = ({
   roles,
 });
 
+// Controleren van JWT
+
+const checkAndParseSession = async (authHeader) => {
+  if (!authHeader) {
+    throw ServiceError.unauthorized("You need to be signed in");
+  }
+
+  if (!authHeader.startsWith("Bearer ")) {
+    throw ServiceError.unauthorized("Invalid authentication token");
+  }
+
+  const authToken = authHeader.substring(7);
+  try {
+    const { roles, lesgever_id } = await verifyJWT(authToken);
+
+    return {
+      lesgever_id,
+      roles,
+      authToken,
+    };
+  } catch (error) {
+    getLogger().error(error.message, { error });
+    throw ServiceError.unauthorized(error.message);
+  }
+};
+
+// Controleren van rollen
+
+const checkRole = (role, roles) => {
+  const hasPermission = roles.includes(role); // 👈 1
+
+  if (!hasPermission) {
+    throw ServiceError.forbidden(
+      "You are not allowed to view this part of the application"
+    );
+  }
+};
+
 // Lesgever inloggen
 
 const makeLoginData = async (lesgever) => {
@@ -213,5 +253,7 @@ module.exports = {
   createLesgever,
   updateLesgeverById,
   deleteLesgeverById,
+  checkAndParseSession,
+  checkRole,
   login,
 };

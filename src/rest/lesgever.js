@@ -3,6 +3,8 @@ const Router = require("@koa/router");
 const lesgeverService = require("../service/lesgever");
 const lesgeverschemaService = require("../service/lesgeverschema");
 const validate = require("../core/validation");
+const { requireAuthentication, makeRequireRole } = require("../core/auth");
+const Role = require("../core/roles");
 
 // Alle lesgevers ophalen
 
@@ -134,33 +136,73 @@ login.validationScheme = {
   },
 };
 
+// Controleren van de lesgever via id
+
+const checkLesgeverId = (ctx, next) => {
+  const { lesgever_id, roles } = ctx.state.session;
+  const { id } = ctx.params;
+
+  // You can only get our own data unless you're an admin
+  if (id !== lesgever_id && !roles.includes(Role.ADMIN)) {
+    return ctx.throw(
+      403,
+      "You are not allowed to view this user's information",
+      {
+        code: "FORBIDDEN",
+      }
+    );
+  }
+  return next();
+};
+
+const requireAdmin = makeRequireRole(Role.STUURGROEP);
+
 module.exports = (app) => {
   const router = new Router({
     prefix: "/lesgevers",
   });
 
-  router.get("/", validate(getAllLesgever.validationScheme), getAllLesgever);
-  router.post("/", validate(createLesgever.validationScheme), createLesgever);
+  router.get(
+    "/",
+    requireAuthentication,
+    requireAdmin,
+    validate(getAllLesgever.validationScheme),
+    getAllLesgever
+  );
+  router.post(
+    "/",
+    requireAuthentication,
+    validate(createLesgever.validationScheme),
+    createLesgever
+  );
   router.get(
     "/:id",
+    requireAuthentication,
     validate(getLesgeverById.validationScheme),
     getLesgeverById
   );
   router.get(
     "/:id/lesgeverschemas",
+    requireAuthentication,
     validate(getLesgeverschemaByLesgeverId.validationScheme),
     getLesgeverschemaByLesgeverId
   );
   router.put(
     "/:id",
+    requireAuthentication,
     validate(updateLesgeverById.validationScheme),
+    checkLesgeverId,
     updateLesgeverById
   );
   router.delete(
     "/:id",
+    requireAuthentication,
     validate(deleteLesgeverById.validationScheme),
     deleteLesgeverById
   );
+
+  // Publieke routes
+
   router.post("/login", validate(login.validationScheme), login);
 
   app.use(router.routes()).use(router.allowedMethods());
