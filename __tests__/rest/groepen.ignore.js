@@ -1,6 +1,6 @@
 const supertest = require("supertest");
-const createServer = require("../src/createServer");
-const { tables, getKnex } = require("../src/data");
+const createServer = require("../../src/createServer");
+const { tables, getKnex } = require("../../src/data");
 
 const data = {
   groepen: [

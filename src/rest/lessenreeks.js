@@ -3,6 +3,8 @@ const Router = require("@koa/router");
 const lessenreeksService = require("../service/lessenreeks");
 const lesService = require("../service/les");
 const validate = require("../core/validation");
+const { requireAuthentication, makeRequireRole } = require("../core/auth");
+const Role = require("../core/roles");
 
 // Alle lessenreeksen ophalen
 
@@ -100,6 +102,10 @@ deleteLessenreeksById.validationScheme = {
   },
 };
 
+// Rollen controleren
+
+const requireAdmin = makeRequireRole(Role.STUURGROEP);
+
 module.exports = (app) => {
   const router = new Router({
     prefix: "/lessenreeksen",
@@ -107,34 +113,46 @@ module.exports = (app) => {
 
   router.get(
     "/",
+    requireAuthentication,
+    requireAdmin,
     validate(getAllLessenreeks.validationScheme),
     getAllLessenreeks
   );
   router.get(
     "/:id",
+    requireAuthentication,
+    requireAdmin,
     validate(getLessenreeksById.validationScheme),
     getLessenreeksById
   );
   router.post(
     "/",
+    requireAuthentication,
+    requireAdmin,
     validate(createLessenreeks.validationScheme),
     createLessenreeks
   );
 
   router.get(
     "/:id/lessen",
+    requireAuthentication,
+    requireAdmin,
     validate(getLesByLessenreeksId.validationScheme),
     getLesByLessenreeksId
   );
 
   router.put(
     "/:id",
+    requireAuthentication,
+    requireAdmin,
     validate(updateLessenreeksById.validationScheme),
     updateLessenreeksById
   );
 
   router.delete(
     "/:id",
+    requireAuthentication,
+    requireAdmin,
     validate(deleteLessenreeksById.validationScheme),
     deleteLessenreeksById
   );

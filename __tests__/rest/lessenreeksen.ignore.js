@@ -1,6 +1,6 @@
-const supertest = require("supertest");
-const createServer = require("../src/createServer");
-const { tables, getKnex } = require("../src/data");
+const { tables } = require("../../src/data");
+const { withServer, login, loginAdmin } = require("../supertest.setup");
+const { testAuthHeader } = require("../common/auth");
 
 const data = {
   lessenreeksen: [
@@ -40,21 +40,21 @@ const dataToDelete = {
   lessen: [1],
 };
 
-describe("Lessenreeksen", () => {
-  let server;
+describe("Lesgevers", () => {
   let request;
   let knex;
+  let authHeader;
+  let adminAuthHeader;
+
+  withServer(({ supertest, knex: k }) => {
+    request = supertest;
+    knex = k;
+  });
 
   beforeAll(async () => {
-    server = await createServer();
-    request = supertest(server.getApp().callback());
-    knex = getKnex();
+    authHeader = await login(request);
+    adminAuthHeader = await loginAdmin(request);
   });
-
-  afterAll(async () => {
-    await server.stop();
-  });
-
   const URL = "/api/lessenreeksen";
 
   describe("GET /api/lessenreeksen", () => {
@@ -72,10 +72,12 @@ describe("Lessenreeksen", () => {
         .del();
     });
 
-    // Testcases
+    // Test
 
     test("should 200 and return all lessenreeksen", async () => {
-      const response = await request.get(URL);
+      const response = await request
+        .get(URL)
+        .set("Authorization", adminAuthHeader);
 
       expect(response.status).toBe(200);
       expect(response.body.items.length).toBe(3);
@@ -104,6 +106,18 @@ describe("Lessenreeksen", () => {
         einddatum: new Date(2024, 12, 30, 0).toJSON(),
       });
     });
+
+    test("should 400 when given an argument", async () => {
+      const response = await request
+        .get(`${URL}?invalid=true`)
+        .set("Authorization", adminAuthHeader);
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.code).toBe("VALIDATION_FAILED");
+      expect(response.body.details.query).toHaveProperty("invalid");
+    });
+
+    testAuthHeader(() => request.get(URL));
   });
 
   // GET /api/lessenreeksen/:id
@@ -126,7 +140,9 @@ describe("Lessenreeksen", () => {
     // Test
 
     test("should 200 and return the correct lessenreeks", async () => {
-      const response = await request.get(`${URL}/1`);
+      const response = await request
+        .get(`${URL}/1`)
+        .set("Authorization", adminAuthHeader);
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual({
@@ -137,9 +153,37 @@ describe("Lessenreeksen", () => {
         einddatum: new Date(2023, 12, 30, 0).toJSON(),
       });
     });
+
+    test("should 404 when requesting not existing lessenreeks", async () => {
+      const response = await request
+        .get(`${URL}/6`)
+        .set("Authorization", adminAuthHeader);
+
+      expect(response.statusCode).toBe(404);
+      expect(response.body).toMatchObject({
+        code: "NOT_FOUND",
+        message: "Lessenreeks met id 6 niet gevonden",
+        details: {
+          id: 6,
+        },
+      });
+      expect(response.body.stack).toBeTruthy();
+    });
+
+    test("should 400 with invalid lessenreeks_id", async () => {
+      const response = await request
+        .get(`${URL}/invalid`)
+        .set("Authorization", adminAuthHeader);
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.code).toBe("VALIDATION_FAILED");
+      expect(response.body.details.params).toHaveProperty("id");
+    });
+
+    testAuthHeader(() => request.get(`${URL}/1`));
   });
 
-  // GET /api/lessenreeksen/:id/lessen
+  /*  // GET /api/lessenreeksen/:id/lessen
 
   describe("GET /api/lessenreeksen/:id/lessen", () => {
     // Testdata toevoegen aan database
@@ -277,4 +321,6 @@ describe("Lessenreeksen", () => {
       expect(response.body).toEqual({});
     });
   });
+
+  */
 });

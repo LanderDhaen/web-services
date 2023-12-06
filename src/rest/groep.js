@@ -4,6 +4,8 @@ const groepService = require("../service/groep");
 const lesgeverService = require("../service/lesgever");
 const lesvoorbereidingService = require("../service/lesvoorbereiding");
 const validate = require("../core/validation");
+const { requireAuthentication, makeRequireRole } = require("../core/auth");
+const Role = require("../core/roles");
 
 // Alle groepen ophalen
 
@@ -107,31 +109,59 @@ deleteGroepById.validationScheme = {
   },
 };
 
+const requireAdmin = makeRequireRole(Role.STUURGROEP);
+
 module.exports = (app) => {
   const router = new Router({
     prefix: "/groepen",
   });
 
-  router.get("/", validate(getAllGroepen.validationScheme), getAllGroepen);
-  router.post("/", validate(createGroep.validationScheme), createGroep);
-  router.get("/:id", validate(getGroepById.validationScheme), getGroepById);
+  router.get(
+    "/",
+    requireAuthentication,
+    requireAdmin,
+    validate(getAllGroepen.validationScheme),
+    getAllGroepen
+  );
+  router.post(
+    "/",
+    requireAuthentication,
+    requireAdmin,
+    validate(createGroep.validationScheme),
+    createGroep
+  );
+  router.get(
+    "/:id",
+    requireAuthentication,
+    requireAdmin,
+    validate(getGroepById.validationScheme),
+    getGroepById
+  );
   router.get(
     "/:id/lesgevers",
+    requireAuthentication,
+    requireAdmin,
     validate(getLesgeverByGroepId.validationScheme),
     getLesgeverByGroepId
   );
   router.get(
     "/:id/lesvoorbereidingen",
+    requireAuthentication,
+    requireAdmin,
     validate(getLesvoorbereidingByGroepId.validationScheme),
     getLesvoorbereidingByGroepId
   );
   router.put(
     "/:id",
+    requireAuthentication,
+    requireAdmin,
     validate(updateGroepById.validationScheme),
     updateGroepById
   );
   router.delete(
     "/:id",
+    requireAuthentication,
+    requireAdmin,
     validate(deleteGroepById.validationScheme),
     deleteGroepById
   );

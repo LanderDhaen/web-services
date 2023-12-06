@@ -103,8 +103,8 @@ const tables = Object.freeze({
 });
 
 module.exports = {
-  initializeData,
-  getKnex,
-  shutdownData,
   tables,
+  getKnex,
+  initializeData,
+  shutdownData,
 };

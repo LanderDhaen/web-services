@@ -136,14 +136,14 @@ login.validationScheme = {
   },
 };
 
-// Controleren van de lesgever via id
+// Controle of lesgever die ingelogd is, dezelfde is als diegene die hij/zij probeert op te vragen (of admin)
 
 const checkLesgeverId = (ctx, next) => {
   const { lesgever_id, roles } = ctx.state.session;
   const { id } = ctx.params;
 
   // You can only get our own data unless you're an admin
-  if (id !== lesgever_id && !roles.includes(Role.ADMIN)) {
+  if (id !== lesgever_id && !roles.includes(Role.STUURGROEP)) {
     return ctx.throw(
       403,
       "You are not allowed to view this user's information",
@@ -154,6 +154,8 @@ const checkLesgeverId = (ctx, next) => {
   }
   return next();
 };
+
+// Rollen controleren
 
 const requireAdmin = makeRequireRole(Role.STUURGROEP);
 
@@ -172,6 +174,7 @@ module.exports = (app) => {
   router.post(
     "/",
     requireAuthentication,
+    requireAdmin,
     validate(createLesgever.validationScheme),
     createLesgever
   );
@@ -179,24 +182,27 @@ module.exports = (app) => {
     "/:id",
     requireAuthentication,
     validate(getLesgeverById.validationScheme),
+    checkLesgeverId,
     getLesgeverById
   );
   router.get(
     "/:id/lesgeverschemas",
     requireAuthentication,
     validate(getLesgeverschemaByLesgeverId.validationScheme),
+    checkLesgeverId,
     getLesgeverschemaByLesgeverId
   );
   router.put(
     "/:id",
     requireAuthentication,
+    requireAdmin,
     validate(updateLesgeverById.validationScheme),
-    checkLesgeverId,
     updateLesgeverById
   );
   router.delete(
     "/:id",
     requireAuthentication,
+    requireAdmin,
     validate(deleteLesgeverById.validationScheme),
     deleteLesgeverById
   );
