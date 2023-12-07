@@ -154,13 +154,13 @@ describe("Lessenreeksen", () => {
 
     test("should 404 when requesting not existing lessenreeks", async () => {
       const response = await request
-        .get(`${URL}/6`)
+        .get(`${URL}/600`)
         .set("Authorization", authHeader);
 
       expect(response.statusCode).toBe(404);
       expect(response.body).toMatchObject({
         code: "NOT_FOUND",
-        message: "Er bestaat geen lessenreeks met id 6!",
+        message: "Er bestaat geen lessenreeks met id 600!",
       });
       expect(response.body.stack).toBeTruthy();
     });
@@ -274,8 +274,6 @@ describe("Lessenreeksen", () => {
           startdatum: new Date(2030, 9, 1, 0).toJSON(),
           einddatum: new Date(2030, 12, 30, 0).toJSON(),
         });
-
-      console.log(response.body);
 
       expect(response.status).toBe(200);
       expect(response.body.lessenreeks_id).toBeTruthy();
@@ -541,7 +539,7 @@ describe("Lessenreeksen", () => {
 
     // Test
 
-    test("should 204 and return no content", async () => {
+    test("should 204 and return nothing", async () => {
       const response = await request
         .delete(`${URL}/1`)
         .set("Authorization", adminAuthHeader);

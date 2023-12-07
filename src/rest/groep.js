@@ -109,6 +109,8 @@ deleteGroepById.validationScheme = {
   },
 };
 
+// Rollen controleren
+
 const requireAdmin = makeRequireRole(Role.STUURGROEP);
 
 module.exports = (app) => {

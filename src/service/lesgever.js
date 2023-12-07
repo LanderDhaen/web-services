@@ -34,6 +34,14 @@ const getLesgeverById = async (id) => {
 // Lesgevers ophalen a.d.h.v groep_id
 
 const getLesgeverByGroepId = async (id) => {
+  const bestaandeGroep = await groepService.getGroepById(id);
+
+  if (!bestaandeGroep) {
+    throw ServiceError.notFound(`Er bestaat geen groep met id ${id}!`, {
+      id,
+    });
+  }
+
   const lesgevers = await lesgeverRepository.getLesgeverByGroepId(id);
   if (!lesgevers) {
     throw ServiceError.notFound(

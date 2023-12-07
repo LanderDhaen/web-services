@@ -1,5 +1,5 @@
 const { tables } = require("../../src/data");
-const { withServer, login } = require("../supertest.setup");
+const { withServer, login, loginAdmin } = require("../supertest.setup");
 const { testAuthHeader } = require("../common/auth");
 
 const data = {
@@ -44,21 +44,21 @@ const dataToDelete = {
   lessen: [1, 15, 7],
 };
 
-describe("Lessenreeksen", () => {
-  let server;
+describe("Lessen", () => {
   let request;
   let knex;
+  let authHeader;
+  let adminAuthHeader;
+
+  withServer(({ supertest, knex: k }) => {
+    request = supertest;
+    knex = k;
+  });
 
   beforeAll(async () => {
-    server = await createServer();
-    request = supertest(server.getApp().callback());
-    knex = getKnex();
+    authHeader = await login(request);
+    adminAuthHeader = await loginAdmin(request);
   });
-
-  afterAll(async () => {
-    await server.stop();
-  });
-
   const URL = "/api/lessen";
 
   describe("GET /api/lessen", () => {
@@ -79,7 +79,7 @@ describe("Lessenreeksen", () => {
     });
 
     test("should 200 and return all lessen", async () => {
-      const response = await request.get(URL);
+      const response = await request.get(URL).set("Authorization", authHeader);
 
       expect(response.status).toBe(200);
       expect(response.body.items.length).toBe(3);
@@ -120,6 +120,18 @@ describe("Lessenreeksen", () => {
         },
       });
     });
+
+    test("should 400 when given an argument", async () => {
+      const response = await request
+        .get(`${URL}?invalid=true`)
+        .set("Authorization", authHeader);
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.code).toBe("VALIDATION_FAILED");
+      expect(response.body.details.query).toHaveProperty("invalid");
+    });
+
+    testAuthHeader(() => request.get(URL));
   });
 
   // GET /api/lessen/:id
@@ -142,7 +154,9 @@ describe("Lessenreeksen", () => {
     });
 
     test("should 200 and return the requested les", async () => {
-      const response = await request.get(`${URL}/1`);
+      const response = await request
+        .get(`${URL}/1`)
+        .set("Authorization", authHeader);
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual({
@@ -157,6 +171,28 @@ describe("Lessenreeksen", () => {
         },
       });
     });
+
+    test("should 400 with invalid les_id", async () => {
+      const response = await request
+        .get(`${URL}/invalid`)
+        .set("Authorization", authHeader);
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.code).toBe("VALIDATION_FAILED");
+      expect(response.body.details.params).toHaveProperty("id");
+    });
+
+    test("should 404 when requesting not existing les", async () => {
+      const response = await request
+        .get(`${URL}/10`)
+        .set("Authorization", authHeader);
+
+      expect(response.statusCode).toBe(404);
+      expect(response.body.code).toBe("NOT_FOUND");
+      expect(response.body.details.id).toBe(10);
+    });
+
+    testAuthHeader(() => request.get(`${URL}/1`));
   });
 
   // PUT /api/lessen/:id
@@ -181,10 +217,13 @@ describe("Lessenreeksen", () => {
     // Test
 
     test("should 200 and return the updated les", async () => {
-      const response = await request.put(`${URL}/1`).send({
-        datum: new Date(2033, 10, 1, 0),
-        lessenreeks_id: 2,
-      });
+      const response = await request
+        .put(`${URL}/1`)
+        .set("Authorization", adminAuthHeader)
+        .send({
+          datum: new Date(2033, 10, 1, 0),
+          lessenreeks_id: 2,
+        });
 
       expect(response.status).toBe(200);
       expect(response.body.les_id).toBeTruthy();
@@ -199,6 +238,92 @@ describe("Lessenreeksen", () => {
         new Date(2024, 8, 30, 0).toJSON()
       );
     });
+
+    test("should 400 with invalid les_id", async () => {
+      const response = await request
+        .put(`${URL}/invalid`)
+        .set("Authorization", adminAuthHeader)
+        .send({
+          datum: new Date(2033, 10, 1, 0),
+          lessenreeks_id: 2,
+        });
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.code).toBe("VALIDATION_FAILED");
+      expect(response.body.details.params).toHaveProperty("id");
+    });
+
+    test("should 404 when updating not existing les", async () => {
+      const response = await request
+        .put(`${URL}/10`)
+        .set("Authorization", adminAuthHeader)
+        .send({
+          datum: new Date(2033, 10, 1, 0),
+          lessenreeks_id: 2,
+        });
+
+      expect(response.statusCode).toBe(404);
+      expect(response.body.code).toBe("NOT_FOUND");
+      expect(response.body.details.id).toBe(10);
+    });
+
+    test("should 404 when lessenreeks does not exist", async () => {
+      const response = await request
+        .put(`${URL}/1`)
+        .set("Authorization", adminAuthHeader)
+        .send({
+          datum: new Date(2033, 10, 1, 0),
+          lessenreeks_id: 10,
+        });
+
+      expect(response.statusCode).toBe(404);
+      expect(response.body).toMatchObject({
+        code: "NOT_FOUND",
+        message: "Er bestaat geen lessenreeks met id 10!",
+      });
+      expect(response.body.stack).toBeTruthy();
+    });
+
+    test("should 400 when missing datum", async () => {
+      const response = await request
+        .put(`${URL}/1`)
+        .set("Authorization", adminAuthHeader)
+        .send({
+          lessenreeks_id: 2,
+        });
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.code).toBe("VALIDATION_FAILED");
+      expect(response.body.details.body).toHaveProperty("datum");
+    });
+
+    test("should 400 when missing lessenreeks_id", async () => {
+      const response = await request
+        .put(`${URL}/1`)
+        .set("Authorization", adminAuthHeader)
+        .send({
+          datum: new Date(2033, 10, 1, 0),
+        });
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.code).toBe("VALIDATION_FAILED");
+      expect(response.body.details.body).toHaveProperty("lessenreeks_id");
+    });
+
+    test("should 403 when not admin", async () => {
+      const response = await request
+        .put(`${URL}/1`)
+        .set("Authorization", authHeader)
+        .send({
+          datum: new Date(2033, 10, 1, 0),
+          lessenreeks_id: 2,
+        });
+
+      expect(response.statusCode).toBe(403);
+      expect(response.body.code).toBe("FORBIDDEN");
+    });
+
+    testAuthHeader(() => request.put(`${URL}/1`));
   });
 
   // POST /api/lessen
@@ -224,10 +349,13 @@ describe("Lessenreeksen", () => {
     // Test
 
     test("should 201 and return the created les", async () => {
-      const response = await request.post(URL).send({
-        datum: new Date(2043, 10, 1, 0),
-        lessenreeks_id: 2,
-      });
+      const response = await request
+        .post(URL)
+        .set("Authorization", adminAuthHeader)
+        .send({
+          datum: new Date(2043, 10, 1, 0),
+          lessenreeks_id: 2,
+        });
 
       expect(response.status).toBe(201);
       expect(response.body.les_id).toBeTruthy();
@@ -244,6 +372,64 @@ describe("Lessenreeksen", () => {
 
       lessenToDelete.push(response.body.les_id);
     });
+
+    test("should 404 when lessenreeks does not exist", async () => {
+      const response = await request
+        .post(URL)
+        .set("Authorization", adminAuthHeader)
+        .send({
+          datum: new Date(2043, 10, 1, 0),
+          lessenreeks_id: 10,
+        });
+
+      expect(response.statusCode).toBe(404);
+      expect(response.body).toMatchObject({
+        code: "NOT_FOUND",
+        message: "Er bestaat geen lessenreeks met id 10!",
+      });
+      expect(response.body.stack).toBeTruthy();
+    });
+
+    test("should 400 when missing datum", async () => {
+      const response = await request
+        .post(URL)
+        .set("Authorization", adminAuthHeader)
+        .send({
+          lessenreeks_id: 2,
+        });
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.code).toBe("VALIDATION_FAILED");
+      expect(response.body.details.body).toHaveProperty("datum");
+    });
+
+    test("should 400 when missing lessenreeks_id", async () => {
+      const response = await request
+        .post(URL)
+        .set("Authorization", adminAuthHeader)
+        .send({
+          datum: new Date(2043, 10, 1, 0),
+        });
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.code).toBe("VALIDATION_FAILED");
+      expect(response.body.details.body).toHaveProperty("lessenreeks_id");
+    });
+
+    test("should 403 when not admin", async () => {
+      const response = await request
+        .post(URL)
+        .set("Authorization", authHeader)
+        .send({
+          datum: new Date(2043, 10, 1, 0),
+          lessenreeks_id: 2,
+        });
+
+      expect(response.statusCode).toBe(403);
+      expect(response.body.code).toBe("FORBIDDEN");
+    });
+
+    testAuthHeader(() => request.post(URL));
   });
 
   // DELETE /api/lessen/:id
@@ -268,10 +454,46 @@ describe("Lessenreeksen", () => {
     // Test
 
     test("should 204 and return nothing", async () => {
-      const response = await request.delete(`${URL}/1`);
+      const response = await request
+        .delete(`${URL}/1`)
+        .set("Authorization", adminAuthHeader);
 
       expect(response.status).toBe(204);
       expect(response.body).toEqual({});
     });
+
+    test("should 400 with invalid les_id", async () => {
+      const response = await request
+        .delete(`${URL}/invalid`)
+        .set("Authorization", adminAuthHeader);
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.code).toBe("VALIDATION_FAILED");
+      expect(response.body.details.params).toHaveProperty("id");
+    });
+
+    test("should 404 when deleting not existing les", async () => {
+      const response = await request
+        .delete(`${URL}/10`)
+        .set("Authorization", adminAuthHeader);
+
+      expect(response.statusCode).toBe(404);
+      expect(response.body).toMatchObject({
+        code: "NOT_FOUND",
+        message: "Er bestaat geen les met id 10!",
+      });
+      expect(response.body.stack).toBeTruthy();
+    });
+
+    test("should 403 when not admin", async () => {
+      const response = await request
+        .delete(`${URL}/1`)
+        .set("Authorization", authHeader);
+
+      expect(response.statusCode).toBe(403);
+      expect(response.body.code).toBe("FORBIDDEN");
+    });
+
+    testAuthHeader(() => request.delete(`${URL}/1`));
   });
 });

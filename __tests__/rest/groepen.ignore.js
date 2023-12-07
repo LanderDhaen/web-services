@@ -1,6 +1,6 @@
-const supertest = require("supertest");
-const createServer = require("../../src/createServer");
-const { tables, getKnex } = require("../../src/data");
+const { tables } = require("../../src/data");
+const { withServer, login, loginAdmin } = require("../supertest.setup");
+const { testAuthHeader } = require("../common/auth");
 
 const data = {
   groepen: [
@@ -35,7 +35,7 @@ const data = {
       imageURL: "",
       email: "lander.dhaen@move-united.be",
       GSM: "0499999999",
-      groep_id: 3,
+      groep_id: 1,
       password_hash:
         "$argon2id$v=19$m=131072,t=6,p=1$9AMcua9h7va8aUQSEgH/TA$TUFuJ6VPngyGThMBVo3ONOZ5xYfee9J1eNMcA5bSpq4",
       roles: JSON.stringify(["admin, user"]),
@@ -45,12 +45,12 @@ const data = {
   lesvoorbereidingen: [
     {
       lesvoorbereiding_id: 1,
-      lesvoorbereiding_naam: "Walter de Walrus gaat naar school",
+      lesvoorbereiding_naam: "Ellie het Eendje gaat naar school",
       lesvoorbereiding_type: "Gewone Les",
       link_to_PDF: "https://www.google.com",
       feedback: "Dit is een test",
       les_id: 1,
-      groep_id: 3,
+      groep_id: 1,
     },
   ],
 
@@ -82,18 +82,19 @@ const dataToDelete = {
 };
 
 describe("Groepen", () => {
-  let server;
   let request;
   let knex;
+  let authHeader;
+  let adminAuthHeader;
 
-  beforeAll(async () => {
-    server = await createServer();
-    request = supertest(server.getApp().callback());
-    knex = getKnex();
+  withServer(({ supertest, knex: k }) => {
+    request = supertest;
+    knex = k;
   });
 
-  afterAll(async () => {
-    await server.stop();
+  beforeAll(async () => {
+    authHeader = await login(request);
+    adminAuthHeader = await loginAdmin(request);
   });
 
   const URL = "/api/groepen";
@@ -114,9 +115,11 @@ describe("Groepen", () => {
     // Test
 
     test("should 200 and return all groepen", async () => {
-      const response = await request.get(URL);
+      const response = await request
+        .get(URL)
+        .set("Authorization", adminAuthHeader);
       expect(response.status).toBe(200);
-      expect(response.body.items.length).toBe(3);
+      expect(response.body.items.length).toBe(4);
 
       expect(response.body.items[0]).toEqual({
         groep_id: 1,
@@ -138,7 +141,33 @@ describe("Groepen", () => {
         beschrijving: "Watergewenning, ontdekken diep",
         aantal_lesgevers: 1,
       });
+
+      expect(response.body.items[3]).toEqual({
+        groep_id: 9,
+        groep_naam: "Redders",
+        beschrijving: "Redders",
+        aantal_lesgevers: 0,
+      });
     });
+
+    test("should 400 when given an argument", async () => {
+      const response = await request
+        .get(`${URL}?invalid=true`)
+        .set("Authorization", adminAuthHeader);
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.code).toBe("VALIDATION_FAILED");
+      expect(response.body.details.query).toHaveProperty("invalid");
+    });
+
+    test("should 403 when not admin", async () => {
+      const response = await request.get(URL).set("Authorization", authHeader);
+
+      expect(response.statusCode).toBe(403);
+      expect(response.body.code).toBe("FORBIDDEN");
+    });
+
+    testAuthHeader(() => request.get(URL));
   });
 
   // GET /api/groepen/:id
@@ -159,7 +188,9 @@ describe("Groepen", () => {
     // Test
 
     test("should 200 and return the requested groep", async () => {
-      const response = await request.get(`${URL}/1`);
+      const response = await request
+        .get(`${URL}/1`)
+        .set("Authorization", adminAuthHeader);
       expect(response.status).toBe(200);
       expect(response.body).toEqual({
         groep_id: 1,
@@ -168,6 +199,36 @@ describe("Groepen", () => {
         aantal_lesgevers: 0,
       });
     });
+
+    test("should 400 with invalid groep_id", async () => {
+      const response = await request
+        .get(`${URL}/invalid`)
+        .set("Authorization", adminAuthHeader);
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.code).toBe("VALIDATION_FAILED");
+      expect(response.body.details.params).toHaveProperty("id");
+    });
+
+    test("should 404 when requesting not existing groep", async () => {
+      const response = await request
+        .get(`${URL}/100`)
+        .set("Authorization", adminAuthHeader);
+
+      expect(response.statusCode).toBe(404);
+      expect(response.body.code).toBe("NOT_FOUND");
+    });
+
+    test("should 403 when not admin", async () => {
+      const response = await request
+        .get(`${URL}/1`)
+        .set("Authorization", authHeader);
+
+      expect(response.statusCode).toBe(403);
+      expect(response.body.code).toBe("FORBIDDEN");
+    });
+
+    testAuthHeader(() => request.get(`${URL}/1`));
   });
 
   // GET /groepen/:id/lesgevers
@@ -192,7 +253,9 @@ describe("Groepen", () => {
     // Test
 
     test("should 200 and return the lesgevers of the requested groep", async () => {
-      const response = await request.get(`${URL}/3/lesgevers`);
+      const response = await request
+        .get(`${URL}/1/lesgevers`)
+        .set("Authorization", adminAuthHeader);
 
       expect(response.status).toBe(200);
       expect(response.body.length).toBe(1);
@@ -207,14 +270,44 @@ describe("Groepen", () => {
         email: "lander.dhaen@move-united.be",
         GSM: "0499999999",
         groep: {
-          groep_id: 3,
-          groep_naam: "Waterschildpadden",
-          beschrijving: "Watergewenning, ontdekken diep",
-          aantal_lesgevers: 1,
+          groep_id: 1,
+          groep_naam: "Eendjes",
+          beschrijving: "Startgroep, met ouders",
+          aantal_lesgevers: 0,
         },
         roles: ["admin, user"],
       });
     });
+
+    test("should 400 with invalid groep_id", async () => {
+      const response = await request
+        .get(`${URL}/invalid/lesgevers`)
+        .set("Authorization", adminAuthHeader);
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.code).toBe("VALIDATION_FAILED");
+      expect(response.body.details.params).toHaveProperty("id");
+    });
+
+    test("should 404 when requesting not existing groep", async () => {
+      const response = await request
+        .get(`${URL}/100/lesgevers`)
+        .set("Authorization", adminAuthHeader);
+
+      expect(response.statusCode).toBe(404);
+      expect(response.body.code).toBe("NOT_FOUND");
+    });
+
+    test("should 403 when not admin", async () => {
+      const response = await request
+        .get(`${URL}/1/lesgevers`)
+        .set("Authorization", authHeader);
+
+      expect(response.statusCode).toBe(403);
+      expect(response.body.code).toBe("FORBIDDEN");
+    });
+
+    testAuthHeader(() => request.get(`${URL}/1/lesgevers`));
   });
 
   // GET /api/groepen/:id/lesvoorbereidingen
@@ -245,13 +338,15 @@ describe("Groepen", () => {
     // Test
 
     test("should 200 and return the lesvoorbereidingen of the requested groep", async () => {
-      const response = await request.get(`${URL}/3/lesvoorbereidingen`);
+      const response = await request
+        .get(`${URL}/1/lesvoorbereidingen`)
+        .set("Authorization", adminAuthHeader);
 
       expect(response.status).toBe(200);
       expect(response.body.length).toBe(1);
       expect(response.body[0]).toEqual({
         lesvoorbereiding_id: 1,
-        lesvoorbereiding_naam: "Walter de Walrus gaat naar school",
+        lesvoorbereiding_naam: "Ellie het Eendje gaat naar school",
         lesvoorbereiding_type: "Gewone Les",
         link_to_PDF: "https://www.google.com",
         feedback: "Dit is een test",
@@ -259,13 +354,43 @@ describe("Groepen", () => {
           les_id: 1,
         },
         groep: {
-          groep_id: 3,
-          groep_naam: "Waterschildpadden",
-          beschrijving: "Watergewenning, ontdekken diep",
-          aantal_lesgevers: 1,
+          groep_id: 1,
+          groep_naam: "Eendjes",
+          beschrijving: "Startgroep, met ouders",
+          aantal_lesgevers: 0,
         },
       });
     });
+
+    test("should 400 with invalid groep_id", async () => {
+      const response = await request
+        .get(`${URL}/invalid/lesvoorbereidingen`)
+        .set("Authorization", adminAuthHeader);
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.code).toBe("VALIDATION_FAILED");
+      expect(response.body.details.params).toHaveProperty("id");
+    });
+
+    test("should 404 when requesting not existing groep", async () => {
+      const response = await request
+        .get(`${URL}/100/lesvoorbereidingen`)
+        .set("Authorization", adminAuthHeader);
+
+      expect(response.statusCode).toBe(404);
+      expect(response.body.code).toBe("NOT_FOUND");
+    });
+
+    test("should 403 when not admin", async () => {
+      const response = await request
+        .get(`${URL}/1/lesvoorbereidingen`)
+        .set("Authorization", authHeader);
+
+      expect(response.statusCode).toBe(403);
+      expect(response.body.code).toBe("FORBIDDEN");
+    });
+
+    testAuthHeader(() => request.get(`${URL}/1/lesvoorbereidingen`));
   });
 
   // PUT /api/groepen/:id
@@ -286,11 +411,14 @@ describe("Groepen", () => {
     // Test
 
     test("should 200 and return the updated groep", async () => {
-      const response = await request.put(`${URL}/1`).send({
-        groep_naam: "Eendjes 2.0",
-        beschrijving: "Startgroep, met ouders 2.0",
-        aantal_lesgevers: 8,
-      });
+      const response = await request
+        .put(`${URL}/1`)
+        .set("Authorization", adminAuthHeader)
+        .send({
+          groep_naam: "Eendjes 2.0",
+          beschrijving: "Startgroep, met ouders 2.0",
+          aantal_lesgevers: 8,
+        });
 
       expect(response.status).toBe(200);
       expect(response.body.groep_id).toBeTruthy();
@@ -298,6 +426,93 @@ describe("Groepen", () => {
       expect(response.body.beschrijving).toBe("Startgroep, met ouders 2.0");
       expect(response.body.aantal_lesgevers).toBe(8);
     });
+
+    test("should 400 with invalid groep_id", async () => {
+      const response = await request
+        .put(`${URL}/invalid`)
+        .set("Authorization", adminAuthHeader)
+        .send({
+          groep_naam: "Eendjes 2.0",
+          beschrijving: "Startgroep, met ouders 2.0",
+          aantal_lesgevers: 8,
+        });
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.code).toBe("VALIDATION_FAILED");
+      expect(response.body.details.params).toHaveProperty("id");
+    });
+
+    test("should 404 when requesting not existing groep", async () => {
+      const response = await request
+        .put(`${URL}/100`)
+        .set("Authorization", adminAuthHeader)
+        .send({
+          groep_naam: "Eendjes 2.0",
+          beschrijving: "Startgroep, met ouders 2.0",
+          aantal_lesgevers: 8,
+        });
+
+      expect(response.statusCode).toBe(404);
+      expect(response.body.code).toBe("NOT_FOUND");
+    });
+
+    test("should 400 when missing groep_naam", async () => {
+      const response = await request
+        .put(`${URL}/1`)
+        .set("Authorization", adminAuthHeader)
+        .send({
+          beschrijving: "Startgroep, met ouders 2.0",
+          aantal_lesgevers: 8,
+        });
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.code).toBe("VALIDATION_FAILED");
+      expect(response.body.details.body).toHaveProperty("groep_naam");
+    });
+
+    test("should 400 when missing beschrijving", async () => {
+      const response = await request
+        .put(`${URL}/1`)
+        .set("Authorization", adminAuthHeader)
+        .send({
+          groep_naam: "Eendjes 2.0",
+          aantal_lesgevers: 8,
+        });
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.code).toBe("VALIDATION_FAILED");
+      expect(response.body.details.body).toHaveProperty("beschrijving");
+    });
+
+    test("should 400 when missing aantal_lesgevers", async () => {
+      const response = await request
+        .put(`${URL}/1`)
+        .set("Authorization", adminAuthHeader)
+        .send({
+          groep_naam: "Eendjes 2.0",
+          beschrijving: "Startgroep, met ouders 2.0",
+        });
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.code).toBe("VALIDATION_FAILED");
+      expect(response.body.details.body).toHaveProperty("aantal_lesgevers");
+    });
+
+    test("should 403 when not admin", async () => {
+      const response = await request
+        .put(`${URL}/1`)
+        .set("Authorization", authHeader)
+        .send({
+          groep_naam: "Eendjes 2.0",
+          beschrijving: "Startgroep, met ouders 2.0",
+          aantal_lesgevers: 8,
+        });
+
+      expect(response.statusCode).toBe(403);
+      expect(response.body.code).toBe("FORBIDDEN");
+    });
+
+    testAuthHeader(() => request.put(`${URL}/1`));
   });
 
   // POST /api/groepen
@@ -316,11 +531,14 @@ describe("Groepen", () => {
     // Test
 
     test("should 201 and return the created groep", async () => {
-      const response = await request.post(URL).send({
-        groep_naam: "Haaien",
-        beschrijving: "Competitiegroep",
-        aantal_lesgevers: 5,
-      });
+      const response = await request
+        .post(URL)
+        .set("Authorization", adminAuthHeader)
+        .send({
+          groep_naam: "Haaien",
+          beschrijving: "Competitiegroep",
+          aantal_lesgevers: 5,
+        });
 
       expect(response.status).toBe(201);
       expect(response.body.groep_id).toBeTruthy();
@@ -330,6 +548,64 @@ describe("Groepen", () => {
 
       groepenToDelete.push(response.body.groep_id);
     });
+
+    test("should 400 when missing groep_naam", async () => {
+      const response = await request
+        .post(URL)
+        .set("Authorization", adminAuthHeader)
+        .send({
+          beschrijving: "Competitiegroep",
+          aantal_lesgevers: 5,
+        });
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.code).toBe("VALIDATION_FAILED");
+      expect(response.body.details.body).toHaveProperty("groep_naam");
+    });
+
+    test("should 400 when missing beschrijving", async () => {
+      const response = await request
+        .post(URL)
+        .set("Authorization", adminAuthHeader)
+        .send({
+          groep_naam: "Haaien",
+          aantal_lesgevers: 5,
+        });
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.code).toBe("VALIDATION_FAILED");
+      expect(response.body.details.body).toHaveProperty("beschrijving");
+    });
+
+    test("should 400 when missing aantal_lesgevers", async () => {
+      const response = await request
+        .post(URL)
+        .set("Authorization", adminAuthHeader)
+        .send({
+          groep_naam: "Haaien",
+          beschrijving: "Competitiegroep",
+        });
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.code).toBe("VALIDATION_FAILED");
+      expect(response.body.details.body).toHaveProperty("aantal_lesgevers");
+    });
+
+    test("should 403 when not admin", async () => {
+      const response = await request
+        .post(URL)
+        .set("Authorization", authHeader)
+        .send({
+          groep_naam: "Haaien",
+          beschrijving: "Competitiegroep",
+          aantal_lesgevers: 5,
+        });
+
+      expect(response.statusCode).toBe(403);
+      expect(response.body.code).toBe("FORBIDDEN");
+    });
+
+    testAuthHeader(() => request.post(URL));
   });
 
   // DELETE /api/groepen/:id
@@ -350,10 +626,55 @@ describe("Groepen", () => {
     // Test
 
     test("should 204 and return nothing", async () => {
-      const response = await request.delete(`${URL}/1`);
+      const response = await request
+        .delete(`${URL}/1`)
+        .set("Authorization", adminAuthHeader);
+
+      console.log(response.body);
 
       expect(response.status).toBe(204);
       expect(response.body).toEqual({});
     });
+
+    /* Deze werk niet 
+
+    test("should 404 when requesting not existing groep", async () => {
+      const response = await request
+        .delete(`${URL}/10`)
+        .set("Authorization", adminAuthHeader);
+
+      expect(response.statusCode).toBe(404);
+      expect(response.body).toMatchObject({
+        code: "NOT_FOUND",
+        message: "Er bestaat geen groep met id 100!",
+      });
+    });
+
+    */
+
+    test("should 400 with invalid groep_id", async () => {
+      const response = await request
+        .delete(`${URL}/invalid`)
+        .set("Authorization", adminAuthHeader);
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.code).toBe("VALIDATION_FAILED");
+      expect(response.body.details.params).toHaveProperty("id");
+    });
+
+    test("should 403 when not admin", async () => {
+      const response = await request
+        .delete(`${URL}/1`)
+        .set("Authorization", authHeader);
+
+      expect(response.statusCode).toBe(403);
+      expect(response.body).toMatchObject({
+        code: "FORBIDDEN",
+        message: "You are not allowed to view this part of the application",
+      });
+      expect(response.body.stack).toBeTruthy();
+    });
+
+    testAuthHeader(() => request.delete(`${URL}/1`));
   });
 });

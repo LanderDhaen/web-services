@@ -20,10 +20,10 @@ module.exports = async () => {
 
   await knex(tables.groep).insert([
     {
-      groep_id: 3,
-      groep_naam: "Waterschildpadden",
-      beschrijving: "Watergewenning, ontdekken diep",
-      aantal_lesgevers: 1,
+      groep_id: 9,
+      groep_naam: "Redders",
+      beschrijving: "Redders",
+      aantal_lesgevers: 0,
     },
   ]);
 
@@ -38,7 +38,7 @@ module.exports = async () => {
       imageURL: "",
       email: "test.user@gmail.com",
       GSM: "0491882278",
-      groep_id: 3,
+      groep_id: 9,
       password_hash:
         "$argon2id$v=19$m=2048,t=2,p=1$NF6PFLTgSYpDSex0iFeFQQ$Rz5ouoM9q3EH40hrq67BC3Ajsu/ohaHnkKBLunELLzU",
       roles: JSON.stringify([Role.LESGEVER]),
@@ -53,7 +53,7 @@ module.exports = async () => {
       imageURL: "",
       email: "test.admin@gmail.com",
       GSM: "0491228878",
-      groep_id: 3,
+      groep_id: 9,
       password_hash:
         "$argon2id$v=19$m=2048,t=2,p=1$NF6PFLTgSYpDSex0iFeFQQ$Rz5ouoM9q3EH40hrq67BC3Ajsu/ohaHnkKBLunELLzU",
       roles: JSON.stringify([Role.STUURGROEP, Role.LESGEVER]),

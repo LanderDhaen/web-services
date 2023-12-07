@@ -1,6 +1,7 @@
 const { tables, getKnex } = require("../data/index");
 const { getLogger } = require("../core/logging");
 const ObjectMapper = require("object-mapper");
+const { get } = require("config");
 
 // Kolommen selecteren
 
@@ -77,27 +78,48 @@ const getLesByLessenreeksId = async (id) => {
 // Les aanmaken
 
 const createLes = async ({ datum, lessenreeks_id }) => {
-  const [id] = await getKnex()(tables.les).insert({
-    datum,
-    lessenreeks_id,
-  });
+  try {
+    const [id] = await getKnex()(tables.les).insert({
+      datum,
+      lessenreeks_id,
+    });
 
-  return id;
+    return id;
+  } catch (error) {
+    getLogger().error("Error creating les", {
+      error,
+    });
+    throw error;
+  }
 };
 
 // Les updaten a.d.h.v id
 
 const updateLesById = async (id, { datum, lessenreeks_id }) => {
-  await getKnex()(tables.les).where("les_id", id).update({
-    datum,
-    lessenreeks_id,
-  });
+  try {
+    await getKnex()(tables.les).where("les_id", id).update({
+      datum,
+      lessenreeks_id,
+    });
+  } catch (error) {
+    getLogger().error("Error updating les", {
+      error,
+    });
+    throw error;
+  }
 };
 
 // Les verwijderen a.d.h.v id
 
 const deleteLesById = async (id) => {
-  await getKnex()(tables.les).where("les_id", id).del();
+  try {
+    await getKnex()(tables.les).where("les_id", id).del();
+  } catch (error) {
+    getLogger().error("Error deleting les", {
+      error,
+    });
+    throw error;
+  }
 };
 
 module.exports = {

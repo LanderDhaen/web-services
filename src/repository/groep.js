@@ -37,22 +37,26 @@ const getGroepById = async (id) => {
     .where(`${tables.groep}.groep_id`, id)
     .first(SELECT_COLUMNS);
 
-  if (!groep) {
-    throw ServiceError.notFound(`Groep met id ${id} niet gevonden`);
-  }
   return ObjectMapper(groep, formatGroep);
 };
 
 // Groep aanmaken
 
 const createGroep = async ({ groep_naam, beschrijving, aantal_lesgevers }) => {
-  const [id] = await getKnex()(tables.groep).insert({
-    groep_naam,
-    beschrijving,
-    aantal_lesgevers,
-  });
+  try {
+    const [id] = await getKnex()(tables.groep).insert({
+      groep_naam,
+      beschrijving,
+      aantal_lesgevers,
+    });
 
-  return id;
+    return id;
+  } catch (error) {
+    getLogger().error("Error creating groep", {
+      error,
+    });
+    throw error;
+  }
 };
 
 // Groep updaten a.d.h.v id
@@ -61,22 +65,28 @@ const updateGroepById = async (
   id,
   { groep_naam, beschrijving, aantal_lesgevers }
 ) => {
-  await getKnex()(tables.groep).where("groep_id", id).update({
-    groep_naam,
-    beschrijving,
-    aantal_lesgevers,
-  });
-  return id;
+  try {
+    await getKnex()(tables.groep).where("groep_id", id).update({
+      groep_naam,
+      beschrijving,
+      aantal_lesgevers,
+    });
+    return id;
+  } catch (error) {
+    getLogger().error("Error updating groep", {
+      error,
+    });
+    throw error;
+  }
 };
 
-// Lesgever verwijderen a.d.h.v id
+// Groep verwijderen a.d.h.v id
 
 const deleteGroepById = async (id) => {
   try {
-    const rijen = await getKnex()(tables.groep).where("groep_id", id).del();
-    return rijen > 0;
+    await getKnex()(tables.groep).where("groep_id", id).del();
   } catch (error) {
-    getLogger().error("Error in deleteLesvoorbereidingById", {
+    getLogger().error("Error deleting groep", {
       error,
     });
     throw error;

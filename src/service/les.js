@@ -53,6 +53,19 @@ const getLesByLessenreeksId = async (id) => {
 // Les aanmaken
 
 const createLes = async ({ datum, lessenreeks_id }) => {
+  const bestaandeLessenreeks = await lessenreeksService.getLessenreeksById(
+    lessenreeks_id
+  );
+
+  if (!bestaandeLessenreeks) {
+    throw ServiceError.notFound(
+      `Er bestaat geen lessenreeks met id ${lessenreeks_id}!`,
+      {
+        lessenreeks_id,
+      }
+    );
+  }
+
   try {
     const id = await lesRepository.createLes({
       datum,
@@ -67,6 +80,19 @@ const createLes = async ({ datum, lessenreeks_id }) => {
 // Les updaten a.d.h.v id
 
 const updateLesById = async (id, { datum, lessenreeks_id }) => {
+  const bestaandeLessenreeks = await lessenreeksService.getLessenreeksById(
+    lessenreeks_id
+  );
+
+  if (!bestaandeLessenreeks) {
+    throw ServiceError.notFound(
+      `Er bestaat geen lessenreeks met id ${lessenreeks_id}!`,
+      {
+        lessenreeks_id,
+      }
+    );
+  }
+
   try {
     await lesRepository.updateLesById(id, {
       datum,
@@ -89,7 +115,11 @@ const deleteLesById = async (id) => {
     });
   }
 
-  await lesRepository.deleteLesById(id);
+  try {
+    await lesRepository.deleteLesById(id);
+  } catch (error) {
+    throw handleDBError(error);
+  }
 };
 
 module.exports = {

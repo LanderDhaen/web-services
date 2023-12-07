@@ -78,18 +78,12 @@ const data = {
       beschrijving: "Visie-cel, Coördinatoren, Stuurgroep",
       aantal_lesgevers: 1,
     },
-    {
-      groep_id: 9,
-      groep_naam: "Redders",
-      beschrijving: "Redders",
-      aantal_lesgevers: 0,
-    },
   ],
 };
 
 const dataToDelete = {
   lesgevers: [3, 4],
-  groepen: [1, 2, 4, 5, 6, 7, 8, 9],
+  groepen: [1, 2, 4, 5, 6, 7, 8],
 };
 
 describe("Lesgevers", () => {

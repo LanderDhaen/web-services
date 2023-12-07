@@ -3,6 +3,8 @@ const Router = require("@koa/router");
 const lesService = require("../service/les");
 const lesgeverschemaService = require("../service/lesgeverschema");
 const validate = require("../core/validation");
+const { requireAuthentication, makeRequireRole } = require("../core/auth");
+const Role = require("../core/roles");
 
 // Alle lessen ophalen
 
@@ -26,7 +28,7 @@ const createLes = async (ctx) => {
 
 createLes.validationScheme = {
   body: {
-    datum: Joi.date().iso().less("now"),
+    datum: Joi.date().iso(),
     lessenreeks_id: Joi.number().integer().positive(),
   },
 };
@@ -72,7 +74,7 @@ updateLesById.validationScheme = {
     id: Joi.number().integer().positive(),
   },
   body: {
-    datum: Joi.date().iso().less("now"),
+    datum: Joi.date().iso(),
     lessenreeks_id: Joi.number().integer().positive(),
   },
 };
@@ -89,22 +91,52 @@ deleteLesById.validationScheme = {
   },
 };
 
+// Rollen controleren
+
+const requireAdmin = makeRequireRole(Role.STUURGROEP);
+
 module.exports = (app) => {
   const router = new Router({
     prefix: "/lessen",
   });
 
-  router.get("/", validate(getAllLessen.validationScheme), getAllLessen);
-  router.post("/", validate(createLes.validationScheme), createLes);
-  router.get("/:id", validate(getLesById.validationScheme), getLesById);
+  router.get(
+    "/",
+    requireAuthentication,
+    validate(getAllLessen.validationScheme),
+    getAllLessen
+  );
+  router.post(
+    "/",
+    requireAuthentication,
+    requireAdmin,
+    validate(createLes.validationScheme),
+    createLes
+  );
+  router.get(
+    "/:id",
+    requireAuthentication,
+    validate(getLesById.validationScheme),
+    getLesById
+  );
   router.get(
     "/:id/lesgeverschemas",
+    requireAuthentication,
+    requireAdmin,
     validate(getLesgeverschemaByLesId.validationScheme),
     getLesgeverschemaByLesId
   );
-  router.put("/:id", validate(updateLesById.validationScheme), updateLesById);
+  router.put(
+    "/:id",
+    requireAuthentication,
+    requireAdmin,
+    validate(updateLesById.validationScheme),
+    updateLesById
+  );
   router.delete(
     "/:id",
+    requireAuthentication,
+    requireAdmin,
     validate(deleteLesById.validationScheme),
     deleteLesById
   );
