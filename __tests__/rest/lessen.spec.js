@@ -1,6 +1,6 @@
-const supertest = require("supertest");
-const createServer = require("../../src/createServer");
-const { tables, getKnex } = require("../../src/data");
+const { tables } = require("../../src/data");
+const { withServer, login } = require("../supertest.setup");
+const { testAuthHeader } = require("../common/auth");
 
 const data = {
   lessen: [

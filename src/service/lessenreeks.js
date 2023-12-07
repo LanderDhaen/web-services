@@ -53,14 +53,6 @@ const updateLessenreeksById = async (
   id,
   { jaargang, nummer, startdatum, einddatum }
 ) => {
-  const lessenreeks = await lessenreeksRepository.getLessenreeksById(id);
-
-  if (!lessenreeks) {
-    throw ServiceError.notFound(`Er bestaat geen lessenreeks met id ${id}!`, {
-      id,
-    });
-  }
-
   try {
     await lessenreeksRepository.updateLessenreeksById(id, {
       jaargang,

@@ -1,6 +1,7 @@
 const ServiceError = require("../core/serviceError");
 const handleDBError = require("./_handleDBError");
 const lesRepository = require("../repository/les");
+const lessenreeksService = require("../service/lessenreeks");
 
 // Alle lessen ophalen
 
@@ -29,6 +30,13 @@ const getLesById = async (id) => {
 // Lessen ophalen a.d.h.v lessenreeks_id
 
 const getLesByLessenreeksId = async (id) => {
+  const lessenreeks = await lessenreeksService.getLessenreeksById(id);
+  if (!lessenreeks) {
+    throw ServiceError.notFound(`Er bestaat geen lessenreeks met id ${id}!`, {
+      id,
+    });
+  }
+
   const lessen = await lesRepository.getLesByLessenreeksId(id);
   if (!lessen) {
     throw ServiceError.notFound(

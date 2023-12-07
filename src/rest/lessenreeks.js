@@ -32,8 +32,8 @@ createLessenreeks.validationScheme = {
   body: {
     jaargang: Joi.string().length(9),
     nummer: Joi.number().integer().positive().min(1).max(2),
-    startdatum: Joi.date().iso().less("now"),
-    einddatum: Joi.date().iso().less("now"),
+    startdatum: Joi.date().iso(),
+    einddatum: Joi.date().iso(),
   },
 };
 
@@ -83,8 +83,8 @@ updateLessenreeksById.validationScheme = {
   body: {
     jaargang: Joi.string().length(9),
     nummer: Joi.number().integer().positive().min(1).max(2),
-    startdatum: Joi.date().iso().less("now"),
-    einddatum: Joi.date().iso().less("now"),
+    startdatum: Joi.date().iso(),
+    einddatum: Joi.date().iso(),
   },
 };
 
@@ -114,14 +114,12 @@ module.exports = (app) => {
   router.get(
     "/",
     requireAuthentication,
-    requireAdmin,
     validate(getAllLessenreeks.validationScheme),
     getAllLessenreeks
   );
   router.get(
     "/:id",
     requireAuthentication,
-    requireAdmin,
     validate(getLessenreeksById.validationScheme),
     getLessenreeksById
   );
@@ -136,7 +134,6 @@ module.exports = (app) => {
   router.get(
     "/:id/lessen",
     requireAuthentication,
-    requireAdmin,
     validate(getLesByLessenreeksId.validationScheme),
     getLesByLessenreeksId
   );

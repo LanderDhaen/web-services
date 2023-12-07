@@ -1,6 +1,5 @@
 const { tables, getKnex } = require("../data/index");
 const { getLogger } = require("../core/logging");
-const ServiceError = require("../core/serviceError");
 const ObjectMapper = require("object-mapper");
 
 // Kolommen selecteren
@@ -53,15 +52,8 @@ const getLesById = async (id) => {
       "=",
       `${tables.lessenreeks}.lessenreeks_id`
     )
-    .select(SELECT_COLUMNS)
     .where("les_id", id)
-    .first();
-
-  if (!les) {
-    throw ServiceError.notFound(`Er bestaat geen les met id ${id}!`, {
-      id,
-    });
-  }
+    .first(SELECT_COLUMNS);
 
   return ObjectMapper(les, formatLes);
 };
@@ -78,15 +70,6 @@ const getLesByLessenreeksId = async (id) => {
     )
     .where(`${tables.les}.lessenreeks_id`, id)
     .select(SELECT_COLUMNS);
-
-  if (!lessen) {
-    throw ServiceError.notFound(
-      `Er bestaan geen lessen met lessenreeks id ${id}!`,
-      {
-        id,
-      }
-    );
-  }
 
   return lessen.map((les) => ObjectMapper(les, formatLes));
 };
