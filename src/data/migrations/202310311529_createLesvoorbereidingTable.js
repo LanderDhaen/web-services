@@ -9,7 +9,7 @@ module.exports = {
       table.string("lesvoorbereiding_type", 255).notNullable();
       table.string("link_to_PDF").notNullable();
       table.unique("link_to_PDF", "idx_link_to_PDF_unique");
-      table.string("feedback", 255).notNullable();
+      table.string("feedback", 255);
 
       table.integer("les_id").unsigned().notNullable();
 

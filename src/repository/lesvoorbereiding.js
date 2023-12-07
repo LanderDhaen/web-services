@@ -2,6 +2,7 @@ const { tables, getKnex } = require("../data/index");
 const { getLogger } = require("../core/logging");
 const ServiceError = require("../core/serviceError");
 const ObjectMapper = require("object-mapper");
+const { get } = require("config");
 
 // Kolommen selecteren
 
@@ -63,10 +64,6 @@ const getLesvoorbereidingById = async (id) => {
     .where("lesvoorbereiding_id", id)
     .first(SELECT_COLUMNS);
 
-  if (!lesvoorbereiding) {
-    throw ServiceError.notFound(`Lesvoorbereiding met id ${id} niet gevonden`);
-  }
-
   return ObjectMapper(lesvoorbereiding, formatLesvoorbereiding);
 };
 
@@ -83,10 +80,6 @@ const getLesvoorbereidingByGroepId = async (id) => {
     .where(`${tables.lesvoorbereiding}.groep_id`, id)
     .select(SELECT_COLUMNS)
     .orderBy(`${tables.lesvoorbereiding}.lesvoorbereiding_id`, "ASC");
-
-  if (!lesvoorbereidingen) {
-    throw ServiceError.notFound(`Groep met id ${id} niet gevonden`);
-  }
 
   return lesvoorbereidingen.map((lesvoorbereiding) =>
     ObjectMapper(lesvoorbereiding, formatLesvoorbereiding)
@@ -114,7 +107,10 @@ const createLesvoorbereiding = async ({
     });
     return id;
   } catch (error) {
-    throw handleDBError(error);
+    getLogger().error("Error creating lesvoorbereiding", {
+      error,
+    });
+    throw error;
   }
 };
 
@@ -131,29 +127,34 @@ const updateLesvoorbereidingById = async (
     groep_id,
   }
 ) => {
-  await getKnex()(tables.lesvoorbereiding)
-    .where("lesvoorbereiding_id", id)
-    .update({
-      lesvoorbereiding_naam,
-      lesvoorbereiding_type,
-      link_to_PDF,
-      feedback,
-      les_id,
-      groep_id,
+  try {
+    await getKnex()(tables.lesvoorbereiding)
+      .where("lesvoorbereiding_id", id)
+      .update({
+        lesvoorbereiding_naam,
+        lesvoorbereiding_type,
+        link_to_PDF,
+        feedback,
+        les_id,
+        groep_id,
+      });
+  } catch (error) {
+    getLogger().error("Error updating lesvoorbereiding", {
+      error,
     });
+    throw error;
+  }
 };
 
 // Lesvoorbereiding verwijderen a.d.h.v id
 
 const deleteLesvoorbereidingById = async (id) => {
   try {
-    const rijen = await getKnex()(tables.lesvoorbereiding)
+    await getKnex()(tables.lesvoorbereiding)
       .where("lesvoorbereiding_id", id)
       .del();
-
-    return rijen > 0;
   } catch (error) {
-    getLogger().error("Error in deleteLesvoorbereidingById", {
+    getLogger().error("Error ", {
       error,
     });
     throw error;

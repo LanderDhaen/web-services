@@ -1,8 +1,9 @@
 const Joi = require("joi");
 const Router = require("@koa/router");
 const lesvoorbereidingService = require("../service/lesvoorbereiding");
-const c = require("config");
 const validate = require("../core/validation");
+const { requireAuthentication, makeRequireRole } = require("../core/auth");
+const Role = require("../core/roles");
 
 // Alle lesvoorbereidingen ophalen
 
@@ -100,6 +101,10 @@ deleteLesvoorbereidingById.validationScheme = {
   },
 };
 
+// Rollen controleren
+
+const requireAdmin = makeRequireRole(Role.STUURGROEP);
+
 module.exports = (app) => {
   const router = new Router({
     prefix: "/lesvoorbereidingen",
@@ -107,26 +112,34 @@ module.exports = (app) => {
 
   router.get(
     "/",
+    requireAuthentication,
     validate(getAllLesvoorbereidingen.validationScheme),
     getAllLesvoorbereidingen
   );
   router.post(
     "/",
+    requireAuthentication,
+    requireAdmin,
     validate(createLesvoorbereiding.validationScheme),
     createLesvoorbereiding
   );
   router.get(
     "/:id",
+    requireAuthentication,
     validate(getLesvoorbereidingById.validationScheme),
     getLesvoorbereidingById
   );
   router.put(
     "/:id",
+    requireAuthentication,
+    requireAdmin,
     validate(updateLesvoorbereidingById.validationScheme),
     updateLesvoorbereidingById
   );
   router.delete(
     "/:id",
+    requireAuthentication,
+    requireAdmin,
     validate(deleteLesvoorbereidingById.validationScheme),
     deleteLesvoorbereidingById
   );

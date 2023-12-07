@@ -2,6 +2,7 @@ const ServiceError = require("../core/serviceError");
 const handleDBError = require("./_handleDBError");
 const lesvoorbereidingRepository = require("../repository/lesvoorbereiding");
 const groepService = require("../service/groep");
+const lesService = require("../service/les");
 
 // Alle lesvoorbereidingen ophalen
 
@@ -31,6 +32,14 @@ const getLesvoorbereidingById = async (id) => {
 // Lesvoorbereidingen ophalen a.d.h.v groep_id
 
 const getLesvoorbereidingByGroepId = async (id) => {
+  const bestaandeGroep = await groepService.getGroepById(id);
+
+  if (!bestaandeGroep) {
+    throw ServiceError.notFound(`Er bestaat geen groep met id ${id}!`, {
+      id,
+    });
+  }
+
   const lesvoorbereidingen =
     await lesvoorbereidingRepository.getLesvoorbereidingByGroepId(id);
 
@@ -57,6 +66,13 @@ const createLesvoorbereiding = async ({
   groep_id,
 }) => {
   const bestaandeGroep = await groepService.getGroepById(groep_id);
+  const bestaandeLes = await lesService.getLesById(les_id);
+
+  if (!bestaandeLes) {
+    throw ServiceError.notFound(`Er bestaat geen les met id ${les_id}!`, {
+      les_id,
+    });
+  }
 
   if (!bestaandeGroep) {
     throw ServiceError.notFound(`Er bestaat geen groep met id ${groep_id}!`, {
@@ -93,39 +109,51 @@ const updateLesvoorbereidingById = async (
   }
 ) => {
   const bestaandeGroep = await groepService.getGroepById(groep_id);
+  const bestaandeLes = await lesService.getLesById(les_id);
+
+  if (!bestaandeLes) {
+    throw ServiceError.notFound(`Er bestaat geen les met id ${les_id}!`, {
+      les_id,
+    });
+  }
+
   if (!bestaandeGroep) {
     throw ServiceError.notFound(`Er bestaat geen groep met id ${groep_id}!`, {
       groep_id,
     });
   }
 
-  await lesvoorbereidingRepository.updateLesvoorbereidingById(id, {
-    lesvoorbereiding_naam,
-    lesvoorbereiding_type,
-    link_to_PDF,
-    feedback,
-    les_id,
-    groep_id,
-  });
-
-  return getLesvoorbereidingById(id);
+  try {
+    await lesvoorbereidingRepository.updateLesvoorbereidingById(id, {
+      lesvoorbereiding_naam,
+      lesvoorbereiding_type,
+      link_to_PDF,
+      feedback,
+      les_id,
+      groep_id,
+    });
+    return getLesvoorbereidingById(id);
+  } catch (error) {
+    throw handleDBError(error);
+  }
 };
 
 // Lesvoorbereiding verwijderen a.d.h.v id
 
 const deleteLesvoorbereidingById = async (id) => {
-  try {
-    const deletedLesvoorbereiding =
-      await lesvoorbereidingRepository.deleteLesvoorbereidingById(id);
+  const lesvoorbereiding =
+    await lesvoorbereidingRepository.getLesvoorbereidingById(id);
 
-    if (!deletedLesvoorbereiding) {
-      throw ServiceError.notFound(
-        `Er bestaat geen lesvoorbereiding met id ${id}!`,
-        {
-          id,
-        }
-      );
-    }
+  if (!lesvoorbereiding) {
+    throw ServiceError.notFound(
+      `Er bestaat geen lesvoorbereiding met id ${id}!`,
+      {
+        id,
+      }
+    );
+  }
+  try {
+    await lesvoorbereidingRepository.deleteLesvoorbereidingById(id);
   } catch (error) {
     throw handleDBError(error);
   }
