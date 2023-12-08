@@ -113,6 +113,8 @@ const updateLesgeverById = async (
     email,
     GSM,
     groep_id,
+    password,
+    roles,
   }
 ) => {
   const bestaandeGroep = await groepService.getGroepById(groep_id);
@@ -123,31 +125,41 @@ const updateLesgeverById = async (
     });
   }
 
-  await lesgeverRepository.updateLesgeverById(id, {
-    lesgever_naam,
-    geboortedatum,
-    type,
-    aanwezigheidspercentage,
-    diploma,
-    imageURL,
-    email,
-    GSM,
-    groep_id,
-  });
-  return getLesgeverById(id);
+  try {
+    const password_hash = await hashPassword(password);
+
+    await lesgeverRepository.updateLesgeverById(id, {
+      lesgever_naam,
+      geboortedatum,
+      type,
+      aanwezigheidspercentage,
+      diploma,
+      imageURL,
+      email,
+      GSM,
+      groep_id,
+      password_hash,
+      roles,
+    });
+    return getLesgeverById(id);
+  } catch (error) {
+    throw handleDBError(error);
+  }
 };
 
 // Lesgever verwijderen a.d.h.v id
 
 const deleteLesgeverById = async (id) => {
-  try {
-    const deletedLesgever = await lesgeverRepository.deleteLesgeverById(id);
+  const lesgever = await lesgeverRepository.getLesgeverById(id);
 
-    if (!deletedLesgever) {
-      throw ServiceError.notFound(`Er bestaat geen lesgever met id ${id}!`, {
-        id,
-      });
-    }
+  if (!lesgever) {
+    throw ServiceError.notFound(`Er bestaat geen lesgever met id ${id}!`, {
+      id,
+    });
+  }
+
+  try {
+    await lesgeverRepository.deleteLesgeverById(id);
   } catch (error) {
     throw handleDBError(error);
   }

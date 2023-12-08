@@ -72,10 +72,6 @@ const getLesgeverById = async (id) => {
     .where("lesgever_id", id)
     .first(SELECT_COLUMNS);
 
-  if (!lesgever) {
-    throw ServiceError.notFound(`Lesgever met id ${id} niet gevonden`);
-  }
-
   return ObjectMapper(lesgever, formatLesgever);
 };
 
@@ -98,12 +94,6 @@ const getLesgeverByGroepId = async (id) => {
     .where(`${tables.lesgever}.groep_id`, id)
     .select(SELECT_COLUMNS);
 
-  if (!lesgevers) {
-    throw ServiceError.notFound(
-      `Er bestaan geen lessen met lessenreeks id ${id}`
-    );
-  }
-
   return lesgevers.map((lesgever) => ObjectMapper(lesgever, formatLesgever));
 };
 
@@ -122,21 +112,27 @@ const createLesgever = async ({
   password_hash,
   roles,
 }) => {
-  const [id] = await getKnex()(tables.lesgever).insert({
-    lesgever_naam,
-    geboortedatum,
-    type,
-    aanwezigheidspercentage,
-    diploma,
-    imageURL,
-    email,
-    GSM,
-    groep_id,
-    password_hash,
-    roles: JSON.stringify(roles),
-  });
+  try {
+    const [id] = await getKnex()(tables.lesgever).insert({
+      lesgever_naam,
+      geboortedatum,
+      type,
+      aanwezigheidspercentage,
+      diploma,
+      imageURL,
+      email,
+      GSM,
+      groep_id,
+      password_hash,
+      roles: JSON.stringify(roles),
+    });
 
-  return id;
+    return id;
+  } catch (error) {
+    getLogger().error("Error creating lesgever", { error });
+
+    throw error;
+  }
 };
 
 // Lesgever updaten a.d.h.v id
@@ -153,32 +149,39 @@ const updateLesgeverById = async (
     email,
     GSM,
     groep_id,
+    password_hash,
+    roles,
   }
 ) => {
-  await getKnex()(tables.lesgever).where("lesgever_id", id).update({
-    lesgever_naam,
-    geboortedatum,
-    type,
-    aanwezigheidspercentage,
-    diploma,
-    imageURL,
-    email,
-    GSM,
-    groep_id,
-  });
+  try {
+    await getKnex()(tables.lesgever)
+      .where("lesgever_id", id)
+      .update({
+        lesgever_naam,
+        geboortedatum,
+        type,
+        aanwezigheidspercentage,
+        diploma,
+        imageURL,
+        email,
+        GSM,
+        groep_id,
+        password_hash,
+        roles: JSON.stringify(roles),
+      });
+  } catch (error) {
+    getLogger().error("Error updating lesgever", { error });
+    throw error;
+  }
 };
 
 // Lesgever verwijderen a.d.h.v id
 
 const deleteLesgeverById = async (id) => {
   try {
-    const rijen = await getKnex()(tables.lesgever)
-      .where("lesgever_id", id)
-      .del();
-
-    return rijen > 0;
+    await getKnex()(tables.lesgever).where("lesgever_id", id).del();
   } catch (error) {
-    getLogger().error("Error in deleteLesgeverById", { error });
+    getLogger().error("Error deleting lesgever", { error });
     throw error;
   }
 };

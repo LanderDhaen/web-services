@@ -89,6 +89,8 @@ const updateLesgeverById = async (ctx) => {
     email: String(ctx.request.body.email),
     GSM: String(ctx.request.body.GSM),
     groep_id: Number(ctx.request.body.groep_id),
+    password: String(ctx.request.body.password),
+    roles: String(ctx.request.body.roles),
   });
 };
 
@@ -106,6 +108,8 @@ updateLesgeverById.validationScheme = {
     email: Joi.string().email(),
     GSM: Joi.string().length(10),
     groep_id: Joi.number().integer().positive(),
+    password: Joi.string().min(8).required(),
+    roles: Joi.string(),
   },
 };
 
