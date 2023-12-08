@@ -348,7 +348,7 @@ describe("Lesgevers", () => {
     // Test
     test("should 200 and return the updated lesgever", async () => {
       const response = await request
-        .put(`${URL}/1`)
+        .put(`${URL}/3`)
         .set("Authorization", adminAuthHeader)
         .send({
           lesgever_naam: "Lander Dhaen 2.0",
