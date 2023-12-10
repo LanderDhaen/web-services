@@ -1,6 +1,9 @@
 const ServiceError = require("../core/serviceError");
 const handleDBError = require("./_handleDBError");
 const lesgeverschemaRepository = require("../repository/lesgeverschema");
+const groepService = require("../service/groep");
+const lesgeverService = require("../service/lesgever");
+const lesService = require("../service/les");
 
 // Alle lesgeverschema's ophalen
 
@@ -66,6 +69,33 @@ const getLesgeverschemaByLesgeverId = async (id) => {
 // Lesgeverschema aanmaken
 
 const createLesgeverschema = async ({ groep_id, lesgever_id, les_id }) => {
+  const bestaandeGroep = await groepService.getGroepById(groep_id);
+
+  if (!bestaandeGroep) {
+    throw ServiceError.notFound(`Er bestaat geen groep met id ${groep_id}!`, {
+      groep_id,
+    });
+  }
+
+  const bestaandeLesgever = await lesgeverService.getLesgeverById(lesgever_id);
+
+  if (!bestaandeLesgever) {
+    throw ServiceError.notFound(
+      `Er bestaat geen lesgever met id ${lesgever_id}!`,
+      {
+        lesgever_id,
+      }
+    );
+  }
+
+  const bestaandeLes = await lesService.getLesById(les_id);
+
+  if (!bestaandeLes) {
+    throw ServiceError.notFound(`Er bestaat geen les met id ${les_id}!`, {
+      les_id,
+    });
+  }
+
   try {
     const id = await lesgeverschemaRepository.createLesgeverschema({
       groep_id,
@@ -84,8 +114,34 @@ const updateLesgeverschemaById = async (
   id,
   { groep_id, lesgever_id, les_id }
 ) => {
+  const bestaandeGroep = await groepService.getGroepById(groep_id);
+
+  if (!bestaandeGroep) {
+    throw ServiceError.notFound(`Er bestaat geen groep met id ${groep_id}!`, {
+      groep_id,
+    });
+  }
+
+  const bestaandeLesgever = await lesgeverService.getLesgeverById(lesgever_id);
+
+  if (!bestaandeLesgever) {
+    throw ServiceError.notFound(
+      `Er bestaat geen lesgever met id ${lesgever_id}!`,
+      {
+        lesgever_id,
+      }
+    );
+  }
+
+  const bestaandeLes = await lesService.getLesById(les_id);
+
+  if (!bestaandeLes) {
+    throw ServiceError.notFound(`Er bestaat geen les met id ${les_id}!`, {
+      les_id,
+    });
+  }
+
   try {
-    await getLesgeverschemaById(id);
     await lesgeverschemaRepository.updateLesgeverschemaById(id, {
       groep_id,
       lesgever_id,
@@ -100,8 +156,9 @@ const updateLesgeverschemaById = async (
 // Lesgeverschema verwijderen a.d.h.v. lesgever_id
 
 const deleteLesgeverschemaById = async (id) => {
-  const lesgeverschema =
-    await lesgeverschemaRepository.deleteLesgeverschemaById(id);
+  const lesgeverschema = await lesgeverschemaRepository.getLesgeverschemaById(
+    id
+  );
 
   if (!lesgeverschema) {
     throw ServiceError.notFound(
@@ -112,7 +169,11 @@ const deleteLesgeverschemaById = async (id) => {
     );
   }
 
-  return lesgeverschema;
+  try {
+    await lesgeverschemaRepository.deleteLesgeverschemaById(id);
+  } catch (error) {
+    throw handleDBError(error);
+  }
 };
 
 module.exports = {

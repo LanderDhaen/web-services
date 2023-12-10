@@ -2,6 +2,8 @@ const Joi = require("joi");
 const Router = require("@koa/router");
 const lesgeverschemaService = require("../service/lesgeverschema");
 const validate = require("../core/validation");
+const { requireAuthentication, makeRequireRole } = require("../core/auth");
+const Role = require("../core/roles");
 
 // Alle lesgeverschema's ophalen
 
@@ -71,6 +73,10 @@ deleteLesgeverschemaById.validationScheme = {
   },
 };
 
+// Rollen controleren
+
+const requireAdmin = makeRequireRole(Role.STUURGROEP);
+
 module.exports = (app) => {
   const router = new Router({
     prefix: "/lesgeverschemas",
@@ -78,24 +84,32 @@ module.exports = (app) => {
 
   router.get(
     "/",
+    requireAuthentication,
+    requireAdmin,
     validate(getAllLesgeverschema.validationScheme),
     getAllLesgeverschema
   );
 
   router.post(
     "/",
+    requireAuthentication,
+    requireAdmin,
     validate(createLesgeverschema.validationScheme),
     createLesgeverschema
   );
 
   router.put(
     "/:id",
+    requireAuthentication,
+    requireAdmin,
     validate(updateLesgeverschemaById.validationScheme),
     updateLesgeverschemaById
   );
 
   router.delete(
     "/:id",
+    requireAuthentication,
+    requireAdmin,
     validate(deleteLesgeverschemaById.validationScheme),
     deleteLesgeverschemaById
   );

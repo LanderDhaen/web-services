@@ -175,86 +175,74 @@ const getLesgeverschemaById = async (id) => {
     .orderBy(`${tables.les}.les_id`, "ASC")
     .first();
 
-  if (!lesgeverschema) {
-    throw ServiceError.notFound(
-      `Er bestaat geen lesgeverschema met id ${id}!`,
-      {
-        id,
-      }
-    );
-  }
-
   return formatLesgeverschemas([lesgeverschema])[0];
 };
 
 // Lesgeverschema ophalen a.d.h.v. les_id
 
 const getLesgeverschemaByLesId = async (id) => {
-  const lesgeverschemas = await getKnex()(tables.lesgeverschema)
-    .join(
-      tables.lesgever,
-      `${tables.lesgeverschema}.lesgever_id`,
-      "=",
-      `${tables.lesgever}.lesgever_id`
-    )
-    .join(
-      tables.les,
-      `${tables.lesgeverschema}.les_id`,
-      "=",
-      `${tables.les}.les_id`
-    )
-    .join(
-      tables.lessenreeks,
-      `${tables.les}.lessenreeks_id`,
-      "=",
-      `${tables.lessenreeks}.lessenreeks_id`
-    )
-    .select(SELECT_COLUMNS)
-    .where(`${tables.les}.les_id`, id)
-    .orderBy(`${tables.les}.les_id`, "ASC");
+  try {
+    const lesgeverschemas = await getKnex()(tables.lesgeverschema)
+      .join(
+        tables.lesgever,
+        `${tables.lesgeverschema}.lesgever_id`,
+        "=",
+        `${tables.lesgever}.lesgever_id`
+      )
+      .join(
+        tables.les,
+        `${tables.lesgeverschema}.les_id`,
+        "=",
+        `${tables.les}.les_id`
+      )
+      .join(
+        tables.lessenreeks,
+        `${tables.les}.lessenreeks_id`,
+        "=",
+        `${tables.lessenreeks}.lessenreeks_id`
+      )
+      .select(SELECT_COLUMNS)
+      .where(`${tables.les}.les_id`, id)
+      .orderBy(`${tables.les}.les_id`, "ASC");
 
-  if (!lesgeverschemas) {
-    throw ServiceError.notFound(
-      `Er bestaat geen lesgeverschema met les_id ${id}!`,
-      {
-        id,
-      }
-    );
+    return formatLesgeverschemas(lesgeverschemas);
+  } catch (error) {
+    getLogger().error("Error getting lesgeverschema by les_id", { error });
+    throw error;
   }
-
-  return formatLesgeverschemas(lesgeverschemas);
 };
 
 // Lesgeverschema ophalen a.d.h.v. lesgever_id
 
 const getLesgeverschemaByLesgeverId = async (id) => {
-  const lesgeverschemas = await getKnex()(tables.lesgeverschema)
-    .select("*")
-    .where(`${tables.lesgeverschema}.lesgever_id`, id)
-    .orderBy(`${tables.lesgeverschema}.les_id`, "ASC");
+  try {
+    const lesgeverschemas = await getKnex()(tables.lesgeverschema)
+      .select("*")
+      .where(`${tables.lesgeverschema}.lesgever_id`, id)
+      .orderBy(`${tables.lesgeverschema}.les_id`, "ASC");
 
-  if (!lesgeverschemas) {
-    throw ServiceError.notFound(
-      `Er bestaat geen lesgeverschema met lesgever_id ${id}!`,
-      {
-        id,
-      }
-    );
+    return lesgeverschemas;
+  } catch (error) {
+    getLogger().error("Error getting lesgeverschema by lesgever_id", { error });
+    throw error;
   }
-
-  return lesgeverschemas;
 };
 
 // Lesgeverschema aanmaken
 
 const createLesgeverschema = async ({ groep_id, lesgever_id, les_id }) => {
-  const [id] = await getKnex()(tables.lesgeverschema).insert({
-    les_id,
-    groep_id,
-    lesgever_id,
-  });
+  try {
+    const [id] = await getKnex()(tables.lesgeverschema).insert({
+      les_id,
+      groep_id,
+      lesgever_id,
+    });
 
-  return id;
+    return id;
+  } catch (error) {
+    getLogger().error("Error creating lesgeverschema", { error });
+    throw error;
+  }
 };
 
 // Lesgeverschema updaten a.d.h.v. id
@@ -263,32 +251,30 @@ const updateLesgeverschemaById = async (
   id,
   { groep_id, lesgever_id, les_id }
 ) => {
-  await getKnex()(tables.lesgeverschema)
-    .where(`${tables.lesgeverschema}.les_lesgever_id`, id)
-    .update({
-      les_id,
-      groep_id,
-      lesgever_id,
-    });
+  try {
+    await getKnex()(tables.lesgeverschema)
+      .where(`${tables.lesgeverschema}.les_lesgever_id`, id)
+      .update({
+        les_id,
+        groep_id,
+        lesgever_id,
+      });
+  } catch (error) {
+    getLogger().error("Error updating lesgeverschema", { error });
+  }
 };
 
 // Lesgeverschema verwijderen a.d.h.v. id
 
 const deleteLesgeverschemaById = async (id) => {
-  const lesgeverschema = await getKnex()(tables.lesgeverschema)
-    .where(`${tables.lesgeverschema}.les_lesgever_id`, id)
-    .del();
-
-  if (!lesgeverschema) {
-    throw ServiceError.notFound(
-      `Er bestaat geen lesgeverschema met ID ${id}!`,
-      {
-        id,
-      }
-    );
+  try {
+    const lesgeverschema = await getKnex()(tables.lesgeverschema)
+      .where(`${tables.lesgeverschema}.les_lesgever_id`, id)
+      .del();
+  } catch (error) {
+    getLogger().error("Error deleting lesgeverschema", { error });
+    throw error;
   }
-
-  return lesgeverschema;
 };
 
 module.exports = {
