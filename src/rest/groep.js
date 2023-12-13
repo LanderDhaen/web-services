@@ -99,7 +99,7 @@ updateGroepById.validationScheme = {
 // Groep verwijderen a.d.h.v id
 
 const deleteGroepById = async (ctx) => {
-  groepService.deleteGroepById(Number(ctx.params.id));
+  await groepService.deleteGroepById(Number(ctx.params.id));
   ctx.status = 204;
 };
 

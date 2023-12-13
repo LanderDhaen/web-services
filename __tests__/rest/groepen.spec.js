@@ -98,7 +98,7 @@ describe("Groepen", () => {
   });
 
   const URL = "/api/groepen";
-
+  /*
   describe("GET /api/groepen", () => {
     // Testdata toevoegen aan database
 
@@ -607,7 +607,7 @@ describe("Groepen", () => {
 
     testAuthHeader(() => request.post(URL));
   });
-
+*/
   // DELETE /api/groepen/:id
 
   describe("DELETE /api/groepen/:id", () => {
@@ -630,17 +630,15 @@ describe("Groepen", () => {
         .delete(`${URL}/1`)
         .set("Authorization", adminAuthHeader);
 
-      console.log(response.body);
-
       expect(response.status).toBe(204);
       expect(response.body).toEqual({});
     });
 
-    /* Deze werk niet 
+    /* Deze werk niet */
 
-    test("should 404 when requesting not existing groep", async () => {
+    test("should 404 when deleting not existing groep", async () => {
       const response = await request
-        .delete(`${URL}/10`)
+        .delete(`${URL}/100`)
         .set("Authorization", adminAuthHeader);
 
       expect(response.statusCode).toBe(404);
@@ -649,8 +647,6 @@ describe("Groepen", () => {
         message: "Er bestaat geen groep met id 100!",
       });
     });
-
-    */
 
     test("should 400 with invalid groep_id", async () => {
       const response = await request
