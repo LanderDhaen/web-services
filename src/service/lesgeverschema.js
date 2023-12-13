@@ -4,6 +4,7 @@ const lesgeverschemaRepository = require("../repository/lesgeverschema");
 const groepService = require("../service/groep");
 const lesgeverService = require("../service/lesgever");
 const lesService = require("../service/les");
+const lesgever = require("../rest/lesgever");
 
 // Alle lesgeverschema's ophalen
 
@@ -34,6 +35,14 @@ const getLesgeverschemaById = async (id) => {
 // Lesgeverschema ophalen a.d.h.v. les_id
 
 const getLesgeverschemaByLesId = async (id) => {
+  const les = await lesService.getLesById(id);
+
+  if (!les) {
+    throw ServiceError.notFound(`Er bestaat geen les met id ${id}!`, {
+      id,
+    });
+  }
+
   const lesgeverschema =
     await lesgeverschemaRepository.getLesgeverschemaByLesId(id);
 
@@ -51,6 +60,17 @@ const getLesgeverschemaByLesId = async (id) => {
 
 // Lesgeverschema ophalen a.d.h.v. lesgever_id
 const getLesgeverschemaByLesgeverId = async (id) => {
+  const lesgever = await lesgeverService.getLesgeverById(id);
+
+  if (!lesgever) {
+    throw ServiceError.notFound(
+      `Er bestaat geen lesgeverschema voor lesgever_id ${id}!`,
+      {
+        id,
+      }
+    );
+  }
+
   const lesgeverschema =
     await lesgeverschemaRepository.getLesgeverschemaByLesgeverId(id);
 

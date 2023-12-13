@@ -37,11 +37,32 @@ const data = {
       einddatum: new Date(2024, 8, 30, 0),
     },
   ],
+  schemas: [
+    {
+      les_lesgever_id: 1,
+      les_id: 1,
+      groep_id: 9,
+      lesgever_id: 1,
+    },
+    {
+      les_lesgever_id: 2,
+      les_id: 1,
+      groep_id: 9,
+      lesgever_id: 2,
+    },
+    {
+      les_lesgever_id: 3,
+      les_id: 15,
+      groep_id: 9,
+      lesgever_id: 1,
+    },
+  ],
 };
 
 const dataToDelete = {
   lessenreeksen: [1, 2],
   lessen: [1, 15, 7],
+  schemas: [1, 2, 3],
 };
 
 describe("Lessen", () => {
@@ -193,6 +214,124 @@ describe("Lessen", () => {
     });
 
     testAuthHeader(() => request.get(`${URL}/1`));
+  });
+
+  // GET /api/lessen/:id/lesgeverschemas
+
+  describe("GET /api/:id/lesgeverschemas", () => {
+    // Testdata toevoegen aan database
+
+    beforeAll(async () => {
+      await knex(tables.lessenreeks).insert(data.lessenreeksen);
+      await knex(tables.les).insert(data.lessen);
+      await knex(tables.lesgeverschema).insert(data.schemas);
+    });
+
+    // Testdata verwijderen uit database
+
+    afterAll(async () => {
+      await knex(tables.lesgeverschema)
+        .whereIn("les_lesgever_id", dataToDelete.schemas)
+        .del();
+      await knex(tables.les).whereIn("les_id", dataToDelete.lessen).del();
+      await knex(tables.lessenreeks)
+        .whereIn("lessenreeks_id", dataToDelete.lessenreeksen)
+        .del();
+    });
+
+    // Test
+
+    test("should 200 and return the correct schemas for the requested les", async () => {
+      const response = await request
+        .get(`${URL}/1/lesgeverschemas`)
+        .set("Authorization", adminAuthHeader);
+
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual([
+        {
+          les_id: 1,
+          datum: "2023-09-30T22:00:00.000Z",
+          lessenreeks: {
+            lessenreeks_id: 1,
+            jaargang: "2023-2024",
+            nummer: 1,
+            startdatum: new Date(2023, 9, 1, 0).toJSON(),
+            einddatum: new Date(2023, 12, 30, 0).toJSON(),
+          },
+          groepen: [
+            {
+              groep_id_schema: 9,
+              lesgevers: [
+                {
+                  les_lesgever_id: 1,
+                  lesgever_id: 1,
+                  lesgever_naam: "Test User",
+                  geboortedatum: new Date(2001, 3, 30, 0).toJSON(),
+                  type: "Lesvrij",
+                  aanwezigheidspercentage: 100,
+                  diploma: "Redder",
+                  imageURL: "",
+                  email: "test.user@gmail.com",
+                  GSM: "0491882278",
+                  groep_id: 9,
+                },
+                {
+                  les_lesgever_id: 2,
+                  lesgever_id: 2,
+                  lesgever_naam: "Admin User",
+                  geboortedatum: new Date(2001, 3, 30, 0).toJSON(),
+                  type: "Verantwoordelijke",
+                  aanwezigheidspercentage: 100,
+                  diploma: "Animator",
+                  imageURL: "",
+                  email: "test.admin@gmail.com",
+                  GSM: "0491228878",
+                  groep_id: 9,
+                },
+              ],
+            },
+          ],
+        },
+      ]);
+    });
+
+    test("should 404 when requesting not existing les", async () => {
+      const response = await request
+        .get(`${URL}/6/lesgeverschemas`)
+        .set("Authorization", adminAuthHeader);
+
+      expect(response.statusCode).toBe(404);
+      expect(response.body).toMatchObject({
+        code: "NOT_FOUND",
+        message: "Er bestaat geen les met id 6!",
+      });
+      expect(response.body.stack).toBeTruthy();
+    });
+
+    test("should 400 with invalid les_id", async () => {
+      const response = await request
+        .get(`${URL}/invalid/lesgeverschemas`)
+        .set("Authorization", adminAuthHeader);
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.code).toBe("VALIDATION_FAILED");
+      expect(response.body.details.params).toHaveProperty("id");
+    });
+
+    test("should 403 when not admin", async () => {
+      const response = await request
+        .get(`${URL}/1/lesgeverschemas`)
+        .set("Authorization", authHeader);
+
+      expect(response.statusCode).toBe(403);
+      expect(response.body).toMatchObject({
+        code: "FORBIDDEN",
+        message: "You are not allowed to view this part of the application",
+      });
+      expect(response.body.stack).toBeTruthy();
+    });
+
+    testAuthHeader(() => request.get(`${URL}/1/lesgeverschemas`));
   });
 
   // PUT /api/lessen/:id

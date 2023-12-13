@@ -425,7 +425,7 @@ describe("Lesgevers", () => {
 
     test("should 404 when requesting not existing lesgever", async () => {
       const response = await request
-        .get(`${URL}/6`)
+        .get(`${URL}/6/lesgeverschemas`)
         .set("Authorization", adminAuthHeader);
 
       expect(response.statusCode).toBe(404);
@@ -438,7 +438,7 @@ describe("Lesgevers", () => {
 
     test("should 400 with invalid lesgever_id", async () => {
       const response = await request
-        .get(`${URL}/invalid`)
+        .get(`${URL}/invalid/lesgeverschemas`)
         .set("Authorization", authHeader);
 
       expect(response.statusCode).toBe(400);
@@ -448,7 +448,7 @@ describe("Lesgevers", () => {
 
     test("should 403 when not admin and requesting different user", async () => {
       const response = await request
-        .get(`${URL}/3`)
+        .get(`${URL}/3/lesgeverschemas`)
         .set("Authorization", authHeader);
 
       expect(response.statusCode).toBe(403);
