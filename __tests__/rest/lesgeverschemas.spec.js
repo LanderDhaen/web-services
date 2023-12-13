@@ -261,35 +261,10 @@ describe("Lesgeverschemas", () => {
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual({
+        les_lesgever_id: 1,
         les_id: 1,
-        datum: new Date(2023, 9, 1, 0).toJSON(),
-        lessenreeks: {
-          lessenreeks_id: 1,
-          jaargang: "2023-2024",
-          nummer: 1,
-          startdatum: new Date(2023, 9, 1, 0).toJSON(),
-          einddatum: new Date(2023, 12, 30, 0).toJSON(),
-        },
-        groepen: [
-          {
-            groep_id_schema: 7,
-            lesgevers: [
-              {
-                les_lesgever_id: 1,
-                lesgever_id: 2,
-                lesgever_naam: "Admin User",
-                geboortedatum: new Date(2001, 3, 30, 0).toJSON(),
-                type: "Verantwoordelijke",
-                aanwezigheidspercentage: 100,
-                diploma: "Animator",
-                imageURL: "",
-                email: "test.admin@gmail.com",
-                GSM: "0491228878",
-                groep_id: 9,
-              },
-            ],
-          },
-        ],
+        groep_id: 7,
+        lesgever_id: 2,
       });
     });
 
@@ -470,16 +445,12 @@ describe("Lesgeverschemas", () => {
         });
 
       expect(response.status).toBe(201);
-      expect(
-        response.body.groepen[0].lesgevers[0].les_lesgever_id
-      ).toBeTruthy();
-      expect(response.body.les_id).toBe(1);
-      expect(response.body.groepen[0].groep_id_schema).toBe(7);
-      expect(response.body.groepen[0].lesgevers[0].lesgever_id).toBe(3);
+      expect(response.body.les_id).toEqual(1);
+      expect(response.body.groep_id).toEqual(7);
+      expect(response.body.lesgever_id).toEqual(3);
+      expect(response.body.les_lesgever_id).toBeTruthy();
 
-      schemaToDelete.push(
-        response.body.groepen[0].lesgevers[0].les_lesgever_id
-      );
+      schemaToDelete.push(response.body.les_lesgever_id);
     });
 
     test("should 400 when missing les_id", async () => {
@@ -641,6 +612,18 @@ describe("Lesgeverschemas", () => {
 
       expect(response.status).toBe(204);
       expect(response.body).toEqual({});
+    });
+
+    test("should 404 when deleting not existing schema", async () => {
+      const response = await request
+        .delete(`${URL}/100`)
+        .set("Authorization", adminAuthHeader);
+
+      expect(response.statusCode).toBe(404);
+      expect(response.body).toMatchObject({
+        code: "NOT_FOUND",
+        message: "Er bestaat geen lesgeverschema met id 100!",
+      });
     });
 
     test("should 400 with invalid les_lesgever_id", async () => {

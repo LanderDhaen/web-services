@@ -152,30 +152,12 @@ const getAllLesgeverschema = async () => {
 
 const getLesgeverschemaById = async (id) => {
   const lesgeverschema = await getKnex()(tables.lesgeverschema)
-    .join(
-      tables.lesgever,
-      `${tables.lesgeverschema}.lesgever_id`,
-      "=",
-      `${tables.lesgever}.lesgever_id`
-    )
-    .join(
-      tables.les,
-      `${tables.lesgeverschema}.les_id`,
-      "=",
-      `${tables.les}.les_id`
-    )
-    .join(
-      tables.lessenreeks,
-      `${tables.les}.lessenreeks_id`,
-      "=",
-      `${tables.lessenreeks}.lessenreeks_id`
-    )
-    .select(SELECT_COLUMNS)
+    .select("*")
     .where(`${tables.lesgeverschema}.les_lesgever_id`, id)
-    .orderBy(`${tables.les}.les_id`, "ASC")
+    .orderBy(`${tables.lesgeverschema}.les_id`, "ASC")
     .first();
 
-  return formatLesgeverschemas([lesgeverschema])[0];
+  return lesgeverschema;
 };
 
 // Lesgeverschema ophalen a.d.h.v. les_id

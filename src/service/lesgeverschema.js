@@ -20,15 +20,6 @@ const getLesgeverschemaById = async (id) => {
     id
   );
 
-  if (!lesgeverschema) {
-    throw ServiceError.notFound(
-      `Er bestaat geen lesgeverschema met id ${id}!`,
-      {
-        id,
-      }
-    );
-  }
-
   return lesgeverschema;
 };
 
