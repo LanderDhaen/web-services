@@ -98,7 +98,7 @@ describe("Groepen", () => {
   });
 
   const URL = "/api/groepen";
-  /*
+
   describe("GET /api/groepen", () => {
     // Testdata toevoegen aan database
 
@@ -607,7 +607,7 @@ describe("Groepen", () => {
 
     testAuthHeader(() => request.post(URL));
   });
-*/
+
   // DELETE /api/groepen/:id
 
   describe("DELETE /api/groepen/:id", () => {
@@ -633,8 +633,6 @@ describe("Groepen", () => {
       expect(response.status).toBe(204);
       expect(response.body).toEqual({});
     });
-
-    /* Deze werk niet */
 
     test("should 404 when deleting not existing groep", async () => {
       const response = await request

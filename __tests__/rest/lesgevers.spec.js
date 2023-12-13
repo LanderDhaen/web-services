@@ -85,11 +85,55 @@ const data = {
       aantal_lesgevers: 1,
     },
   ],
+  lessenreeksen: [
+    {
+      lessenreeks_id: 1,
+      jaargang: "2023-2024",
+      nummer: 1,
+      startdatum: new Date(2023, 9, 1, 0),
+      einddatum: new Date(2023, 12, 30, 0),
+    },
+  ],
+  lessen: [
+    {
+      les_id: 1,
+      datum: new Date("2023-09-01"),
+      lessenreeks_id: 1,
+    },
+    {
+      les_id: 2,
+      datum: new Date("2023-09-08"),
+      lessenreeks_id: 1,
+    },
+  ],
+  schemas: [
+    {
+      les_lesgever_id: 1,
+      les_id: 1,
+      groep_id: 3,
+      lesgever_id: 1,
+    },
+    {
+      les_lesgever_id: 2,
+      les_id: 1,
+      groep_id: 7,
+      lesgever_id: 2,
+    },
+    {
+      les_lesgever_id: 3,
+      les_id: 2,
+      groep_id: 7,
+      lesgever_id: 1,
+    },
+  ],
 };
 
 const dataToDelete = {
   lesgevers: [3, 4],
   groepen: [1, 2, 3, 4, 5, 6, 7, 8],
+  lessenreeksen: [1],
+  lessen: [1, 2],
+  schemas: [1, 2, 3],
 };
 
 describe("Lesgevers", () => {
@@ -324,6 +368,98 @@ describe("Lesgevers", () => {
     });
 
     testAuthHeader(() => request.get(`${URL}/1`));
+  });
+
+  // GET /api/lesgevers/:id/lesgeverschemas
+
+  describe("GET /api/:id/lesgeverschemas", () => {
+    // Testdata toevoegen aan database
+
+    beforeAll(async () => {
+      await knex(tables.groep).insert(data.groepen);
+      await knex(tables.lesgever).insert(data.lesgevers);
+      await knex(tables.lessenreeks).insert(data.lessenreeksen);
+      await knex(tables.les).insert(data.lessen);
+      await knex(tables.lesgeverschema).insert(data.schemas);
+    });
+
+    // Testdata verwijderen uit database
+
+    afterAll(async () => {
+      await knex(tables.lesgeverschema)
+        .whereIn("les_lesgever_id", dataToDelete.schemas)
+        .del();
+      await knex(tables.les).whereIn("les_id", dataToDelete.lessen).del();
+      await knex(tables.lessenreeks)
+        .whereIn("lessenreeks_id", dataToDelete.lessenreeksen)
+        .del();
+      await knex(tables.groep).whereIn("groep_id", dataToDelete.groepen).del();
+      await knex(tables.lesgever)
+        .whereIn("lesgever_id", dataToDelete.lesgevers)
+        .del();
+    });
+
+    // Test
+
+    test("should 200 and return the correct schemas for the requested lesgever", async () => {
+      const response = await request
+        .get(`${URL}/1/lesgeverschemas`)
+        .set("Authorization", authHeader);
+
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual([
+        {
+          les_lesgever_id: 1,
+          les_id: 1,
+          groep_id: 3,
+          lesgever_id: 1,
+        },
+        {
+          les_lesgever_id: 3,
+          les_id: 2,
+          groep_id: 7,
+          lesgever_id: 1,
+        },
+      ]);
+    });
+
+    test("should 404 when requesting not existing lesgever", async () => {
+      const response = await request
+        .get(`${URL}/6`)
+        .set("Authorization", adminAuthHeader);
+
+      expect(response.statusCode).toBe(404);
+      expect(response.body).toMatchObject({
+        code: "NOT_FOUND",
+        message: "Er bestaat geen lesgever met id 6!",
+      });
+      expect(response.body.stack).toBeTruthy();
+    });
+
+    test("should 400 with invalid lesgever_id", async () => {
+      const response = await request
+        .get(`${URL}/invalid`)
+        .set("Authorization", authHeader);
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body.code).toBe("VALIDATION_FAILED");
+      expect(response.body.details.params).toHaveProperty("id");
+    });
+
+    test("should 403 when not admin and requesting different user", async () => {
+      const response = await request
+        .get(`${URL}/3`)
+        .set("Authorization", authHeader);
+
+      expect(response.statusCode).toBe(403);
+      expect(response.body).toMatchObject({
+        code: "FORBIDDEN",
+        message: "You are not allowed to view this user's information",
+      });
+      expect(response.body.stack).toBeTruthy();
+    });
+
+    testAuthHeader(() => request.get(`${URL}/1/lesgeverschemas`));
   });
 
   // PUT /api/lesgevers/:id
