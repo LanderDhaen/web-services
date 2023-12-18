@@ -550,6 +550,7 @@ describe("Lesvoorbereidingen", () => {
       await knex(tables.groep).insert(data.groepen);
       await knex(tables.lessenreeks).insert(data.lessenreeksen);
       await knex(tables.les).insert(data.lessen);
+      await knex(tables.lesvoorbereiding).insert(data.lesvoorbereidingen[0]);
     });
 
     // Testdata verwijderen uit database
@@ -598,6 +599,31 @@ describe("Lesvoorbereidingen", () => {
       });
 
       lesvoorBereidingenToDelete.push(response.body.lesvoorbereiding_id);
+    });
+
+    test("should 400 when duplicate link_to_PDF", async () => {
+      const response = await request
+        .post(URL)
+        .set("Authorization", adminAuthHeader)
+        .send({
+          lesvoorbereiding_naam: "Tester de tester gaat testen",
+          lesvoorbereiding_type: "Test Les",
+          link_to_PDF: "https://www.google.com",
+          feedback: "Dit is de les vanuit de testklasse",
+          les_id: 15,
+          groep_id: 3,
+        });
+
+      console.log(response.body);
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body).toMatchObject({
+        code: "VALIDATION_FAILED",
+        message: "Er bestaat al een lesvoorbereiding met deze link",
+      });
+      expect(response.body.stack).toBeTruthy();
+
+      lesvoorBereidingenToDelete.push(1);
     });
 
     test("should 404 when les does not exist", async () => {

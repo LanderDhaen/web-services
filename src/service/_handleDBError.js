@@ -43,7 +43,7 @@ const handleDBError = (error) => {
         return ServiceError.validationFailed(
           "Lesvoorbereiding met dit id bestaat al"
         );
-      case sqlMessage.includes("idx_link_to_pdf_unique"):
+      case sqlMessage.includes("idx_link_to_PDF_unique"):
         return ServiceError.validationFailed(
           "Er bestaat al een lesvoorbereiding met deze link"
         );
@@ -56,6 +56,7 @@ const handleDBError = (error) => {
         );
 
       default:
+        console.log(sqlMessage);
         return ServiceError.validationFailed("This item already exists");
     }
   }

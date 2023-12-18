@@ -897,6 +897,7 @@ describe("Lesgevers", () => {
 
     beforeAll(async () => {
       await knex(tables.groep).insert(data.groepen);
+      await knex(tables.lesgever).insert(data.lesgevers[0]);
     });
 
     // Testdata verwijderen uit database
@@ -973,6 +974,60 @@ describe("Lesgevers", () => {
           id: 100,
         },
       });
+    });
+
+    test("should 400 when duplicate email", async () => {
+      const response = await request
+        .post(URL)
+        .set("Authorization", adminAuthHeader)
+        .send({
+          lesgever_naam: "Fix it Felix",
+          geboortedatum: "2001-03-30T00:00:00.000Z",
+          type: "Reserve Lesgever",
+          aanwezigheidspercentage: 10,
+          diploma: "Geen",
+          imageURL: "test",
+          email: "lander.dhaen@move-united.be",
+          GSM: "0491111111",
+          groep_id: 1,
+          password: "12345678",
+        });
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body).toMatchObject({
+        code: "VALIDATION_FAILED",
+        message: "Er bestaat al een lesgever met dit emailadres",
+      });
+      expect(response.body.stack).toBeTruthy();
+
+      lesgeversToDelete.push(3);
+    });
+
+    test("should 400 when duplicate email", async () => {
+      const response = await request
+        .post(URL)
+        .set("Authorization", adminAuthHeader)
+        .send({
+          lesgever_naam: "Fix it Felix",
+          geboortedatum: "2001-03-30T00:00:00.000Z",
+          type: "Reserve Lesgever",
+          aanwezigheidspercentage: 10,
+          diploma: "Geen",
+          imageURL: "test",
+          email: "fixitfelix2.0@move-united.be",
+          GSM: "0499999999",
+          groep_id: 1,
+          password: "12345678",
+        });
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body).toMatchObject({
+        code: "VALIDATION_FAILED",
+        message: "Er bestaat al een lesgever met dit GSM-nummer",
+      });
+      expect(response.body.stack).toBeTruthy();
+
+      lesgeversToDelete.push(3);
     });
 
     test("should 400 when missing lesgever_naam", async () => {

@@ -424,7 +424,7 @@ describe("Groepen", () => {
     // Testdata toevoegen aan database
 
     beforeAll(async () => {
-      await knex(tables.groep).insert(data.groepen[0]);
+      await knex(tables.groep).insert(data.groepen);
     });
 
     // Testdata verwijderen uit database
@@ -545,7 +545,11 @@ describe("Groepen", () => {
   describe("POST /api/groepen", () => {
     const groepenToDelete = [];
 
-    // Testdata toevoegen aan database niet nodig
+    // Testdata toevoegen aan database
+
+    beforeAll(async () => {
+      await knex(tables.groep).insert(data.groepen[0]);
+    });
 
     // Testdata verwijderen uit database
 
@@ -572,6 +576,26 @@ describe("Groepen", () => {
       expect(response.body.aantal_lesgevers).toBe(5);
 
       groepenToDelete.push(response.body.groep_id);
+    });
+
+    test("should 400 when duplicate groep_naam", async () => {
+      const response = await request
+        .post(URL)
+        .set("Authorization", adminAuthHeader)
+        .send({
+          groep_naam: "Eendjes",
+          beschrijving: "Competitiegroep",
+          aantal_lesgevers: 5,
+        });
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body).toMatchObject({
+        code: "VALIDATION_FAILED",
+        message: "Groep met deze naam bestaat al",
+      });
+      expect(response.body.stack).toBeTruthy();
+
+      groepenToDelete.push(1);
     });
 
     test("should 400 when missing groep_naam", async () => {
