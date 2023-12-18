@@ -184,7 +184,7 @@ describe("Lessenreeksen", () => {
     // Testdata toevoegen aan database
 
     beforeAll(async () => {
-      await knex(tables.lessenreeks).insert(data.lessenreeksen[0]);
+      await knex(tables.lessenreeks).insert(data.lessenreeksen);
       await knex(tables.les).insert(data.lessen[0]);
     });
 
@@ -240,6 +240,18 @@ describe("Lessenreeksen", () => {
       expect(response.statusCode).toBe(400);
       expect(response.body.code).toBe("VALIDATION_FAILED");
       expect(response.body.details.params).toHaveProperty("id");
+    });
+
+    test("should 404 when requesting lessen of a lessenreeks without lessen", async () => {
+      const response = await request
+        .get(`${URL}/2/lessen`)
+        .set("Authorization", authHeader);
+
+      expect(response.statusCode).toBe(404);
+      expect(response.body).toMatchObject({
+        code: "NOT_FOUND",
+        message: "Er bestaan geen lessen met lessenreeks id 2!",
+      });
     });
 
     testAuthHeader(() => request.get(`${URL}/1/lessen`));

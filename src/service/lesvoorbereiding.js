@@ -32,20 +32,16 @@ const getLesvoorbereidingById = async (id) => {
 // Lesvoorbereidingen ophalen a.d.h.v groep_id
 
 const getLesvoorbereidingByGroepId = async (id) => {
-  const bestaandeGroep = await groepService.getGroepById(id);
+  // Controleren of groep bestaat
 
-  if (!bestaandeGroep) {
-    throw ServiceError.notFound(`Er bestaat geen groep met id ${id}!`, {
-      id,
-    });
-  }
+  await groepService.getGroepById(id);
 
   const lesvoorbereidingen =
     await lesvoorbereidingRepository.getLesvoorbereidingByGroepId(id);
 
-  if (!lesvoorbereidingen) {
+  if (lesvoorbereidingen.length === 0) {
     throw ServiceError.notFound(
-      `Er bestaat geen lesvoorbereiding met groep_id ${gid}!`,
+      `Er bestaan geen lesvoorbereidingen voor groep met groep_id ${id}!`,
       {
         id,
       }
@@ -65,20 +61,10 @@ const createLesvoorbereiding = async ({
   les_id,
   groep_id,
 }) => {
-  const bestaandeGroep = await groepService.getGroepById(groep_id);
-  const bestaandeLes = await lesService.getLesById(les_id);
+  // Controleren of groep en les bestaan
 
-  if (!bestaandeLes) {
-    throw ServiceError.notFound(`Er bestaat geen les met id ${les_id}!`, {
-      les_id,
-    });
-  }
-
-  if (!bestaandeGroep) {
-    throw ServiceError.notFound(`Er bestaat geen groep met id ${groep_id}!`, {
-      groep_id,
-    });
-  }
+  await groepService.getGroepById(groep_id);
+  await lesService.getLesById(les_id);
 
   try {
     const id = await lesvoorbereidingRepository.createLesvoorbereiding({
@@ -108,20 +94,10 @@ const updateLesvoorbereidingById = async (
     groep_id,
   }
 ) => {
-  const bestaandeGroep = await groepService.getGroepById(groep_id);
-  const bestaandeLes = await lesService.getLesById(les_id);
+  // Controleren of groep en les bestaan
 
-  if (!bestaandeLes) {
-    throw ServiceError.notFound(`Er bestaat geen les met id ${les_id}!`, {
-      les_id,
-    });
-  }
-
-  if (!bestaandeGroep) {
-    throw ServiceError.notFound(`Er bestaat geen groep met id ${groep_id}!`, {
-      groep_id,
-    });
-  }
+  await groepService.getGroepById(groep_id);
+  await lesService.getLesById(les_id);
 
   try {
     await lesvoorbereidingRepository.updateLesvoorbereidingById(id, {
@@ -141,6 +117,8 @@ const updateLesvoorbereidingById = async (
 // Lesvoorbereiding verwijderen a.d.h.v id
 
 const deleteLesvoorbereidingById = async (id) => {
+  // Controleren of lesvoorbereiding bestaat
+
   const lesvoorbereiding =
     await lesvoorbereidingRepository.getLesvoorbereidingById(id);
 

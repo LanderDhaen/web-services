@@ -26,20 +26,16 @@ const getLesgeverschemaById = async (id) => {
 // Lesgeverschema ophalen a.d.h.v. les_id
 
 const getLesgeverschemaByLesId = async (id) => {
-  const les = await lesService.getLesById(id);
+  // Controleren of les bestaat
 
-  if (!les) {
-    throw ServiceError.notFound(`Er bestaat geen les met id ${id}!`, {
-      id,
-    });
-  }
+  await lesService.getLesById(id);
 
   const lesgeverschema =
     await lesgeverschemaRepository.getLesgeverschemaByLesId(id);
 
-  if (!lesgeverschema) {
+  if (lesgeverschema.length === 0) {
     throw ServiceError.notFound(
-      `Er bestaat geen lesgeverschema voor les_id ${id}!`,
+      `Er bestaan geen lesgeverschemas voor les_id ${id}!`,
       {
         id,
       }
@@ -51,23 +47,15 @@ const getLesgeverschemaByLesId = async (id) => {
 
 // Lesgeverschema ophalen a.d.h.v. lesgever_id
 const getLesgeverschemaByLesgeverId = async (id) => {
-  const lesgever = await lesgeverService.getLesgeverById(id);
-
-  if (!lesgever) {
-    throw ServiceError.notFound(
-      `Er bestaat geen lesgeverschema voor lesgever_id ${id}!`,
-      {
-        id,
-      }
-    );
-  }
+  // Controleren of lesgever bestaat
+  await lesgeverService.getLesgeverById(id);
 
   const lesgeverschema =
     await lesgeverschemaRepository.getLesgeverschemaByLesgeverId(id);
 
-  if (!lesgeverschema) {
+  if (lesgeverschema.length === 0) {
     throw ServiceError.notFound(
-      `Er bestaat geen lesgeverschema voor lesgever_id ${id}!`,
+      `Er bestaan geen lesgeverschemas voor lesgever_id ${id}!`,
       {
         id,
       }
@@ -80,32 +68,11 @@ const getLesgeverschemaByLesgeverId = async (id) => {
 // Lesgeverschema aanmaken
 
 const createLesgeverschema = async ({ groep_id, lesgever_id, les_id }) => {
-  const bestaandeGroep = await groepService.getGroepById(groep_id);
+  // Controleren of groep, lesgever en les bestaan
 
-  if (!bestaandeGroep) {
-    throw ServiceError.notFound(`Er bestaat geen groep met id ${groep_id}!`, {
-      groep_id,
-    });
-  }
-
-  const bestaandeLesgever = await lesgeverService.getLesgeverById(lesgever_id);
-
-  if (!bestaandeLesgever) {
-    throw ServiceError.notFound(
-      `Er bestaat geen lesgever met id ${lesgever_id}!`,
-      {
-        lesgever_id,
-      }
-    );
-  }
-
-  const bestaandeLes = await lesService.getLesById(les_id);
-
-  if (!bestaandeLes) {
-    throw ServiceError.notFound(`Er bestaat geen les met id ${les_id}!`, {
-      les_id,
-    });
-  }
+  await groepService.getGroepById(groep_id);
+  await lesgeverService.getLesgeverById(lesgever_id);
+  await lesService.getLesById(les_id);
 
   try {
     const id = await lesgeverschemaRepository.createLesgeverschema({
@@ -125,32 +92,11 @@ const updateLesgeverschemaById = async (
   id,
   { groep_id, lesgever_id, les_id }
 ) => {
-  const bestaandeGroep = await groepService.getGroepById(groep_id);
+  // Controleren of groep, lesgever en les bestaan
 
-  if (!bestaandeGroep) {
-    throw ServiceError.notFound(`Er bestaat geen groep met id ${groep_id}!`, {
-      groep_id,
-    });
-  }
-
-  const bestaandeLesgever = await lesgeverService.getLesgeverById(lesgever_id);
-
-  if (!bestaandeLesgever) {
-    throw ServiceError.notFound(
-      `Er bestaat geen lesgever met id ${lesgever_id}!`,
-      {
-        lesgever_id,
-      }
-    );
-  }
-
-  const bestaandeLes = await lesService.getLesById(les_id);
-
-  if (!bestaandeLes) {
-    throw ServiceError.notFound(`Er bestaat geen les met id ${les_id}!`, {
-      les_id,
-    });
-  }
+  await groepService.getGroepById(groep_id);
+  await lesgeverService.getLesgeverById(lesgever_id);
+  await lesService.getLesById(les_id);
 
   try {
     await lesgeverschemaRepository.updateLesgeverschemaById(id, {

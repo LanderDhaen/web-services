@@ -298,6 +298,18 @@ describe("Groepen", () => {
       expect(response.body.code).toBe("NOT_FOUND");
     });
 
+    test("should 404 when requesting lesgevers of groep without lesgevers", async () => {
+      const response = await request
+        .get(`${URL}/2/lesgevers`)
+        .set("Authorization", adminAuthHeader);
+
+      expect(response.statusCode).toBe(404);
+      expect(response.body).toMatchObject({
+        code: "NOT_FOUND",
+        message: "Er bestaan geen lesgevers voor groep met groep_id 2!",
+      });
+    });
+
     test("should 403 when not admin", async () => {
       const response = await request
         .get(`${URL}/1/lesgevers`)
@@ -379,6 +391,19 @@ describe("Groepen", () => {
 
       expect(response.statusCode).toBe(404);
       expect(response.body.code).toBe("NOT_FOUND");
+    });
+
+    test("should 404 when requesting lesvoorbereidingen of groep without lesvoorbereidingen", async () => {
+      const response = await request
+        .get(`${URL}/2/lesvoorbereidingen`)
+        .set("Authorization", adminAuthHeader);
+
+      expect(response.statusCode).toBe(404);
+      expect(response.body).toMatchObject({
+        code: "NOT_FOUND",
+        message:
+          "Er bestaan geen lesvoorbereidingen voor groep met groep_id 2!",
+      });
     });
 
     test("should 403 when not admin", async () => {

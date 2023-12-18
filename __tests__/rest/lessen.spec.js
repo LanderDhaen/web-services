@@ -60,7 +60,7 @@ const data = {
 };
 
 const dataToDelete = {
-  lessenreeksen: [1, 2],
+  lessenreeksen: [1, 2, 3],
   lessen: [1, 15, 7],
   schemas: [1, 2, 3],
 };
@@ -316,6 +316,19 @@ describe("Lessen", () => {
       expect(response.statusCode).toBe(400);
       expect(response.body.code).toBe("VALIDATION_FAILED");
       expect(response.body.details.params).toHaveProperty("id");
+    });
+
+    test("should 404 when requesting schemas of a les without schemas", async () => {
+      const response = await request
+        .get(`${URL}/7/lesgeverschemas`)
+        .set("Authorization", adminAuthHeader);
+
+      expect(response.statusCode).toBe(404);
+      expect(response.body).toMatchObject({
+        code: "NOT_FOUND",
+        message: "Er bestaan geen lesgeverschemas voor les_id 7!",
+      });
+      expect(response.body.stack).toBeTruthy();
     });
 
     test("should 403 when not admin", async () => {

@@ -34,18 +34,14 @@ const getLesgeverById = async (id) => {
 // Lesgevers ophalen a.d.h.v groep_id
 
 const getLesgeverByGroepId = async (id) => {
-  const bestaandeGroep = await groepService.getGroepById(id);
+  // Controleren of groep bestaat
 
-  if (!bestaandeGroep) {
-    throw ServiceError.notFound(`Er bestaat geen groep met id ${id}!`, {
-      id,
-    });
-  }
+  await groepService.getGroepById(id);
 
   const lesgevers = await lesgeverRepository.getLesgeverByGroepId(id);
-  if (!lesgevers) {
+  if (lesgevers.length === 0) {
     throw ServiceError.notFound(
-      `Er bestaan geen lesgevers met groep id ${id}!`,
+      `Er bestaan geen lesgevers voor groep met groep_id ${id}!`,
       {
         id,
       }
@@ -69,13 +65,9 @@ const createLesgever = async ({
   groep_id,
   password,
 }) => {
-  const bestaandeGroep = await groepService.getGroepById(groep_id);
+  // Controleren of groep bestaat
 
-  if (!bestaandeGroep) {
-    throw ServiceError.notFound(`Er bestaat geen groep met id ${groep_id}!`, {
-      groep_id,
-    });
-  }
+  await groepService.getGroepById(groep_id);
 
   try {
     const password_hash = await hashPassword(password);
@@ -117,13 +109,9 @@ const updateLesgeverById = async (
     roles,
   }
 ) => {
-  const bestaandeGroep = await groepService.getGroepById(groep_id);
+  // Controleren of groep bestaat
 
-  if (!bestaandeGroep) {
-    throw ServiceError.notFound(`Er bestaat geen groep met id ${groep_id}.`, {
-      groep_id,
-    });
-  }
+  await groepService.getGroepById(groep_id);
 
   try {
     const password_hash = await hashPassword(password);

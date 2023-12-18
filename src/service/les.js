@@ -30,15 +30,14 @@ const getLesById = async (id) => {
 // Lessen ophalen a.d.h.v lessenreeks_id
 
 const getLesByLessenreeksId = async (id) => {
-  const lessenreeks = await lessenreeksService.getLessenreeksById(id);
-  if (!lessenreeks) {
-    throw ServiceError.notFound(`Er bestaat geen lessenreeks met id ${id}!`, {
-      id,
-    });
-  }
+  // Controleren of lessenreeks bestaat
+
+  await lessenreeksService.getLessenreeksById(id);
+
+  // Ophalen van lessen
 
   const lessen = await lesRepository.getLesByLessenreeksId(id);
-  if (!lessen) {
+  if (lessen.length === 0) {
     throw ServiceError.notFound(
       `Er bestaan geen lessen met lessenreeks id ${id}!`,
       {
@@ -53,18 +52,9 @@ const getLesByLessenreeksId = async (id) => {
 // Les aanmaken
 
 const createLes = async ({ datum, lessenreeks_id }) => {
-  const bestaandeLessenreeks = await lessenreeksService.getLessenreeksById(
-    lessenreeks_id
-  );
+  // Controleren of lessenreeks bestaat
 
-  if (!bestaandeLessenreeks) {
-    throw ServiceError.notFound(
-      `Er bestaat geen lessenreeks met id ${lessenreeks_id}!`,
-      {
-        lessenreeks_id,
-      }
-    );
-  }
+  await lessenreeksService.getLessenreeksById(lessenreeks_id);
 
   try {
     const id = await lesRepository.createLes({
@@ -80,18 +70,9 @@ const createLes = async ({ datum, lessenreeks_id }) => {
 // Les updaten a.d.h.v id
 
 const updateLesById = async (id, { datum, lessenreeks_id }) => {
-  const bestaandeLessenreeks = await lessenreeksService.getLessenreeksById(
-    lessenreeks_id
-  );
+  // Controleren of lessenreeks bestaat
 
-  if (!bestaandeLessenreeks) {
-    throw ServiceError.notFound(
-      `Er bestaat geen lessenreeks met id ${lessenreeks_id}!`,
-      {
-        lessenreeks_id,
-      }
-    );
-  }
+  await lessenreeksService.getLessenreeksById(lessenreeks_id);
 
   try {
     await lesRepository.updateLesById(id, {
