@@ -46,11 +46,11 @@
 
 - **componenten**
 
-  - [ ] heeft meerdere componenten - dom & slim (naast login/register)
-  - [ ] applicatie is voldoende complex
-  - [ ] definieert constanten (variabelen, functies en componenten) buiten de component
-  - [ ] minstens één form met meerdere velden met validatie (naast login/register)
-  - [ ] login systeem
+  - [x] heeft meerdere componenten - dom & slim (naast login/register)
+  - [x] applicatie is voldoende complex
+  - [x] definieert constanten (variabelen, functies en componenten) buiten de component
+  - [x] minstens één form met meerdere velden met validatie (naast login/register)
+  - [x] login systeem
         <br />
 
 - **routing**
