@@ -10,7 +10,7 @@ module.exports = {
     name: "Webservices",
   },
   cors: {
-    origins: ["https://two324-webservices-landerdhaen.onrender.com"],
+    origins: ["https://web-iv-2324-frontendweb-landerdhaen.onrender.com"],
     maxAge: 3 * 60 * 60, // 3 hours in ms
   },
 };
