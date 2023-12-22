@@ -990,7 +990,7 @@ describe("Lesgevers", () => {
       lesgeversToDelete.push(3);
     });
 
-    test("should 400 when duplicate email", async () => {
+    test("should 400 when duplicate gsm", async () => {
       const response = await request
         .post(URL)
         .set("Authorization", adminAuthHeader)
