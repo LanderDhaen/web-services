@@ -446,19 +446,6 @@ describe("Lesgevers", () => {
       expect(response.body.details.params).toHaveProperty("id");
     });
 
-    test("should 404 when requesting the schemas of a lesgever with no schemas", async () => {
-      const response = await request
-        .get(`${URL}/3/lesgeverschemas`)
-        .set("Authorization", adminAuthHeader);
-
-      expect(response.statusCode).toBe(404);
-      expect(response.body).toMatchObject({
-        code: "NOT_FOUND",
-        message: "Er bestaan geen lesgeverschemas voor lesgever_id 3!",
-      });
-      expect(response.body.stack).toBeTruthy();
-    });
-
     test("should 403 when not admin and requesting different user", async () => {
       const response = await request
         .get(`${URL}/3/lesgeverschemas`)

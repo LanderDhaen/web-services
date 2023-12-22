@@ -52,16 +52,6 @@ const getLesgeverschemaByLesgeverId = async (id) => {
 
   const lesgeverschema =
     await lesgeverschemaRepository.getLesgeverschemaByLesgeverId(id);
-
-  if (lesgeverschema.length === 0) {
-    throw ServiceError.notFound(
-      `Er bestaan geen lesgeverschemas voor lesgever_id ${id}!`,
-      {
-        id,
-      }
-    );
-  }
-
   return lesgeverschema;
 };
 
